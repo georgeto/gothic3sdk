@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="gui">
+      <UniqueIdentifier>{43b74a14-0079-4b1a-9610-1af0d68c980b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{a473925b-9924-47ad-b92f-dc6fbaf970cb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Shared\gui\ge_hudstaticnpc.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Shared\util\AsmjitUtil.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Shared\util\Debug.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Shared\util\Hook.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Shared\util\Logging.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Shared\util\Memory.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Shared\util\Util.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="Script_LearnPoints.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Shared\gui\ge_hudstaticnpc.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Shared\util\AsmjitUtil.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Shared\util\Debug.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Shared\util\Hook.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Shared\util\Logging.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Shared\util\Memory.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Shared\util\Util.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="Script_LearnPoints.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Shared\util\Logging.inl">
+      <Filter>util</Filter>
+    </None>
+  </ItemGroup>
+</Project>

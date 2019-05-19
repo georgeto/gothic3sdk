@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{b4ed3fc0-e9b7-41c2-8384-f0f64dfe71d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{81c0cce6-607b-42b0-888e-85086090cfff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\cyaml">
+      <UniqueIdentifier>{6e308d8c-b5e4-4815-8c6e-c3640d4e8d71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\cyaml">
+      <UniqueIdentifier>{6daa8900-9ff5-40ca-86be-261624628632}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\yaml.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\yaml_private.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cyaml\cyaml.h">
+      <Filter>include\cyaml</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cyaml\data.h">
+      <Filter>src\cyaml</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cyaml\mem.h">
+      <Filter>src\cyaml</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cyaml\utf8.h">
+      <Filter>src\cyaml</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cyaml\util.h">
+      <Filter>src\cyaml</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cyaml\stdbool.h">
+      <Filter>src\cyaml</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cyaml\inttypes.h" />
+    <ClInclude Include="include\stdint.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\api.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dumper.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emitter.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\loader.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\parser.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reader.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scanner.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\writer.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cyaml\save.c">
+      <Filter>src\cyaml</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cyaml\utf8.c">
+      <Filter>src\cyaml</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cyaml\util.c">
+      <Filter>src\cyaml</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cyaml\mem.c">
+      <Filter>src\cyaml</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cyaml\free.c">
+      <Filter>src\cyaml</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cyaml\load.c">
+      <Filter>src\cyaml</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

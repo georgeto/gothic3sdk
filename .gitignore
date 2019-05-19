@@ -1,0 +1,13 @@
+*.ncb
+*.suo
+*.user
+*.sdf
+*.opensdf
+
+/build
+
+/bin/**/*.exp
+/bin/**/*.lib
+/bin/**/*.pdb
+/bin/**/*.ilk
+/bin/**/*.dll

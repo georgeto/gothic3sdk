@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F74F8EFB-8610-40F4-BFEC-03FB5D4190D7}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="GothicLibRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="GothicLibDebug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Game\GameEnum.h" />
+    <ClInclude Include="Game\ge_armorset_ps.h" />
+    <ClInclude Include="Game\ge_attribute.h" />
+    <ClInclude Include="Game\ge_cameraai_ps.h" />
+    <ClInclude Include="Game\ge_charactercontrol_ps.h" />
+    <ClInclude Include="Game\ge_charactermovement_ps.h" />
+    <ClInclude Include="Game\ge_charactersensor_ps.h" />
+    <ClInclude Include="Game\ge_clock_ps.h" />
+    <ClInclude Include="Game\ge_dummycollectoradmin.h" />
+    <ClInclude Include="Game\ge_dummycollectoranchor.h" />
+    <ClInclude Include="Game\ge_dummycollectorbase.h" />
+    <ClInclude Include="Game\ge_dummycollectorcollisioncircle.h" />
+    <ClInclude Include="Game\ge_dummycollectorcollisionshape.h" />
+    <ClInclude Include="Game\ge_dummycollectordynamiccollisioncircle.h" />
+    <ClInclude Include="Game\ge_dummycollectorenclave.h" />
+    <ClInclude Include="Game\ge_dummycollectorentity.h" />
+    <ClInclude Include="Game\ge_dummycollectorfreepoint.h" />
+    <ClInclude Include="Game\ge_dummycollectorlinkcontainer.h" />
+    <ClInclude Include="Game\ge_dummycollectornavoffset.h" />
+    <ClInclude Include="Game\ge_dummycollectornavpath.h" />
+    <ClInclude Include="Game\ge_dummycollectornavzone.h" />
+    <ClInclude Include="Game\ge_dummycollectornegzone.h" />
+    <ClInclude Include="Game\ge_dummycollectorparticle.h" />
+    <ClInclude Include="Game\ge_dummycollectorprefpath.h" />
+    <ClInclude Include="Game\ge_dummycollectorpset_base.h" />
+    <ClInclude Include="Game\ge_dummycollectortreasureset.h" />
+    <ClInclude Include="Game\ge_dummyvisualbase_ps.h" />
+    <ClInclude Include="Game\ge_dynamiclayer.h" />
+    <ClInclude Include="Game\ge_enclaveadmin.h" />
+    <ClInclude Include="Game\ge_enclave_ps.h" />
+    <ClInclude Include="Game\ge_entity.h" />
+    <ClInclude Include="Game\ge_entitydummyvisual_ps.h" />
+    <ClInclude Include="Game\ge_focus_ps.h" />
+    <ClInclude Include="Game\ge_geometrylayer.h" />
+    <ClInclude Include="Game\ge_guimanager.h" />
+    <ClInclude Include="Game\ge_huddialog.h" />
+    <ClInclude Include="Game\ge_hudmenu.h" />
+    <ClInclude Include="Game\ge_hudpage.h" />
+    <ClInclude Include="Game\ge_infomanager_ps.h" />
+    <ClInclude Include="Game\ge_infoscriptline_ps.h" />
+    <ClInclude Include="Game\ge_infoscript_ps.h" />
+    <ClInclude Include="Game\ge_info_ps.h" />
+    <ClInclude Include="Game\ge_interaction_ps.h" />
+    <ClInclude Include="Game\ge_inventorylistener.h" />
+    <ClInclude Include="Game\ge_inventoryslot.h" />
+    <ClInclude Include="Game\ge_inventorystack.h" />
+    <ClInclude Include="Game\ge_inventory_ps.h" />
+    <ClInclude Include="Game\ge_item_ps.h" />
+    <ClInclude Include="Game\ge_layerbase.h" />
+    <ClInclude Include="Game\ge_lock_ps.h" />
+    <ClInclude Include="Game\ge_magic_ps.h" />
+    <ClInclude Include="Game\ge_movementbase_ps.h" />
+    <ClInclude Include="Game\ge_navigationadmin.h" />
+    <ClInclude Include="Game\ge_navigationmap.h" />
+    <ClInclude Include="Game\ge_navigation_ps.h" />
+    <ClInclude Include="Game\ge_navpath_ps.h" />
+    <ClInclude Include="Game\ge_navzone_ps.h" />
+    <ClInclude Include="Game\ge_negzone_psobj.h" />
+    <ClInclude Include="Game\ge_npc_ps.h" />
+    <ClInclude Include="Game\ge_party_ps.h" />
+    <ClInclude Include="Game\ge_playermemory_ps.h" />
+    <ClInclude Include="Game\ge_propertydummyvisual_ps.h" />
+    <ClInclude Include="Game\ge_questmanager_ps.h" />
+    <ClInclude Include="Game\ge_quest_ps.h" />
+    <ClInclude Include="Game\ge_recipe_ps.h" />
+    <ClInclude Include="Game\ge_scriptadmin.h" />
+    <ClInclude Include="Game\ge_scriptadminext.h" />
+    <ClInclude Include="Game\ge_scriptinit.h" />
+    <ClInclude Include="Game\ge_scriptprocessingunit.h" />
+    <ClInclude Include="Game\ge_scriptroutine_ps.h" />
+    <ClInclude Include="Game\ge_sector.h" />
+    <ClInclude Include="Game\ge_session.h" />
+    <ClInclude Include="Game\ge_sessioncheats.h" />
+    <ClInclude Include="Game\ge_sessioninfo.h" />
+    <ClInclude Include="Game\ge_skill_ps.h" />
+    <ClInclude Include="Game\ge_stat.h" />
+    <ClInclude Include="Game\ge_templatelayer.h" />
+    <ClInclude Include="Game\ge_treasureset_ps.h" />
+    <ClInclude Include="Game\ge_world.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Game\ge_scriptadmin.cpp" />
+    <ClCompile Include="Game\ge_scriptadminext.cpp" />
+    <ClCompile Include="Game\ge_scriptinit.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Engine.vcxproj">
+      <Project>{f385328b-69b2-4e58-b520-9562efd53ad8}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="GFC.vcxproj">
+      <Project>{84e2573c-0d33-417f-a740-b42636728abc}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="SharedBase.vcxproj">
+      <Project>{7823c28a-70f8-484e-a6dc-ccefebc34c03}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

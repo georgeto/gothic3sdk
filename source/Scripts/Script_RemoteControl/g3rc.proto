@@ -1,0 +1,82 @@
+package g3rc;
+
+option java_package = "de.george.g3dit.rpc.proto";
+option java_outer_classname = "G3RemoteControlProtos";
+option optimize_for = LITE_RUNTIME;
+
+message RequestContainer {
+	required uint32 request_number = 1;
+	oneof request {
+		HearbeatRequest heartbeat_request = 2;
+		EntityRequest entity_request = 3;
+		GotoRequest goto_request = 4;
+	}
+}
+
+message ResponseContainer {
+	required uint32 request_number = 1;
+	enum Status {
+		FAILED = 0;
+		SUCCESSFUL = 1;
+	}
+	required Status status = 2;
+	optional string message = 3;
+	oneof response {
+		HearbeatResponse heartbeat_response = 4;
+		EntityResponse entity_response = 5;
+		VoidResponse void_response = 6;
+	}
+}
+
+message HearbeatRequest {
+
+}
+
+message EntityRequest {
+	oneof identifier {
+		string name = 1;
+		string guid = 2;
+	}
+}
+
+message GotoRequest {
+	oneof identifier {
+		string name = 1;
+		string guid = 2;
+		Vector position = 3;
+	}
+}
+
+message HearbeatResponse {
+	enum Status {
+		MENU = 0;
+		LOADING = 1;
+		INGAME = 2;
+	}
+	required Status status = 1;
+}
+
+message VoidResponse {
+}
+
+message EntityResponse {
+	optional Position position = 1;
+}
+
+message Position {
+	required Vector translation = 1;
+	required Vector scale = 2;
+	required EulerAngles rotation = 3;
+}
+
+message Vector {
+	required float x = 1;
+	required float y = 2;
+	required float z = 3;
+}
+
+message EulerAngles {
+	required float yaw = 1;
+	required float pitch = 2;
+	required float roll = 3;
+}
