@@ -45,6 +45,7 @@ inline GEU32 RVA_Game(GEU32 offset)       { return reinterpret_cast<GEU32>(LoadM
 inline GEU32 RVA_Engine(GEU32 offset)     { return reinterpret_cast<GEU32>(LoadModule("Engine.dll")) + offset; };
 inline GEU32 RVA_Importer(GEU32 offset)   { return reinterpret_cast<GEU32>(LoadModule("Importer.dll")) + offset; };
 inline GEU32 RVA_SharedBase(GEU32 offset) { return reinterpret_cast<GEU32>(LoadModule("SharedBase.dll")) + offset; };
+inline GEU32 RVA_Gui(GEU32 offset)        { return reinterpret_cast<GEU32>(LoadModule("GUI.dll")) + offset; };
 inline GEU32 RVA_Executable(GEU32 offset)       { return reinterpret_cast<GEU32>(LoadModule(0)) + offset; };
 
 #endif
