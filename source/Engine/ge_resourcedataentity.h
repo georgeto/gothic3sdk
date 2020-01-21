@@ -50,6 +50,12 @@ class GE_DLLIMPORT eCResourceDataEntity :
     protected:
         void Invalidate( void );
 
+    public:
+        GE_PADDING( 0x18 )
+        eCResourceBase_PS * m_pResource;
+        GE_PADDING( 0x04 )
 };
+
+GE_ASSERT_SIZEOF( eCResourceDataEntity, 0x50 );
 
 #endif

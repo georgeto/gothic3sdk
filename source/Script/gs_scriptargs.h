@@ -155,4 +155,27 @@ class gSArgsFor__AI_ChangeAction :
         gEAction m_enuAction;
 };
 
+class gSArgsFor__AI_SelectWeapon :
+    public gScrArgument
+{
+public: virtual ~gSArgsFor__AI_SelectWeapon(void);
+
+public:
+    Entity m_SelfEntity;
+    Entity m_TargetEntity;
+};
+
+class gSArgsFor__AI_LoopAction :
+    public gScrArgument
+{
+    public: virtual ~gSArgsFor__AI_LoopAction( void );
+
+    public:
+        Entity   m_Entity;
+        Entity   m_InteractEntity;
+        gEAction m_enuAction;
+        GEFloat  m_fStateTime;
+        GEInt    m_iDuration;
+};
+
 #endif

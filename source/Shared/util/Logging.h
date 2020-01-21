@@ -7,7 +7,12 @@
 class mCLoggerBase
 {
     public:
-        mCLoggerBase();
+                 mCLoggerBase();
+        virtual ~mCLoggerBase() = 0;
+
+    public:
+        mCLoggerBase( mCLoggerBase const & ) = delete;
+        mCLoggerBase & operator = ( mCLoggerBase const & ) = delete;
 
     public:
         virtual void LogString( GELPCChar a_strMessage )     = 0;
@@ -15,7 +20,6 @@ class mCLoggerBase
         virtual void PushIndent();
         virtual void PopIndent();
         void SetEnabled(GEBool a_bEnabled);
-        virtual void Free() = 0;
 
     protected:
         bCString Indent( GELPCChar a_strText );
@@ -27,51 +31,50 @@ class mCLoggerBase
         GEUInt m_uCurrentIndent;
 };
 
-class mCFileLogger: public mCLoggerBase
+class mCFileLogger : public mCLoggerBase
 {
     public:
         static mCFileLogger & GetInstance( GELPCChar a_strName );
 
     public:
-        mCFileLogger();
-        mCFileLogger( GELPCChar a_strFile );
+                 mCFileLogger( GELPCChar a_strFile );
+        virtual ~mCFileLogger();
 
     public:
         virtual void LogString( GELPCChar a_strMessage );
         virtual void LogFormat( GELPCChar a_strFormat, ... );
         virtual void LogFormatPrefix( GELPCChar a_strPrefix, GELPCChar a_strFormat, ... );
-        virtual void Free();
         FILE *       GetFile();
 
     private:
         FILE * m_pFile;
 };
 
-class mCStdLogger: public mCLoggerBase
+class mCStdLogger : public mCLoggerBase
 {
     public:
-        mCStdLogger();
-        mCStdLogger( GELPCChar a_strName );
+                 mCStdLogger( GELPCChar a_strName );
+        virtual ~mCStdLogger();
 
         virtual void LogString( GELPCChar a_strMessage );
         virtual void LogFormat( GELPCChar a_strFormat, ... );
-        virtual void Free();
 };
 
 template< typename T >
 class mCLoggingAdmin
 {
     public:
-        static T & GetLogger( GELPCChar a_strPath, GEBool a_bActive = true );
+        static T &    GetLogger( GELPCChar a_strPath, GEBool a_bActive = true );
+        static GEBool FreeLogger( T & a_Logger );
 
     private:
-        static mCLoggingAdmin s_LoggingAdmin;
+        static mCLoggingAdmin & GetLoggingAdmin();
 
     private:
         ~mCLoggingAdmin();
 
     private:
-        bTObjMap< bCString, T > m_Loggers;
+        bTPtrMap< bCString, T * > m_Loggers;
 };
 
 void           SetDefaultLogger( mCLoggerBase & a_Logger );

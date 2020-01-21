@@ -28,6 +28,15 @@
     <Filter Include="localization">
       <UniqueIdentifier>{76e1667a-8de3-47b3-8e38-ffc733216fa1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="api">
+      <UniqueIdentifier>{1875087b-0797-43af-99b0-f54f3e97efc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="api\dx9">
+      <UniqueIdentifier>{5f5f4ea4-b75b-409a-9d82-73a855901d51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="animation">
+      <UniqueIdentifier>{57d7c1fa-10ac-47e9-b558-34b45f4e57dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\ge_pvscellitem.h">
@@ -71,12 +80,6 @@
     </ClInclude>
     <ClInclude Include="Engine\ge_templateentity.h">
       <Filter>entity</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ge_apifont.h">
-      <Filter>font</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\ge_dx9font.h">
-      <Filter>font</Filter>
     </ClInclude>
     <ClInclude Include="Engine\ge_font.h">
       <Filter>font</Filter>
@@ -207,8 +210,128 @@
     </ClInclude>
     <ClInclude Include="Engine\ge_actionmapper.h" />
     <ClInclude Include="Engine\ge_illuminated_ps.h" />
+    <ClInclude Include="Engine\ge_audiochannelgroup.h" />
+    <ClInclude Include="Engine\ge_audiomodule.h" />
+    <ClInclude Include="Engine\ge_audiochannel.h" />
+    <ClInclude Include="Engine\ge_meshelement.h" />
+    <ClInclude Include="Engine\ge_resourcemeshcomplex_ps.h" />
+    <ClInclude Include="Engine\ge_apicubemap.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_apidevice.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_apieffect.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_apihlslshader.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_apiindexdata.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_apiinstance.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_apiprimitive.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_apisprite.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_apitexture.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_apivertexdata.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_apivolume.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_apifont.h">
+      <Filter>api</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9cubemap.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9device.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9effect.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9hlslshader.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9indexdata.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9instance.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9primitive.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9sprite.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9texture.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9vertexdata.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9volume.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_dx9font.h">
+      <Filter>api\dx9</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_animation_baserenderactor.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_animation_hardrenderactor.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_animation_hardwareskinner.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_animationadmin.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_resourceanimationactor_ps.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_visualanimationlod.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_wrapper_emfx2actor.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_visualanimationfactory.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_rendercontext.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_rendercontextanimation.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_visualanimation_ps.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ge_buttonctrl.h" />
+    <ClInclude Include="Engine\ge_menuitem.h" />
+    <ClInclude Include="Engine\ge_threadpool.h" />
+    <ClInclude Include="Engine\ge_gfxindexdata.h" />
+    <ClInclude Include="Engine\ge_gfxvertexdata.h" />
+    <ClInclude Include="Engine\ge_lightmap.h" />
+    <ClInclude Include="Engine\ge_lightmapbatcher.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Engine\ge_dx9instance.cpp">
+      <Filter>api\dx9</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

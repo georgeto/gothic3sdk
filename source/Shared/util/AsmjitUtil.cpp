@@ -235,13 +235,23 @@ bool WriteNops(unsigned long srcAdress, size_t size)
 
 bool SkipCode(unsigned long address, size_t size)
 {
-    if(size < 16)
-        return WriteNops(address, size);
-
     asmjit::X86CodeAsm assembler(address);
-    assembler.jmp(asmjit::imm(address + size));
-    asmjit::x86::nopFill(assembler, size);
+    SkipCode(assembler, size);
     return WriteAssemblerData(assembler, size);
+}
+
+void SkipCode(asmjit::X86CodeAsm & code, size_t size)
+{
+    if(size <= code.GetCode().getCodeSize())
+        return;
+
+    size_t remainingSize = size - code.GetCode().getCodeSize();
+    if(remainingSize >= 16)
+    {
+        code.jmp(asmjit::imm(code.GetCode().getBaseAddress() + size));
+    }
+
+    asmjit::x86::nopFill(code, size);
 }
 
 bool ReadMemory(void * dest, void * source, size_t size)

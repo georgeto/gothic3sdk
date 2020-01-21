@@ -119,7 +119,8 @@ T const * GetPropertySet( eCEntity const * a_pEntity, eEPropertySetType a_Type )
 template< typename T >
 T * FindModule ( void )
 {
-    return dynamic_cast< T * >( eCModuleAdmin::GetInstance().FindModule( bTClassName< T >::GetUnmangled() ));
+    static T * s_pModule = dynamic_cast< T * >( eCModuleAdmin::GetInstance().FindModule( bTClassName< T >::GetUnmangled() ));
+    return s_pModule;
 }
 
 template< typename T >
@@ -165,9 +166,23 @@ bCString JoinString(bTArrayBase< T > const & a_arrObjects, char const *a_FormatS
 
     bCString Result = bCString::GetFormattedString(a_FormatString, a_arrObjects[a_iOffset]);
     for (GEInt i = a_iOffset + 1; i < a_iEnd; i++)
-        Result += a_rDelimiter + bCString::GetFormattedString(a_FormatString, a_arrObjects[a_iOffset]);
+        Result += a_rDelimiter + bCString::GetFormattedString(a_FormatString, a_arrObjects[i]);
 
     return Result;
+}
+
+template< typename A, typename T >
+A SplitString( bCString const & a_rString, bCString const & a_rDelimiters, T(*a_fConverter)(bCString const &), GEBool a_bTrimLeft = GETrue, GEBool a_bTrimRight = GETrue )
+{
+    GEInt iWordCount = a_rString.CountWords(a_rDelimiters);
+    A arrSplitted(iWordCount);
+    for( GEInt i = 0; i < iWordCount; i++ )
+    {
+       bCString strWord;
+       a_rString.GetWord(i, a_rDelimiters, strWord, a_bTrimLeft, a_bTrimRight);
+       arrSplitted.Add(a_fConverter(strWord));
+    }
+    return arrSplitted;
 }
 
 template< typename T >

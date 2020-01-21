@@ -9,8 +9,8 @@ class GE_DLLIMPORT eCDX9Font :
     public eCAPIFont
 {
     public: virtual bEResult GetGlyphData( GEUInt, bCRect &, bCVector2 &, eCAPITexture * &, eCGfxShared::eSGfxLayersDesc & );
-    public: virtual bEResult GetTextIndices( bCUnicodeString const &, GEU16 * &, GEU16 & );
     public: virtual bEResult GetTextIndices( bCString const &, GEU16 * &, GEU16 & );
+    public: virtual bEResult GetTextIndices( bCUnicodeString const &, GEU16 * &, GEU16 & );
     public: virtual bEResult GetDeviceContext( HDC__ * & );
     public: virtual bEResult DrawTextA( bCUnicodeString, bCRect *, GEU32, GEU32 );
     public: virtual         ~eCDX9Font( void );

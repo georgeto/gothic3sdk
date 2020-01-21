@@ -5,15 +5,26 @@ enum eEResourceCacheBehavior
 {
     eEResourceCacheBehavior_Immediate = 1,
     eEResourceCacheBehavior_Lazy      = 2,
-    eEResourceCacheBehavior_3      = 3
+    eEResourceCacheBehavior_3         = 3
 };
-enum eEResourceState;
+
 class eCResourceDataEntity;
 
 class GE_DLLIMPORT eCResourceBase_PS :
     public bCObjectRefBase
 {
     public:
+        enum eEResourceState
+        {
+            eEResourceState_0 = 0x0,
+            eEResourceState_1 = 0x1,
+            eEResourceState_CanBeLoaded = 0x2,
+            eEResourceState_Loading = 0x3,
+            eEResourceState_Unloading = 0x4,
+            eEResourceState_Converting = 0x5,
+            eEResourceState_Available = 0x6,
+            eEResourceState_MaybeFailed_InvalidFileName_OR_Saving = 0x7,
+        };
         enum eECacheType;
 
     public:    virtual bCString const &             GetNativeFileExt( void ) const;
@@ -84,6 +95,18 @@ class GE_DLLIMPORT eCResourceBase_PS :
         void     SetFileBaseName( bCString const & );
         bEResult Unload( eEResourceCacheBehavior );
 
+    public:
+        GEFloat                 m_fResourcePriority;
+        GEInt                   m_CurrentResourceState;
+        GEBool                  __UNK_0014;
+        GE_PADDING( 3 )
+        eEResourceCacheBehavior m_enuCacheBehavior;
+        GEUInt                  m_uSize;
+        GEU32                   m_Bitfield_1_Invalid;
+        eCResourceDataEntity *  m_pEntity;
+        bCString                m_strFileBaseName;
 };
+
+GE_ASSERT_SIZEOF( eCResourceBase_PS, 0x2C )
 
 #endif

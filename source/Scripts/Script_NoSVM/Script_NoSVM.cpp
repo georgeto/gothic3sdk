@@ -42,7 +42,7 @@ gSScriptInit const * GE_STDCALL ScriptInit( void )
     GetScriptAdmin().LoadScriptDLL("Script_Game.dll");
 
     LoadSettings();
-    Hook_StartSayEx.Hook(mCCallHook::GetHookParams(RVA_Script(0x2095A), &StartSayEx, mCBaseHook::mEHookType_ThisCall));
+    Hook_StartSayEx.Hook(RVA_Script(0x2095A), &StartSayEx, mCBaseHook::mEHookType_ThisCall);
 
     return &GetScriptInit();
 }

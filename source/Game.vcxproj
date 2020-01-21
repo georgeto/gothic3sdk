@@ -70,6 +70,7 @@
     <ClInclude Include="Game\ge_dummycollectortreasureset.h" />
     <ClInclude Include="Game\ge_dummyvisualbase_ps.h" />
     <ClInclude Include="Game\ge_dynamiclayer.h" />
+    <ClInclude Include="Game\ge_effect_ps.h" />
     <ClInclude Include="Game\ge_enclaveadmin.h" />
     <ClInclude Include="Game\ge_enclave_ps.h" />
     <ClInclude Include="Game\ge_entity.h" />

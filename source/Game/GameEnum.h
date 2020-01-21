@@ -1405,6 +1405,9 @@ enum IDC
     IDC_LABEL_GAMEPLAY_LOCKPICKING_2                  = 20875,
     IDC_SLIDER_GAMEPLAY_LOCKPICKING_2                 = 20876,
     IDC_VALUE_GAMEPLAY_LOCKPICKING_2                  = 20877,
+    IDC_LABEL_GAMEPLAY_UNOBSERVED_CRIMES_2            = 20895,
+    IDC_SLIDER_GAMEPLAY_UNOBSERVED_CRIMES_2           = 20896,
+    IDC_VALUE_GAMEPLAY_UNOBSERVED_CRIMES_2            = 20897,
     IDC_STATIC_SLIDESHOW_SUBTITLE_2                   = 20757,
     IDC_STATIC_SLIDESHOW_HEADER_2                     = 20756,
     IDC_STATIC_SLIDESHOW_PICTURE_2                    = 20755,
@@ -1859,6 +1862,20 @@ enum IDC
     IDC_LABEL_DIFFICULTY_PLAYER_RANGED_DAMAGE_2       = 20892,
     IDC_SLIDER_DIFFICULTY_PLAYER_RANGED_DAMAGE_2      = 20893,
     IDC_VALUE_DIFFICULTY_PLAYER_RANGED_DAMAGE_2       = 20894,
+};
+
+enum gEWeaponCategory {
+    gEWeaponCategory_None   = 0,
+    gEWeaponCategory_Melee  = 1,
+    gEWeaponCategory_Ranged = 2,
+    gEWeaponCategory_Magic  = 3,
+};
+
+enum gEWalkMode {
+    gEWalkMode_Sneak = 0,
+    gEWalkMode_Walk = 1,
+    gEWalkMode_Run = 2,
+    gEWalkMode_Sprint = 3
 };
 
 #endif

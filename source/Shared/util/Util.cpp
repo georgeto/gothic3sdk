@@ -337,7 +337,7 @@ GEBool StartsWith(bCString const & a_strValue, GEChar a_chPattern)
 
 GEBool EndsWith(bCString const & a_strValue, GELPCChar a_strPattern)
 {
-    return a_strValue.ReverseFind(a_strPattern) == a_strValue.GetLength() - 1;
+    return a_strValue.ReverseFind(a_strPattern) == a_strValue.GetLength() - static_cast<GEInt>(strlen(a_strPattern));
 }
 
 GEBool EndsWith(bCString const & a_strValue, GEChar a_chPattern)

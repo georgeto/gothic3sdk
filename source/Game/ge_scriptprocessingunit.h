@@ -75,13 +75,13 @@ class GE_DLLIMPORT gCScriptProcessingUnit
             GEInt     iUnk1_0;
             GEU8      u8Unk2_0;
             GE_PADDING( 3 );
-            GEFloat fUnk3_1_0;
+            GEFloat AniSpeedScale;
             GEU8    u8Unk4_0;
             GEU8    u8Unk5_0;
             GE_PADDING( 2 );
 
-            sAIPlayAniInstr_Args( eCEntity * a_SelfEntity, eCEntity *a_InteractEntity, bCString a_AniName )
-                : SelfEntity( a_SelfEntity ), InteractEntity( a_InteractEntity ), AniName( a_AniName ), iUnk1_0( 0 ), u8Unk2_0( 0 ), fUnk3_1_0( 1.0f ), u8Unk4_0( 0 ), u8Unk5_0( 0 )
+            sAIPlayAniInstr_Args( eCEntity * a_SelfEntity, eCEntity *a_InteractEntity, bCString a_AniName, GEFloat a_AniSpeedScale = 1.0f )
+                : SelfEntity( a_SelfEntity ), InteractEntity( a_InteractEntity ), AniName( a_AniName ), iUnk1_0( 0 ), u8Unk2_0( 0 ), AniSpeedScale( a_AniSpeedScale ), u8Unk4_0( 0 ), u8Unk5_0( 0 )
             {
             }
         };
@@ -93,6 +93,37 @@ class GE_DLLIMPORT gCScriptProcessingUnit
 
             sAIWaitInstr_Args( eCEntity * a_SelfEntity, GEU32 a_Duration )
                 : SelfEntity( a_SelfEntity ), Duration( a_Duration )
+            {
+            }
+        };
+
+        struct sAICombatMoveInstr_Args
+        {
+            eCEntity *SelfEntity;
+            eCEntity *TargetEntity;
+            gEAction Action;
+            bCString PhaseName;
+            GEFloat AniSpeedScale;
+
+            sAICombatMoveInstr_Args(eCEntity * a_SelfEntity, eCEntity* a_TargetEntity, gEAction a_Action, bCString a_Phase, GEFloat a_AniSpeedScale = 1.0f)
+                : SelfEntity(a_SelfEntity), TargetEntity(a_TargetEntity), Action(a_Action), PhaseName(a_Phase), AniSpeedScale(a_AniSpeedScale)
+            {
+            }
+        };
+
+        struct sAIGotoInstr_Args
+        {
+            GEU32       Unk1;
+            eCEntity*   SelfEntity;
+            eCEntity*   Destination;
+            GEFloat     Unk2;
+            GEFloat     Unk3;
+            GEFloat     Unk4;
+            gEWalkMode  WalkMode;
+            gEDirection Direction;
+
+            sAIGotoInstr_Args(eCEntity* a_pSelfEntity, eCEntity* a_pDestination, gEWalkMode a_WalkMode, gEDirection a_Direction)
+                : Unk1(0), SelfEntity(a_pSelfEntity), Destination(a_pDestination), Unk2(0), Unk3(0), Unk4(0), WalkMode(a_WalkMode), Direction(a_Direction)
             {
             }
         };

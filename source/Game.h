@@ -62,6 +62,7 @@ class gCCharacterSensor_PS;
 #include "Game/ge_navpath_ps.h"
 #include "Game/ge_party_ps.h"
 #include "Game/ge_lock_ps.h"
+#include "Game/ge_effect_ps.h"
 
 #include "Game/ge_entity.h"
 

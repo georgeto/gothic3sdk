@@ -18,6 +18,8 @@ class GE_DLLIMPORT bCCriticalSectionWin32
         void   SetSpinCount( GEU32 );
         GEBool TryAcquire( void );
 
+    private:
+        CRITICAL_SECTION m_CriticalSection;
 };
 
 #endif

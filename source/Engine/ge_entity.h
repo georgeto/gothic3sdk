@@ -10,7 +10,7 @@ struct eSEntityFlags
     GEU32 __FIXME_4                         : 1;  // 00000010 4
     GEU32 m_DeactivationEnabled             : 1;  // 00000020 5
     GEU32 m_Killed                          : 1;  // 00000040 6
-    GEU32 m_ProcessingRangeEntered          : 1;  // 00000080 7
+    GEU32 m_InProcessingRange               : 1;  // 00000080 7
     GEU32 m_CachedIn                        : 1;  // 00000100 8
     GEU32 m_CachingInOut                    : 1;  // 00000200 9
     GEU32 m_Hook                            : 1;  // 00000400 10
@@ -283,6 +283,39 @@ class GE_DLLIMPORT eCEntity :
         void SetPhysicObject( eCPhysicObject * );
         void SetWorldMatrix( bCMatrix const & );
 
+    public:
+        eCPhysicObject *                    m_pPhysicObject;
+        GEFloat                             m_fRenderAlphaValue;
+        GEChar                              m_u8LastRenderPriority;
+        GE_PADDING( 3 )
+        eSEntityFlags                       m_EntityFlags;
+        bCMatrix                            m_WorldMatrix;
+        bCMatrix                            m_LocalMatrix;
+        bCBox                               m_WorldTreeBoundary;
+        bCSphere                            m_WorldTreeSphere;
+        bCBox                               m_WorldNodeBoundary;
+        bCSphere                            m_WorldNodeSphere;
+        bCBox                               m_LocalNodeBoundary;
+        GEFloat                             m_fVisualLoDFactor;
+        GEFloat                             m_fObjectCullFactor;
+        GEInt                               m_uDataChangedTimeStamp;
+        GEFloat                             m_fUniformScaling;
+        bCString                            m_strName;
+        bTSmallArray<eCEntityPropertySet *> m_arrPropertySets;
+        GE_PADDING( 8 )
+        GE_PADDING( 0x40 )  // eCFrustumElementItem m_FrustumElementItem;
+        GEInt                               __UNK_018A;
+        GEI16                               m_u16RefCountTAPoints;
+        GE_PADDING( 2 )
+        GEInt                               __UNK_0194;
+        GEInt                               __UNK_0198;
+        GEInt                               __UNK_019A;
+        GEInt                               __UNK_01A0;
+        GEBool                              m_bWaitingForPlayer_FollowNPC;
+        GE_PADDING ( 3 )
+        bCVector                            m_MotionDelta;
 };
+
+GE_ASSERT_SIZEOF( eCEntity, 0x1B4 )
 
 #endif

@@ -3,6 +3,8 @@
 
 #include "Script.h"
 
+#include "Logging.h"
+
 gSScriptInit & GetScriptInit();
 
 class mCFunctionHook;
@@ -10,20 +12,32 @@ class mCScriptHookRegistry : public gSScriptInit
 {
     public:
         ~mCScriptHookRegistry();
-        GEBool ReplaceScriptAIState(gSScriptAIState const & a_ScriptState);
-        GEBool ReplaceScriptAIFunction(gSScriptAIFunction const & a_ScriptFunction);
-        GEBool ReplaceScriptAICallback(gSScriptAICallback const & a_ScriptCallback);
-        GEBool ReplaceScriptAIRoutine(gSScriptAIRoutine const & a_ScriptRoutine);
-        GEBool ReplaceScript(gSScript const & a_Script);
+        GEBool ReplaceScriptAIState(gSScriptAIState const & a_ScriptState, gFScriptAIState * o_pOriginalScript = nullptr);
+        GEBool ReplaceScriptAIFunction(gSScriptAIFunction const & a_ScriptFunction, gFScriptAIFunction * o_pOriginalScript = nullptr);
+        GEBool ReplaceScriptAICallback(gSScriptAICallback const & a_ScriptCallback, gFScriptAICallback * o_pOriginalScript = nullptr);
+        GEBool ReplaceScriptAIRoutine(gSScriptAIRoutine const & a_ScriptRoutine, gFScriptAIRoutine * o_pOriginalScript = nullptr);
+        GEBool ReplaceScript(gSScript const & a_Script, gFScript * o_pOriginalScript = nullptr);
         void Hook();
 
     private:
-        bTObjArray< gSScriptAIState >    m_arrScriptAIStates;
-        bTObjArray< gSScriptAIFunction > m_arrScriptAIFunctions;
-        bTObjArray< gSScriptAICallback > m_arrScriptAICallbacks;
-        bTObjArray< gSScriptAIRoutine >  m_arrScriptAIRoutines;
-        bTObjArray< gSScript >           m_arrScripts;
-        bTPtrArray< mCFunctionHook * >   m_arrHooks;
+        template<typename S, typename F>
+        struct mTOriginalWrapper
+        {
+            S Script;
+            F * pOriginalScript;
+
+            GEBool operator == ( mTOriginalWrapper const & script ) const {
+                return Script == script.Script;
+            };
+        };
+
+    private:
+        bTObjArray< mTOriginalWrapper<gSScriptAIState, gFScriptAIState> >       m_arrScriptAIStates;
+        bTObjArray< mTOriginalWrapper<gSScriptAIFunction, gFScriptAIFunction> > m_arrScriptAIFunctions;
+        bTObjArray< mTOriginalWrapper<gSScriptAICallback, gFScriptAICallback> > m_arrScriptAICallbacks;
+        bTObjArray< mTOriginalWrapper<gSScriptAIRoutine, gFScriptAIRoutine> >   m_arrScriptAIRoutines;
+        bTObjArray< mTOriginalWrapper<gSScript, gFScript> >                     m_arrScripts;
+        bTPtrArray< mCFunctionHook * >                                          m_arrHooks;
 };
 mCScriptHookRegistry & GetScriptHookRegistry();
 
@@ -31,55 +45,82 @@ mCScriptHookRegistry & GetScriptHookRegistry();
 #define __ME_REGISTER_GENERIC_SCRIPT( TYPE, NAME, FUNC ) \
     GetScriptInit().m_arr ## TYPE ## s.Add( gS ## TYPE ( NAME, __FILE__, FUNC ) );
 
-#define __ME_UNREGISTER_GENERIC_SCRIPT( TYPE, NAME ) \
-    GetScriptAdminExt().UnRegister ## TYPE( const_cast<gS ## TYPE *>( GetScriptAdminExt().Get ## TYPE( NAME ) ) );
+template<typename F>
+void __set_if_present(F a_Value, F * o_pOptional = nullptr)
+{
+    if(o_pOptional)
+        *o_pOptional = a_Value;
+}
 
-#define __ME_REGISTER_GENERIC_SCRIPT_REPLACE( TYPE, NAME, FUNC ) \
-    GetScriptHookRegistry().Replace ## TYPE( gS ## TYPE ( NAME, __FILE__, FUNC ) );
+#define __ME_UNREGISTER_GENERIC_SCRIPT( TYPE, NAME, ... ) \
+    { \
+        if(gS ## TYPE const * pScript = GetScriptAdminExt().Get ## TYPE( NAME ) ) \
+        { \
+            __set_if_present(pScript->m_func ## TYPE, __VA_ARGS__ ); \
+            GetScriptAdminExt().UnRegister ## TYPE( const_cast<gS ## TYPE *>( pScript ) ); \
+        } \
+        else \
+            GetDefaultLogger().LogFormat("Unable to find original " ## #TYPE ## " with name %s.\n", NAME); \
+    }
 
-#define __ME_REPLACE_GENERIC_SCRIPT( TYPE, NAME, FUNC ) \
-    __ME_UNREGISTER_GENERIC_SCRIPT( TYPE, NAME )            \
+#define __ME_REGISTER_GENERIC_SCRIPT_REPLACE( TYPE, NAME, FUNC, ... ) \
+    GetScriptHookRegistry().Replace ## TYPE( gS ## TYPE ( NAME, __FILE__, FUNC ), __VA_ARGS__ );
+
+#define __ME_REPLACE_GENERIC_SCRIPT( TYPE, NAME, FUNC, ... )  \
+    __ME_UNREGISTER_GENERIC_SCRIPT( TYPE, NAME, __VA_ARGS__ ) \
     __ME_REGISTER_GENERIC_SCRIPT( TYPE, NAME, FUNC )
 
 #define ME_REGISTER_SCRIPT_AI_STATE( NAME, FUNC ) __ME_REGISTER_GENERIC_SCRIPT( ScriptAIState, NAME, FUNC )
 #define ME_UNREGISTER_SCRIPT_AI_STATE( NAME ) __ME_UNREGISTER_GENERIC_SCRIPT( ScriptAIState, NAME )
-#define ME_REPLACE_SCRIPT_AI_STATE( NAME, FUNC ) __ME_REPLACE_GENERIC_SCRIPT( ScriptAIState, NAME, FUNC )
+#define ME_REPLACE_SCRIPT_AI_STATE( NAME, FUNC, ... ) __ME_REPLACE_GENERIC_SCRIPT( ScriptAIState, NAME, FUNC, __VA_ARGS__ )
 
 #define ME_REGISTER_SCRIPT_AI_FUNCTION( NAME, FUNC ) __ME_REGISTER_GENERIC_SCRIPT( ScriptAIFunction, NAME, FUNC )
 #define ME_UNREGISTER_SCRIPT_AI_FUNCTION( NAME ) __ME_UNREGISTER_GENERIC_SCRIPT( ScriptAIFunction, NAME )
-#define ME_REPLACE_SCRIPT_AI_FUNCTION( NAME, FUNC ) __ME_REPLACE_GENERIC_SCRIPT( ScriptAIFunction, NAME, FUNC )
+#define ME_REPLACE_SCRIPT_AI_FUNCTION( NAME, FUNC, ... ) __ME_REPLACE_GENERIC_SCRIPT( ScriptAIFunction, NAME, FUNC, __VA_ARGS__ )
 
 #define ME_REGISTER_SCRIPT_AI_CALLBACK( NAME, FUNC ) __ME_REGISTER_GENERIC_SCRIPT( ScriptAICallback, NAME, FUNC )
 #define ME_UNREGISTER_SCRIPT_AI_CALLBACK( NAME ) __ME_UNREGISTER_GENERIC_SCRIPT( ScriptAICallback, NAME )
-#define ME_REPLACE_SCRIPT_AI_CALLBACK( NAME, FUNC ) __ME_REPLACE_GENERIC_SCRIPT( ScriptAICallback, NAME, FUNC )
+#define ME_REPLACE_SCRIPT_AI_CALLBACK( NAME, FUNC, ... ) __ME_REPLACE_GENERIC_SCRIPT( ScriptAICallback, NAME, FUNC, __VA_ARGS__ )
 
 #define ME_REGISTER_SCRIPT_AI_ROUTINE( NAME, FUNC ) __ME_REGISTER_GENERIC_SCRIPT( ScriptAIRoutine, NAME, FUNC )
 #define ME_UNREGISTER_SCRIPT_AI_ROUTINE( NAME ) __ME_UNREGISTER_GENERIC_SCRIPT( ScriptAIRoutine, NAME )
-#define ME_REPLACE_SCRIPT_AI_ROUTINE( NAME, FUNC ) __ME_REPLACE_GENERIC_SCRIPT( ScriptAIRoutine, NAME, FUNC )
+#define ME_REPLACE_SCRIPT_AI_ROUTINE( NAME, FUNC, ... ) __ME_REPLACE_GENERIC_SCRIPT( ScriptAIRoutine, NAME, FUNC, __VA_ARGS__ )
 
 #define ME_REGISTER_SCRIPT( NAME, FUNC ) __ME_REGISTER_GENERIC_SCRIPT( Script, NAME, FUNC )
 #define ME_UNREGISTER_SCRIPT( NAME ) __ME_UNREGISTER_GENERIC_SCRIPT( Script, NAME )
-#define ME_REPLACE_SCRIPT( NAME, FUNC ) __ME_REPLACE_GENERIC_SCRIPT( Script, NAME, FUNC )
-#define ME_HOOK_SCRIPT( NAME, FUNC ) __ME_REGISTER_GENERIC_SCRIPT_REPLACE( Script, NAME, FUNC )
+// Shouldn't be used, as Script_Mod calls most of its scripts directly (bypassing CallScriptXXX), use ME_HOOK_SCRIPT instead.
+#define __ME_REPLACE_SCRIPT( NAME, FUNC, ... ) __ME_REPLACE_GENERIC_SCRIPT( Script, NAME, FUNC, __VA_ARGS__ )
+#define ME_HOOK_SCRIPT( NAME, FUNC, ... ) __ME_REGISTER_GENERIC_SCRIPT_REPLACE( Script, NAME, FUNC, __VA_ARGS__ )
 
-#define ME_DEFINE_AND_REGISTER_SCRIPT_AI_STATE( NAME ) \
-    DECLARE_SCRIPT_STATE( NAME ); \
-    GE_STATIC_BLOCK { ME_REGISTER_SCRIPT_AI_STATE( #NAME, NAME ); } \
-    DECLARE_SCRIPT_STATE( NAME )
 
-#define ME_DEFINE_AND_REPLACE_SCRIPT_AI_STATE( NAME ) \
-    DECLARE_SCRIPT_STATE( NAME ); \
-    GE_STATIC_BLOCK { __ME_REGISTER_GENERIC_SCRIPT_REPLACE( ScriptAIState, #NAME, NAME ); } \
-    DECLARE_SCRIPT_STATE( NAME )
+#define __ME_DEFINE_AND_REGISTER_GENERIC_SCRIPT( NAME, FUNC, DECL ) \
+    DECL; \
+    GE_STATIC_BLOCK { __ME_REGISTER_GENERIC_SCRIPT( FUNC, #NAME, NAME ); } \
+    DECL
 
-#define ME_DEFINE_AND_REGISTER_SCRIPT( NAME ) \
+#define __ME_DEFINE_AND_REPLACE_GENERIC_SCRIPT( NAME, FUNC, DECL ) \
+    DECL; \
+    gF ## FUNC NAME ## _Original; \
+    GE_STATIC_BLOCK { __ME_REGISTER_GENERIC_SCRIPT_REPLACE( FUNC, #NAME, NAME, &NAME ## _Original ); } \
+    DECL
+
+#define ME_DEFINE_AND_REGISTER_SCRIPT_AI_STATE( NAME ) __ME_DEFINE_AND_REGISTER_GENERIC_SCRIPT( NAME, ScriptAIState, DECLARE_SCRIPT_STATE( NAME ) )
+#define ME_DEFINE_AND_REPLACE_SCRIPT_AI_STATE( NAME ) __ME_DEFINE_AND_REPLACE_GENERIC_SCRIPT( NAME, ScriptAIState, DECLARE_SCRIPT_STATE( NAME ) )
+
+#define ME_DEFINE_AND_REGISTER_SCRIPT_AI_FUNCTION( NAME ) __ME_DEFINE_AND_REGISTER_GENERIC_SCRIPT( NAME, ScriptAIFunction, DECLARE_SCRIPT_FUNCTION( NAME ) )
+#define ME_DEFINE_AND_REPLACE_SCRIPT_AI_FUNCTION( NAME ) __ME_DEFINE_AND_REPLACE_GENERIC_SCRIPT( NAME, ScriptAIFunction, DECLARE_SCRIPT_FUNCTION( NAME ) )
+
+#define ME_DEFINE_AND_REGISTER_SCRIPT_AI_CALLBACK( NAME ) __ME_DEFINE_AND_REGISTER_GENERIC_SCRIPT( NAME, ScriptAICallback, DECLARE_SCRIPT_CALLBACK( NAME ) )
+#define ME_DEFINE_AND_REPLACE_SCRIPT_AI_CALLBACK( NAME ) __ME_DEFINE_AND_REPLACE_GENERIC_SCRIPT( NAME, ScriptAICallback, DECLARE_SCRIPT_CALLBACK( NAME ) )
+
+#define ME_DEFINE_AND_REGISTER_SCRIPT_AI_ROUTINE( NAME ) __ME_DEFINE_AND_REGISTER_GENERIC_SCRIPT( NAME, ScriptAIRoutine, DECLARE_SCRIPT_ROUTINE( NAME ) )
+#define ME_DEFINE_AND_REPLACE_SCRIPT_AI_ROUTINE( NAME ) __ME_DEFINE_AND_REPLACE_GENERIC_SCRIPT( NAME, ScriptAIRoutine, DECLARE_SCRIPT_ROUTINE( NAME ) )
+
+#define ME_DEFINE_AND_REGISTER_SCRIPT( NAME ) __ME_DEFINE_AND_REGISTER_GENERIC_SCRIPT( NAME, Script, DECLARE_SCRIPT( NAME ) )
+#define ME_DEFINE_AND_HOOK_SCRIPT( NAME, ... ) \
     DECLARE_SCRIPT( NAME ); \
-    GE_STATIC_BLOCK { ME_REGISTER_SCRIPT( #NAME, NAME ); } \
-    DECLARE_SCRIPT( NAME )
-
-#define ME_DEFINE_AND_HOOK_SCRIPT( NAME ) \
-    DECLARE_SCRIPT( NAME ); \
-    GE_STATIC_BLOCK { ME_HOOK_SCRIPT( #NAME, NAME ); } \
+    gFScript NAME ## _Original; \
+    GE_STATIC_BLOCK { ME_HOOK_SCRIPT( #NAME, NAME, &NAME ## _Original ); } \
     DECLARE_SCRIPT( NAME )
 
 enum mEPropertySetOffset
@@ -144,6 +185,27 @@ void                 RefineFoundFreepoints( gEUseType a_enuUseType );
 Entity               GetFirstFoundRefinedFreepoint();
 Entity               GetRandomFoundRefinedFreepoint();
 
+// The enum names are pure guesswork.
+enum gEItemComboCategory
+{
+    gEItemComboCategory_Deny           = 0,
+    gEItemComboCategory_Utility        = 1,
+    gEItemComboCategory_CombatItem     = 2, // Unconventional weapon? Don't remove in RemoveNonCombatItems?
+    gEItemComboCategory_Carry_Smithing = 3,
+    gEItemComboCategory_Melee          = 4,
+    gEItemComboCategory_Ranged         = 5, // (Bow / CrossBow)
+    gEItemComboCategory_Cast           = 6,
+    gEItemComboCategory_Illegal        = 7,
+};
+
+struct gSItemComboCategorization
+{
+    gEUseType           m_enuUseTypeLeft;
+    gEUseType           m_enuUseTypeRight;
+    gEItemComboCategory m_enuCategory;
+};
+bTObjArray<gSItemComboCategorization> & GetItemComboCategorization();
+
 template<typename T>
 T * GetPropertySetInstance(EntityPropertySet & a_pPropertySet)
 {
@@ -151,5 +213,7 @@ T * GetPropertySetInstance(EntityPropertySet & a_pPropertySet)
 }
 
 GEU32 GetItemQuality(bCString const & a_ItemName);
+
+gEWeaponCategory GetHeldWeaponCategory(Entity const & a_Entity);
 
 #endif

@@ -225,12 +225,14 @@ bTSmallArray< T > & bTSmallArray< T >::operator = ( bTSmallArray< T > const & _s
 template< typename T >
 bTSmallArray< T >::bTSmallArray( bTSmallArray< T > const & _s )
 {
+    this->Init();
     this->CopyFrom( _s );
 }
 
 template< typename T >
 bTSmallArray< T >::bTSmallArray( GEU16 _n )
 {
+    this->Init();
     this->Reserve( _n );
 }
 

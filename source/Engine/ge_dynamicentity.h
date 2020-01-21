@@ -5,7 +5,12 @@ class GE_DLLIMPORT eCDynamicEntity :
     public eCEntity
 {
     public:
-        enum eECreatureClass;
+        enum eECreatureClass
+        {
+            eECreatureClass_Object = 0,
+            eECreatureClass_NPC    = 1,
+            eECreatureClass_Player = 2
+        };
 
     public:    virtual eECreatureClass          GetCreatureClass( void ) const;
     public:    virtual void                     EnableMovementControlByPhysics( GEBool );

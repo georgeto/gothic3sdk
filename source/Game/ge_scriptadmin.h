@@ -65,7 +65,7 @@ class GE_DLLIMPORT gCScriptAdmin :
 
     public:
         void   AddProfileTicks( GEU32 );
-        GEInt  CallScriptFromScript( bCString const &, GELPVoid, GELPVoid, GEInt );
+        GEInt  CallScriptFromScript( bCString const &, GELPVoid, GELPVoid, GEInt = 0 );
         void   ClearDLLList( void );
         GEInt  RunScript( bCString const &, gCScriptProcessingUnit * );
         GEBool RunScriptCallback( bCString const &, gCScriptProcessingUnit * );

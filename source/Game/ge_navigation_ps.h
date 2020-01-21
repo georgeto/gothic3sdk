@@ -1,13 +1,10 @@
 #ifndef GE_NAVIGATION_PS_H_INCLUDED
 #define GE_NAVIGATION_PS_H_INCLUDED
 
-struct gSObstacleEvadeSwitch;
 enum gEGotoStatus;
 class gCPrefPath_PSObj;
 
-class GE_DLLIMPORT gCNavigation_PS :
-    public eCEntityPropertySet
-{
+GE_IMPORT_PROPERTY_SET( gCNavigation_PS, eCEntityPropertySet )
     public:    virtual GEU16                                      GetVersion( void ) const;
     public: using bCObjectBase::Write;
     public:    virtual bEResult                                   Write( bCOStream & );
@@ -39,7 +36,82 @@ class GE_DLLIMPORT gCNavigation_PS :
     public:    virtual void                                       OnPropertySetRemoved( void );
 
     public:
+        struct gSObstacleEvadeSwitch
+        {
+            bCPropertyID m_Evade;
+            GEBool m_bValid;
+        };
+
+    public:
         static bCPropertyObjectBase const * GE_STDCALL GetRootObject( void );
+        GE_IMPORT_DECLARE_PROPERTY( bCVector, StartPosition, m_vecStartPosition )
+        GE_IMPORT_DECLARE_PROPERTY( bCPropertyID, WorkingPoint, m_WorkingPoint )
+        GE_IMPORT_DECLARE_PROPERTY( bCPropertyID, RelaxingPoint, m_RelaxingPoint )
+        GE_IMPORT_DECLARE_PROPERTY( bCPropertyID, SleepingPoint, m_SleepingPoint )
+        GE_IMPORT_DECLARE_PROPERTY( bCString, Routine, m_strRoutine )
+        GE_IMPORT_DECLARE_PROPERTY( bTValArray<class bCPropertyID>, WorkingPoints, m_arrWorkingPoints )
+        GE_IMPORT_DECLARE_PROPERTY( bTValArray<class bCPropertyID>, RelaxingPoints, m_arrRelaxingPoints )
+        GE_IMPORT_DECLARE_PROPERTY( bTValArray<class bCPropertyID>, SleepingPoints, m_arrSleepingPoints )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<class bCString>, RoutineNames, m_arrRoutineNames )
+        GE_IMPORT_DECLARE_PROPERTY( eCEntityProxy, CurrentDestinationPointProxy, m_CurrentDestinationPointProxy )
+        GE_IMPORT_DECLARE_PROPERTY( eCEntityProxy, CurrentZoneEntityProxy, m_CurrentZoneEntityProxy )
+        GE_IMPORT_DECLARE_PROPERTY( eCEntityProxy, LastZoneEntityProxy, m_LastZoneEntityProxy )
+        GE_IMPORT_DECLARE_PROPERTY( bCVector, LastUseableNavigationPosition, m_vecLastUseableNavigationPosition )
+        GE_IMPORT_DECLARE_PROPERTY( bCPropertyID, LastUseableNavigationZoneID, m_LastUseableNavigationZoneID )
+        GE_IMPORT_DECLARE_PROPERTY( GEBool, LastUseableNavigationZoneIsPath, m_bLastUseableNavigationZoneIsPath )
+
+    public:
+        GEBool                   m_bIsOnDestination;
+        GE_PADDING( 2 )
+        GEInt                    m_IsOnDestinationTimeStamp;
+        bTValArray<bCMotion>     m_arrDestination;
+        bTValArray<bCVector>     m_arrEvade;
+        bCPropertyID             m_LastObstacleID;
+        bTValArray<bCMotion>     m_arrNext;
+        bTValArray<bCVector>     m_arrPassed;
+        eCEntityProxy            m_WishedTargetEntityProxy;
+        eCEntityProxy            m_ReachedTargetEntityProxy;
+        gEDirection              m_enuCurrentAniDirection;
+        GEFloat                  m_fUnderWaterDepth;
+        bTValArray<bCVector>     m_arrCurrentDestination;
+        bTValArray<bCPropertyID> m_arrCurrentDestinationID;
+        bTPtrArray<gCNavPath_PS> m_arrCurrentNavPath;
+        bCVector                 m_CurrentTarget;
+        bTValArray<bCMotion>     m_arrCurrentInterPose;
+        GEInt                    m_iLastNegZoneStake;
+        GEBool                   m_bOnTheWay;
+        GEBool                   m_bFinalTargetDetected;
+        GE_PADDING( 2 )
+        gCPrefPath_PSObj *       m_pPreferredPathPSObject;
+        GELPVoid                 m_pNavigationPath;
+        GELPVoid                 m_DCC;
+        gCCharacterMovement_PS * m_pCharacterMovement;
+        GEChar                   __UNK_01E4;
+        GEBool                   m_bIsInProcessingRange;
+        GEBool                   m_bIsFoorDetectionFailed;
+        GE_PADDING( 1 )
+        GEUInt                   m_uTimeSinceLastRunNPCNavigation;
+        bCMotion                 m_GoalPose;
+        GEBool                   m_bGoalPoseSet;
+        GEBool                   m_bGoalNotReached;
+        GE_PADDING( 2 )
+        gEDirection              m_enuNextAniDirection;
+        GEChar                   __UNK_0210;
+        GEBool                   m_bNewInterPose;
+        GE_PADDING( 2 )
+        GELPVoid                 m_pInteractObject;
+        gECharMovementMode       m_enuWishedMovementMode;
+        gEGotoStatus             m_enuGotoStatus;
+        GEBool                   m_bHasFinalTarget;
+        GE_PADDING( 3 )
+        gSObstacleEvadeSwitch    m_ObstacleEvadeSwitch;
+        gSObstacleEvadeSwitch    m_NPCEvadeSwitch;
+        GEBool                   m_bEnabled;
+        GEBool                   m_bKilledByDeadlock;
+        GE_PADDING( 2 )
+        eCEntityProxy            m_WorkingPointProxy;
+        eCEntityProxy            m_RelaxingPointProxy;
+        eCEntityProxy            m_SleepingPointProxy;
 
     public:
         gCNavigation_PS( gCNavigation_PS const & );
@@ -52,34 +124,19 @@ class GE_DLLIMPORT gCNavigation_PS :
         gEDirection &                      AccessCurrentAniDirection( void );
         bTValArray<bCVector> &             AccessCurrentDestination( void );
         bTValArray<bCPropertyID> &         AccessCurrentDestinationID( void );
-        eCEntityProxy &                    AccessCurrentDestinationPointProxy( void );
         bTValArray<bCMotion> &             AccessCurrentInterPose( void );
         bTValArray<gCNavPath_PS *> &       AccessCurrentNavPath( void );
-        eCEntityProxy &                    AccessCurrentZoneEntityProxy( void );
         bTValArray<bCMotion> &             AccessDestination( void );
         bTValArray<bCVector> &             AccessEvade( void );
         GEU32 &                            AccessIsOnDestinationTimeStamp( void );
         bCPropertyID &                     AccessLastObstacleID( void );
-        bCVector &                         AccessLastUseableNavigationPosition( void );
-        bCPropertyID &                     AccessLastUseableNavigationZoneID( void );
-        GEBool &                           AccessLastUseableNavigationZoneIsPath( void );
-        eCEntityProxy &                    AccessLastZoneEntityProxy( void );
         gSObstacleEvadeSwitch &            AccessNPCEvadeSwitch( void );
         bTValArray<bCMotion> &             AccessNext( void );
         gSObstacleEvadeSwitch &            AccessObstacleEvadeSwitch( void );
         bTValArray<bCVector> &             AccessPassed( void );
         eCEntityProxy &                    AccessReachedTargetEntityProxy( void );
-        bCPropertyID &                     AccessRelaxingPoint( void );
-        bTValArray<bCPropertyID> &         AccessRelaxingPoints( void );
-        bCString &                         AccessRoutine( void );
-        bTObjArray<bCString> &             AccessRoutineNames( void );
-        bCPropertyID &                     AccessSleepingPoint( void );
-        bTValArray<bCPropertyID> &         AccessSleepingPoints( void );
-        bCVector &                         AccessStartPosition( void );
         GEFloat &                          AccessUnderWaterDepth( void );
         eCEntityProxy &                    AccessWishedTargetEntityProxy( void );
-        bCPropertyID &                     AccessWorkingPoint( void );
-        bTValArray<bCPropertyID> &         AccessWorkingPoints( void );
         GEBool                             CanCorrectTarget( bCVector const & );
         GEBool                             FillNextForNavigationPath( bCVector const &, bCVector const & );
         GEBool                             FillNextForPreferredPath( void );
@@ -87,11 +144,9 @@ class GE_DLLIMPORT gCNavigation_PS :
         gEDirection                        GetCurrentAniDirection( void ) const;
         bTValArray<bCVector> const &       GetCurrentDestination( void ) const;
         bTValArray<bCPropertyID> const &   GetCurrentDestinationID( void ) const;
-        eCEntityProxy const &              GetCurrentDestinationPointProxy( void ) const;
         bTValArray<bCMotion> const &       GetCurrentInterPose( void ) const;
         bTValArray<gCNavPath_PS *> const & GetCurrentNavPath( void ) const;
         bCVector const &                   GetCurrentTarget( void ) const;
-        eCEntityProxy const &              GetCurrentZoneEntityProxy( void ) const;
         gCDynamicCollisionCircle_PS *      GetDCC( void ) const;
         bTValArray<bCMotion> const &       GetDestination( void ) const;
         GEBool                             GetDontUseLimitedNavPaths( void );
@@ -110,10 +165,6 @@ class GE_DLLIMPORT gCNavigation_PS :
         bCPropertyID const &               GetLastObstacleID( void ) const;
         bCVector const &                   GetLastUseableNavPosition( void ) const;
         GEBool                             GetLastUseableNavZoneID( bCPropertyID & ) const;
-        bCVector const &                   GetLastUseableNavigationPosition( void ) const;
-        bCPropertyID const &               GetLastUseableNavigationZoneID( void ) const;
-        GEBool const &                     GetLastUseableNavigationZoneIsPath( void ) const;
-        eCEntityProxy const &              GetLastZoneEntityProxy( void ) const;
         gCNavPath_PS *                     GetNavigationPath( void ) const;
         GEBool                             GetNewInterPose( void );
         bTValArray<bCMotion> const &       GetNext( void ) const;
@@ -122,21 +173,12 @@ class GE_DLLIMPORT gCNavigation_PS :
         bTValArray<bCVector> const &       GetPassed( void ) const;
         gCPrefPath_PSObj *                 GetPreferredPathPSObject( void ) const;
         eCEntityProxy const &              GetReachedTargetEntityProxy( void ) const;
-        bCPropertyID const &               GetRelaxingPoint( void ) const;
         eCEntityProxy &                    GetRelaxingPointProxy( void );
-        bTValArray<bCPropertyID> const &   GetRelaxingPoints( void ) const;
-        bCString const &                   GetRoutine( void ) const;
-        bTObjArray<bCString> const &       GetRoutineNames( void ) const;
-        bCPropertyID const &               GetSleepingPoint( void ) const;
         eCEntityProxy &                    GetSleepingPointProxy( void );
-        bTValArray<bCPropertyID> const &   GetSleepingPoints( void ) const;
-        bCVector const &                   GetStartPosition( void ) const;
         GEFloat                            GetUnderWaterDepth( void ) const;
         gECharMovementMode                 GetWishedMovementMode( void ) const;
         eCEntityProxy const &              GetWishedTargetEntityProxy( void ) const;
-        bCPropertyID const &               GetWorkingPoint( void ) const;
         eCEntityProxy &                    GetWorkingPointProxy( void );
-        bTValArray<bCPropertyID> const &   GetWorkingPoints( void ) const;
         GEBool                             HasRoutinePointRoamOrPatrol( void );
         GEBool                             IsFoorDetectionFailed( void );
         GEBool                             IsInProcessingRange( void );
@@ -144,9 +186,7 @@ class GE_DLLIMPORT gCNavigation_PS :
         GEBool                             RunSimpleMovement( void );
         void                               SetCharacterMovement( gCCharacterMovement_PS * );
         void                               SetCurrentAniDirection( gEDirection );
-        void                               SetCurrentDestinationPointProxy( eCEntityProxy const & );
         void                               SetCurrentTarget( bCVector const & );
-        void                               SetCurrentZoneEntityProxy( eCEntityProxy const & );
         void                               SetDCC( gCDynamicCollisionCircle_PS * );
         void                               SetEnabled( GEBool );
         void                               SetFinalTargetDetected( GEBool );
@@ -161,28 +201,15 @@ class GE_DLLIMPORT gCNavigation_PS :
         void                               SetLastNegZoneStake( GEInt );
         void                               SetLastUseableNavPosition( bCVector const & );
         void                               SetLastUseableNavZoneID( bCPropertyID const &, GEBool );
-        void                               SetLastUseableNavigationPosition( bCVector const & );
-        void                               SetLastUseableNavigationZoneID( bCPropertyID const & );
-        void                               SetLastUseableNavigationZoneIsPath( GEBool const & );
-        void                               SetLastZoneEntityProxy( eCEntityProxy const & );
         void                               SetNavigationPath( gCNavPath_PS * );
         void                               SetNewInterPose( GEBool );
         void                               SetNextAniDirection( gEDirection );
         void                               SetOnTheWay( GEBool );
         void                               SetPreferredPathPSObject( gCPrefPath_PSObj * );
         void                               SetReachedTargetEntityProxy( eCEntityProxy const & );
-        void                               SetRelaxingPoint( bCPropertyID const & );
-        void                               SetRelaxingPoints( bTValArray<bCPropertyID> const & );
-        void                               SetRoutine( bCString const & );
-        void                               SetRoutineNames( bTObjArray<bCString> const & );
-        void                               SetSleepingPoint( bCPropertyID const & );
-        void                               SetSleepingPoints( bTValArray<bCPropertyID> const & );
-        void                               SetStartPosition( bCVector const & );
         void                               SetUnderWaterDepth( GEFloat );
         void                               SetWishedMovementMode( gECharMovementMode );
         void                               SetWishedTargetEntityProxy( eCEntityProxy const & );
-        void                               SetWorkingPoint( bCPropertyID const & );
-        void                               SetWorkingPoints( bTValArray<bCPropertyID> const & );
         GEBool                             TestNextOnPreferredPath( void );
         GEFloat                            TestPreferredPathUse( gCPrefPath_PSObj * );
         void                               UpdateInteractObject( void );
@@ -194,5 +221,7 @@ class GE_DLLIMPORT gCNavigation_PS :
         void Invalidate( void );
 
 };
+
+GE_ASSERT_SIZEOF( gCNavigation_PS, 0x2AC )
 
 #endif

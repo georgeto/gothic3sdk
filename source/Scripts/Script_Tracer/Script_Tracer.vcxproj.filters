@@ -31,6 +31,9 @@
       <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="Script_Tracer.cpp" />
+    <ClCompile Include="..\..\Shared\util\ScriptUtil.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Shared\gui\ge_hudstaticnpc.h">
@@ -55,6 +58,9 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="Script_Tracer.h" />
+    <ClInclude Include="..\..\Shared\util\ScriptUtil.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Shared\util\Logging.inl">

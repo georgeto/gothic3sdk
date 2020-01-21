@@ -14,6 +14,7 @@ class mCRestorable
     protected:
         void Backup(GELPVoid a_pAddress, GEUInt a_uDataSize);
         void Restore();
+        void ApplyAsm(asmjit::X86CodeAsm& a_Assembler, GEUInt a_u32ReplaceSize);
 
     private:
         struct mSBackupItem
@@ -35,6 +36,26 @@ class mCDataPatch :
 
     private:
         void Patch(GEU32 a_uDataAddress, GELPCVoid a_pNewData, GEU32 a_uSize);
+};
+
+#define CODE_PATCH \
+  [](asmjit::X86CodeAsm & Asm) \
+    { \
+        using namespace asmjit; \
+        using namespace asmjit::x86;
+
+
+class mCCodePatch :
+    public mCRestorable
+{
+    public:
+        typedef void (*mFCodeSupplier)( asmjit::X86CodeAsm & );
+
+    public:
+        mCCodePatch(GEU32 a_uAddress, GEU32 a_uReplaceSize, mFCodeSupplier a_CodeSupplier);
+
+    private:
+        void Patch(GEU32 a_uAddress, GEU32 a_uReplaceSize, mFCodeSupplier a_CodeSupplier);
 };
 
 class mCSkipCode :
@@ -160,12 +181,25 @@ class mCBaseHook :
         };
 
     public:
-        struct mSHookParams
+        class mCHookParams
         {
-            GELPVoid       m_pOriginalFunc;
-            GELPVoid       m_pNewFunc;
-            mEHookType     m_HookType;
-            mERegisterType m_RegisterType;
+            protected:
+                friend class mCBaseHook;
+                GELPVoid       m_pOriginalFunc;
+                GELPVoid       m_pNewFunc;
+                mEHookType     m_HookType;
+                mERegisterType m_RegisterType;
+        };
+
+        template< typename P, typename H >
+        class mCHookInstanceBuilder
+        {
+            public:
+                inline GEBool Hook() const { return m_pHook->Hook(*static_cast<P const *>(this)); };
+
+            protected:
+                friend H;
+                H * m_pHook;
         };
 
     public:
@@ -182,8 +216,11 @@ class mCBaseHook :
         template< typename T > void   SetSelf( T a_Self );
 
     protected:
-        void     ApplyHook( asmjit::X86CodeAsm& a_pReplacement, GEUInt a_u32ReplaceSize );
-        GELPVoid DoRegisterMagic( mSHookParams const & a_HookParams );
+        static const GEU32 JMP_SIZE = 5;
+        static const GEU32 CALL_SIZE = 5;
+
+    protected:
+        GELPVoid DoRegisterMagic( mCHookParams const & a_HookParams );
 
     protected:
         GELPVoid m_pSelf;
@@ -200,23 +237,64 @@ class mCBaseHook :
         mCBaseHook & operator = ( mCBaseHook const & );
 };
 
+#define ME_DECLARE_HOOK_BUILDER_BASE( CLASS ) \
+    template<typename T>                      \
+    class CLASS ## BuilderBase :              \
+        public CLASS ## Params
+
+#define ME_DECLARE_HOOK_BUILDER( CLASS )                              \
+    class CLASS ## Builder :                                          \
+        public CLASS ## BuilderBase<CLASS ## Builder>                 \
+    {                                                                 \
+    };                                                                \
+                                                                      \
+    class CLASS ## InstanceBuilder :                                  \
+        public CLASS ## BuilderBase<CLASS ## InstanceBuilder>,        \
+        public mCHookInstanceBuilder<CLASS ## InstanceBuilder, CLASS> \
+    {                                                                 \
+    };
+
+
 class mCFunctionHook :
     public mCBaseHook
 {
     public:
+        class mCFunctionHookParams :
+            public mCHookParams
+        {
+            protected:
+                friend class mCFunctionHook;
+                GEBool m_bTransparent = GEFalse;
+        };
+
+        ME_DECLARE_HOOK_BUILDER_BASE( mCFunctionHook )
+        {
+            public:
+                // A 'transparent' hook disables itself on entering.
+                // Therefore calling the hooked function from inside the hook is possible without using GetOriginalFunction.
+                // NOTE: 'transparent' hooks can only be used in combination with the hook types OnlyStack or ThisCall.
+                inline T & Transparent() { m_bTransparent = GETrue; return *static_cast<T *>(this); }
+        };
+
+        ME_DECLARE_HOOK_BUILDER( mCFunctionHook );
+
+    public:
         mCFunctionHook( void );
 
     public:
-        template< typename O, typename N >
-        static mSHookParams GetHookParams( O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType = mERegisterType_None );
+        template< typename O, typename N>
+        static mCFunctionHookBuilder PrepareParams( O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType = mEHookType_OnlyStack, mERegisterType a_RegisterType = mERegisterType_None );
 
-    public:
-        // A 'transparent' hook disables itself on entering. Therefore calling the hooked function from inside the hook is possible without using GetOriginalFunction.
-        // NOTE: 'transparent' hooks can only be used in combination with the hook types OnlyStack or ThisCall.
-        GEBool   Hook( mSHookParams const & a_HookParams, GEBool a_bTransparent = GEFalse );
-        GEBool   Hook( mSHookParams const & a_HookParams, asmjit::X86CodeAsm& a_pReplacement, GEUInt a_u32ReplaceSize, GEBool a_bTransparent = GEFalse );
         template< typename O, typename N >
-        GEBool   Hook( O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType = mERegisterType_None );
+        mCFunctionHookInstanceBuilder Prepare( O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType = mEHookType_OnlyStack, mERegisterType a_RegisterType = mERegisterType_None );
+
+        template< typename O, typename N >
+        inline GEBool Hook( O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType = mEHookType_OnlyStack, mERegisterType a_RegisterType = mERegisterType_None );
+
+        GEBool Hook( mCFunctionHookParams const & a_HookParams );
+
+    protected:
+        GEBool HookInternal(mCFunctionHookParams const & a_HookParams, asmjit::X86CodeAsm& a_pAssembler, GEUInt a_u32RelocateSize);
 
     private:
         GEBool m_bInside;
@@ -233,14 +311,28 @@ class mCVtableHook :
     public mCBaseHook
 {
     public:
+        class mCVtableHookParams
+            : mCHookParams
+        {
+            protected:
+                friend class mCVtableHook;
+        };
+
+    public:
         mCVtableHook( void );
-        mCVtableHook( mSHookParams const & a_HookParams );
+        mCVtableHook( mCVtableHookParams const & a_HookParams );
+
+        template< typename O, typename N >
+        mCVtableHook( O a_pVtable, GEU32 a_u32Offset, N a_pNewFunc );
 
     public:
-        template< typename O, typename N > static mSHookParams GetHookParams( O a_pVtable, GEU32 a_u32Offset, N a_pNewFunc );
+        template< typename O, typename N >
+        static mCVtableHookParams PrepareParams( O a_pVtable, GEU32 a_u32Offset, N a_pNewFunc );
 
-    public:
-        void Hook( mSHookParams const & a_HookParams );
+        template< typename O, typename N >
+        GEBool Hook( O a_pVtable, GEU32 a_u32Offset, N a_pNewFunc );
+
+        GEBool Hook( mCVtableHookParams const & a_HookParams );
 
     private:
         mCVtableHook( mCVtableHook const & );
@@ -253,65 +345,179 @@ class mCCallHook :
     public mCBaseHook
 {
     public:
-        struct mSCallHookParams :
-            public mSHookParams
+        class mCCallHookParams :
+            public mCHookParams
         {
-            enum mEArgType
-            {
-                mEArgType_RegDirect,
-                mEArgType_RegIndirect,
-                mEArgType_Immediate
-            };
-
-            struct mSRegRelativeArg
-            {
-                mERegisterType m_Register;
-                union {
-                    GEU32 m_u32Offset;
-                    GEU32 m_u32Immediate;
+            public:
+                enum mEArgType
+                {
+                    mEArgType_RegDirect,
+                    mEArgType_RegIndirect,
+                    mEArgType_Immediate
                 };
-                mEArgType m_enuArgType;
-            };
 
-            GEU32 m_u32CallAdr;
-            bTObjArray<mSRegRelativeArg> m_arrStackArgs;
-            GEBool m_bTestOnReturn;
+                struct mSRegRelativeArg
+                {
+                    mERegisterType m_Register;
+                    union {
+                        GEU32 m_u32Offset;
+                        GEU32 m_u32Immediate;
+                    };
+                    mEArgType m_enuArgType;
+                };
 
-            // Registers are passed in left-to-right order
-            inline mSCallHookParams & AddStackArg(GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None, GEBool a_bIndirect = GEFalse) { mSRegRelativeArg Arg = { a_RegisterType, a_u32Offset, a_bIndirect ? mEArgType_RegIndirect : mEArgType_RegDirect }; m_arrStackArgs.Add(Arg);  return *this; };
-            inline mSCallHookParams & AddStackArgEbp(GEU32 a_u32Offset) { return AddStackArg(a_u32Offset, mERegisterType_Ebp); };
-            inline mSCallHookParams & AddStackArgThis() { return AddStackArg(0, mERegisterType_Ecx); };
-            inline mSCallHookParams & AddStackArgReg(mERegisterType a_RegisterType) { return AddStackArg(0, a_RegisterType); };
-            inline mSCallHookParams & AddPtrStackArg(GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None) { return AddStackArg(a_u32Offset, a_RegisterType, GETrue); };
-            inline mSCallHookParams & AddPtrStackArgEbp(GEU32 a_u32Offset) { return AddStackArg(a_u32Offset, mERegisterType_Ebp, GETrue); };
-            template<typename T>
-            inline mSCallHookParams & AddImmStackArg(T a_ImmediateValue) { return GE_ASSERT_SIZEOF(a_ImmediateValue, sizeof(GEU32)); mSRegRelativeArg Arg = { a_RegisterType, reinterpret_cast<GEU32>(a_ImmediateValue), mEArgType_Immediate }; m_arrStackArgs.Add(Arg);  return *this; };
-            inline mSCallHookParams & TestOnReturn() { m_bTestOnReturn = GETrue; return *this; } ;
+            protected:
+                friend class mCCallHook;
+                GEU32 m_u32CallAdr;
+                bTObjArray<mSRegRelativeArg> m_arrStackArgs;
+                GEBool m_bInsertCall = GEFalse;
+                GEBool m_bExplicitSize = GEFalse;
+                GEUInt m_uCallSize = 0;
+                GEUInt m_uMinRelocateSize = 0;
+                GEUInt m_uMaxRelocateSize = 0;
+                GEBool m_bVariableReturnAddress = GEFalse;
+                GEBool m_bRestoreRegister = GEFalse;
+                GEBool m_bTestOnReturn = GEFalse;
         };
+
+        ME_DECLARE_HOOK_BUILDER_BASE( mCCallHook )
+        {
+            public:
+                // Registers are passed in left-to-right order
+                inline T & AddStackArg( GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None, GEBool a_bIndirect = GEFalse )
+                {
+                    mSRegRelativeArg Arg = { a_RegisterType, a_u32Offset, a_bIndirect ? mEArgType_RegIndirect : mEArgType_RegDirect };
+                    m_arrStackArgs.Add( Arg );
+                    return *static_cast<T *>(this);
+                };
+
+                inline T & AddStackArgEbp( GEU32 a_u32Offset )
+                {
+                    return AddStackArg( a_u32Offset, mERegisterType_Ebp );
+                };
+
+                inline T & AddStackArgReg( mERegisterType a_RegisterType )
+                {
+                    return AddStackArg( 0, a_RegisterType );
+                };
+
+                inline T & AddPtrStackArg( GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None )
+                {
+                    return AddStackArg( a_u32Offset, a_RegisterType, GETrue );
+                };
+
+                inline T & AddPtrStackArgEbp( GEU32 a_u32Offset )
+                {
+                    return AddStackArg( a_u32Offset, mERegisterType_Ebp, GETrue );
+                };
+
+                inline T & AddRegArg( mERegisterType a_RegisterType )
+                {
+                    return AddStackArg( 0, a_RegisterType );
+                };
+
+                inline T & AddPtrRegArg( mERegisterType a_RegisterType )
+                {
+                    return AddPtrStackArg( 0, a_RegisterType );
+                };
+
+                template<typename T>
+                inline T & AddImmArg( T a_ImmediateValue )
+                {
+                    GE_ASSERT_SIZEOF( a_ImmediateValue, sizeof( GEU32 ) );
+                    mSRegRelativeArg Arg = { a_RegisterType, reinterpret_cast<GEU32>( a_ImmediateValue ), mEArgType_Immediate };
+                    m_arrStackArgs.Add( Arg );
+                    return *static_cast<T *>(this);
+                };
+
+                inline T & AddThisArg()
+                {
+                    return AddStackArg( 0, mERegisterType_Ecx );
+                };
+
+                inline T & InsertCall()
+                {
+                    m_bInsertCall = GETrue;
+                    return *static_cast<T *>(this);
+                };
+
+                inline T & ReplaceSize( GEUInt a_uReplaceSize )
+                {
+                    m_bExplicitSize = GETrue;
+                    m_uCallSize = a_uReplaceSize;
+                    m_uMinRelocateSize = a_uReplaceSize < CALL_SIZE ? CALL_SIZE - a_uReplaceSize : 0;
+                    m_uMaxRelocateSize = 0;
+                    return *static_cast<T *>(this);
+                };
+
+                inline T & ExplicitSize( GEUInt a_uCallSize, GEUInt a_uRelocateSize )
+                {
+                    m_bExplicitSize = GETrue;
+                    m_uCallSize = a_uCallSize;
+                    m_uMinRelocateSize = m_uMaxRelocateSize = a_uRelocateSize;
+                    return *static_cast<T *>(this);
+                };
+
+                inline T & VariableReturnAddress()
+                {
+                    m_bVariableReturnAddress = GETrue;
+                    return *static_cast<T *>(this);
+                };
+
+                inline T & RestoreRegister()
+                {
+                    m_bRestoreRegister = GETrue;
+                    return *static_cast<T *>(this);
+                };
+
+                inline T & TestOnReturn()
+                {
+                    m_bTestOnReturn = GETrue;
+                    return *static_cast<T *>(this);
+                };
+
+                template< typename O >
+                inline T & OriginalFunction( O a_pOriginalFunc )
+                {
+                    GE_ASSERT_SIZEOF(O, sizeof(GELPVoid))
+                    m_pOriginalFunc = *reinterpret_cast< GELPVoid * >(&a_pOriginalFunc);
+                    return *static_cast<T *>(this);
+                }
+        };
+
+        ME_DECLARE_HOOK_BUILDER( mCCallHook );
 
     public:
         mCCallHook( void );
-        // Beware of the static initialization order fiasco, which will occur, if this constructor (or the Hook method) is called, before the static initilization of AsmJit.
-        mCCallHook( mSCallHookParams const & a_HookParams, GEUInt a_uCallSize = 5, GEUInt a_uRelocateSize = 0, GEBool a_bVariableReturnAddress = GEFalse, GEBool a_bRestoreRegister = GEFalse );
 
-    public:
-        template< typename N >             static mSCallHookParams GetHookParams( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType );
-        template< typename N >             static mSCallHookParams GetHookParams( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType );
-        template< typename O, typename N > static mSCallHookParams GetHookParams( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType, O a_pOriginalFunc );
+        template< typename N >
+        mCCallHook( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType = mEHookType_OnlyStack, mERegisterType a_RegisterType = mERegisterType_None );
+
+        // Beware of the static initialization order fiasco, which will occur, if this constructor (or the Hook method) is called, before the static initialization of AsmJit.
+        mCCallHook( mCCallHookParams const & a_HookParams );
 
     public:
         inline GEU32  GetReturnAddress() { return m_u32CallReturnAdr; };
         // Relocated instructions are not executed, when the return address was changed.
         inline void   SetReturnAddress( GEU32 a_u32ReturnAddress ) { m_u32CallReturnAdr = a_u32ReturnAddress; };
-               GEBool HookAuto( mSCallHookParams const & a_HookParams, GEBool a_bReplaceCall = GETrue, GEBool a_bVariableReturnAddress = GEFalse, GEBool a_bRestoreRegister = GEFalse );
-               GEBool HookAuto( mSCallHookParams const & a_HookParams, GEUInt a_uReplaceSize, GEBool a_bVariableReturnAddress = GEFalse, GEBool a_bRestoreRegister = GEFalse );
-               GEBool Hook( mSCallHookParams const & a_HookParams, GEUInt a_uCallSize = 5, GEUInt a_uRelocateSize = 0, GEBool a_bVariableReturnAddress = GEFalse, GEBool a_bRestoreRegister = GEFalse );
+
+    public:
+        template< typename N >
+        static mCCallHookBuilder PrepareParams( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType = mEHookType_OnlyStack, mERegisterType a_RegisterType = mERegisterType_None );
+
+        template< typename N >
+        mCCallHookInstanceBuilder Prepare( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType = mEHookType_OnlyStack, mERegisterType a_RegisterType = mERegisterType_None );
+
+        template< typename N >
+        GEBool Hook( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType = mEHookType_OnlyStack, mERegisterType a_RegisterType = mERegisterType_None );
+
+        GEBool Hook( mCCallHookParams const & a_HookParams );
 
     public:
         void Disable();
 
     private:
-        GEBool HookInternal( mSCallHookParams const & a_HookParams, GEUInt a_uCallSize, GEUInt a_uMinRelocateSize, GEUInt a_uMaxRelocateSize, GEBool a_bVariableReturnAddress = GEFalse, GEBool a_bRestoreRegister = GEFalse );
+        GEBool HookInternal( mCCallHookParams const & a_HookParams );
 
     private:
         mCCallHook( mCCallHook const & );
@@ -602,11 +808,11 @@ void mCRegisterBase::SetImmEdi(T a_Edi)
 }
 
 template< typename O, typename N>
-mCFunctionHook::mSHookParams mCFunctionHook::GetHookParams( O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType )
+mCFunctionHook::mCFunctionHookBuilder mCFunctionHook::PrepareParams( O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType )
 {
     GE_ASSERT_SIZEOF(O, sizeof(GELPVoid))
     GE_ASSERT_SIZEOF(N, sizeof(GELPVoid))
-    mCFunctionHook::mSHookParams Params;
+    mCFunctionHookBuilder Params;
     Params.m_pOriginalFunc = *reinterpret_cast< GELPVoid * >(&a_pOriginalFunc);
     Params.m_pNewFunc = *reinterpret_cast< GELPVoid * >(&a_pNewFunc);
     Params.m_HookType = a_HookType;
@@ -614,18 +820,27 @@ mCFunctionHook::mSHookParams mCFunctionHook::GetHookParams( O a_pOriginalFunc, N
     return Params;
 }
 
-template< typename O, typename N >
-GEBool mCFunctionHook::Hook( O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType )
+template< typename O, typename N>
+mCFunctionHook::mCFunctionHookInstanceBuilder mCFunctionHook::Prepare( O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType )
 {
-    return Hook(GetHookParams(a_pOriginalFunc, a_pNewFunc, a_HookType, a_RegisterType));
+    mCFunctionHookInstanceBuilder Params;
+    *static_cast<mCFunctionHookParams *>(&Params) = PrepareParams(a_pOriginalFunc, a_pNewFunc, a_HookType, a_RegisterType);
+    Params.m_pHook = this;
+    return Params;
 }
 
 template< typename O, typename N >
-mCVtableHook::mSHookParams mCVtableHook::GetHookParams(O a_pVtable, GEU32 a_u32Offset, N a_pNewFunc)
+GEBool mCFunctionHook::Hook( O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType )
+{
+    return Prepare(a_pOriginalFunc, a_pNewFunc, a_HookType, a_RegisterType).Hook();
+}
+
+template< typename O, typename N >
+mCVtableHook::mCVtableHookParams mCVtableHook::PrepareParams( O a_pVtable, GEU32 a_u32Offset, N a_pNewFunc )
 {
     GE_ASSERT_SIZEOF(O, sizeof(GELPVoid))
     GE_ASSERT_SIZEOF(N, sizeof(GELPVoid))
-    mCVtableHook::mSHookParams Params;
+    mCVtableHook::mCVtableHookParams Params;
     Params.m_pOriginalFunc = *reinterpret_cast< GELPChar * >(&a_pVtable) + a_u32Offset;
     Params.m_pNewFunc = *reinterpret_cast< GELPVoid * >(&a_pNewFunc);
     Params.m_HookType = mEHookType_ThisCall;
@@ -633,31 +848,45 @@ mCVtableHook::mSHookParams mCVtableHook::GetHookParams(O a_pVtable, GEU32 a_u32O
     return Params;
 }
 
-template< typename N >
-mCCallHook::mSCallHookParams mCCallHook::GetHookParams( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType )
-{
-    return GetHookParams(a_u32CallAdr, a_pNewFunc, a_HookType, mERegisterType_None, 0);
-}
-
-template< typename N >
-mCCallHook::mSCallHookParams mCCallHook::GetHookParams( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType )
-{
-    return GetHookParams(a_u32CallAdr, a_pNewFunc, a_HookType, a_RegisterType, 0);
-}
-
 template< typename O, typename N >
-mCCallHook::mSCallHookParams mCCallHook::GetHookParams( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType, O a_pOriginalFunc )
+GEBool mCVtableHook::Hook( O a_pVtable, GEU32 a_u32Offset, N a_pNewFunc )
 {
-    GE_ASSERT_SIZEOF(O, sizeof(GELPVoid))
+    return Hook(PrepareParams(a_pVtable, a_u32Offset, a_pNewFunc));
+}
+
+template< typename N >
+mCCallHook::mCCallHook( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType )
+    : mCCallHook()
+{
+    Hook(a_u32CallAdr, a_pNewFunc, a_HookType, a_RegisterType);
+}
+
+template< typename N >
+mCCallHook::mCCallHookBuilder mCCallHook::PrepareParams( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType )
+{
     GE_ASSERT_SIZEOF(N, sizeof(GELPVoid))
-    mCCallHook::mSCallHookParams Params;
+    mCCallHook::mCCallHookBuilder Params;
     Params.m_u32CallAdr = a_u32CallAdr;
-    Params.m_pOriginalFunc = *reinterpret_cast< GELPVoid * >(&a_pOriginalFunc);
+    Params.m_pOriginalFunc = 0;
     Params.m_pNewFunc = *reinterpret_cast< GELPVoid * >(&a_pNewFunc);
     Params.m_HookType = a_HookType;
     Params.m_RegisterType = a_RegisterType;
-    Params.m_bTestOnReturn = GEFalse;
     return Params;
+}
+
+template< typename N >
+mCCallHook::mCCallHookInstanceBuilder mCCallHook::Prepare( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType )
+{
+    mCCallHookInstanceBuilder Params;
+    *static_cast<mCCallHookParams *>(&Params) = PrepareParams(a_u32CallAdr, a_pNewFunc, a_HookType, a_RegisterType);
+    Params.m_pHook = this;
+    return Params;
+}
+
+template< typename N >
+GEBool mCCallHook::Hook( GEU32 a_u32CallAdr, N a_pNewFunc, mEHookType a_HookType, mERegisterType a_RegisterType )
+{
+    return Prepare(a_u32CallAdr, a_pNewFunc, a_HookType, a_RegisterType).Hook();
 }
 
 template< typename T >

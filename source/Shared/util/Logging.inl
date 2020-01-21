@@ -1,25 +1,57 @@
 template< typename T >
-T & mCLoggingAdmin<T>::GetLogger( GELPCChar a_strPath, GEBool a_bEnabled )
+mCLoggingAdmin<T> & mCLoggingAdmin<T>::GetLoggingAdmin()
 {
     static mCLoggingAdmin<T> s_LoggingAdmin;
+    return s_LoggingAdmin;
+}
 
-    if( !s_LoggingAdmin.m_Loggers.IsValidKey( a_strPath ) )
+
+template< typename T >
+T & mCLoggingAdmin<T>::GetLogger( GELPCChar a_strPath, GEBool a_bEnabled )
+{
+    mCLoggingAdmin<T> & LoggingAdmin = GetLoggingAdmin();
+    if( !LoggingAdmin.m_Loggers.IsValidKey( a_strPath ) )
     {
-        T Logger = T(a_strPath);
-        Logger.SetEnabled(a_bEnabled);
-        s_LoggingAdmin.m_Loggers.SetAt( a_strPath, Logger );
+        T * pLogger = new T(a_strPath);
+        pLogger->SetEnabled(a_bEnabled);
+        LoggingAdmin.m_Loggers.SetAt( a_strPath, pLogger );
     }
 
-    return s_LoggingAdmin.m_Loggers.AccessAt( a_strPath );
+    return *LoggingAdmin.m_Loggers.AccessAt( a_strPath );
+}
+
+
+template< typename T >
+GEBool mCLoggingAdmin<T>::FreeLogger( T & a_Logger )
+{
+    mCLoggingAdmin<T> & LoggingAdmin = GetLoggingAdmin();
+
+    bCString strName;
+    GE_MAP_FOR_EACH_VP(Name, pLogger, LoggingAdmin.m_Loggers)
+    {
+        if(pLogger == &a_Logger)
+        {
+            strName = *Name;
+            break;
+        }
+    }
+
+    if( strName.IsEmpty() )
+        return GEFalse;
+
+    LoggingAdmin.m_Loggers.RemoveAt( strName );
+    delete &a_Logger;
+
+    return GETrue;
 }
 
 
 template< typename T >
 mCLoggingAdmin<T>::~mCLoggingAdmin()
 {
-   for(bTValMap< bCString, T >::bCIterator NodeIterator = m_Loggers.Begin(); NodeIterator != m_Loggers.End(); ++NodeIterator)
+    GE_MAP_FOR_EACH_VP(Name, pLogger, m_Loggers)
     {
-        NodeIterator->Free();
+        delete pLogger;
     }
     m_Loggers.Clear();
 }

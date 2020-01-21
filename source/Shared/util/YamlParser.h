@@ -105,7 +105,7 @@ class mCYamlParser
                 m_arrClassPrefixes.Add("");
                 if(a_arrClassPrefixes)
                 {
-                    GE_ARRAY_FOR_EACH_CONST( bCString, Prefix, (*a_arrClassPrefixes) )
+                    GE_ARRAY_FOR_EACH( Prefix, (*a_arrClassPrefixes) )
                     {
                         m_arrClassPrefixes.Add(*Prefix);
                     }

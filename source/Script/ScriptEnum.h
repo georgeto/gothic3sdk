@@ -79,11 +79,4 @@ enum EDifficulty {
     EDifficulty_Hard = 2
 };
 
-enum gEWalkMode {
-    gEWalkMode_Sneak  = 0,
-    gEWalkMode_Walk   = 1,
-    gEWalkMode_Run    = 2,
-    gEWalkMode_Sprint = 3
-};
-
 #endif

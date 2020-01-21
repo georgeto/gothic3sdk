@@ -22,7 +22,7 @@ class GE_DLLIMPORT bCEvent :
     protected:
         void Invalidate( void );
 
-    protected:
+    public:
         GEU32  __UNK_000C;
         GEBool __UNK_0010;
         // Id of the window that caused the window (if any): eCGUIManager::GetInstance()->AccessWindowByID(m_u32WindowId)

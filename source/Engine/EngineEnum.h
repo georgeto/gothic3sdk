@@ -665,13 +665,136 @@ enum eEWeatherZoneOverwrite {
 
 // eCWeatherZone_PS.Shape
 
-enum eEWeatherZoneShape {
+enum eEWeatherZoneShape
+{
     eEWeatherZoneShape_2D_Circle = 0,
     eEWeatherZoneShape_2D_Rect   = 1,
     eEWeatherZoneShape_3D_Sphere = 2,
     eEWeatherZoneShape_3D_Box    = 3
 };
 
-
+enum eEVertexStreamArrayType
+{
+    /*
+     * Faces / Triangles
+     */
+    eEVertexStreamArrayType_Face = 0,
+    /*
+     * Vertex format includes the position of an untransformed vertex. (D3DFVF_XYZ) (bCVector3)
+     */
+    eEVertexStreamArrayType_VertexPosition = 1,
+    /*
+     * Vertex format includes the position of a transformed vertex. (D3DFVF_XYZRHW) (bCVector4)
+     */
+    eEVertexStreamArrayType_VertexPositionTransformed = 2,
+    /*
+     * Vertex format includes a vertex normal vector. (D3DFVF_NORMAL) (bCVector3)
+     */
+    eEVertexStreamArrayType_Normal = 3,
+    /*
+     * Vertex format includes a diffuse color component. (D3DFVF_DIFFUSE) (DWORD in ARGB order)
+     * <p>
+     * Bi-Tangent Heading (G3MC Manual) - 00FF0000
+     * <p>
+     * Texture Fading (G3MC)
+     */
+    eEVertexStreamArrayType_Diffuse = 4,
+    /*
+     * Vertex format includes a specular color component. (D3DFVF_SPECULAR) (DWORD in ARGB
+     * order)
+     * <p>
+     * ? (G3MC Manual) - FF000000
+     * <p>
+     * "eCTexCoordSrcBumpOffset::GetImplementation - No color source for height set!"
+     * <p>
+     * "eCTexCoordSrcBumpOffset::GetImplementation - Invalid color source component. Color
+     * component forced to alpha!"
+     */
+    eEVertexStreamArrayType_Specular = 5,
+    /*
+     * Vertex format specified in point size. This size is expressed in camera space units for
+     * vertices that are not transformed and lit, and in device-space units for transformed and
+     * lit vertices. (D3DFVF_PSIZE) (GEFloat)
+     */
+    eEVertexStreamArrayType_PointSize = 6,
+    /*
+     * Vertex format contains position data, and a corresponding number of weighting (beta)
+     * values to use for multimatrix vertex blending operations. (D3DFVF_XYZB1 through
+     * D3DFVF_XYZB5) (GEFloat)
+     */
+    eEVertexStreamArrayType_XYZB1             = 7,
+    eEVertexStreamArrayType_XYZB2             = 8,
+    eEVertexStreamArrayType_XYZB3             = 9,
+    eEVertexStreamArrayType_XYZB4             = 10,
+    eEVertexStreamArrayType_XYZB5             = 11,
+    eEVertexStreamArrayType_TextureCoordinate = 12,
+    eEVertexStreamArrayType_13                = 13,
+    eEVertexStreamArrayType_14                = 14,
+    /*
+     * Water Reflections (G3MC)
+     */
+    eEVertexStreamArrayType_15 = 15,
+    eEVertexStreamArrayType_16 = 16,
+    eEVertexStreamArrayType_17 = 17,
+    eEVertexStreamArrayType_18 = 18,
+    eEVertexStreamArrayType_19 = 19,
+    eEVertexStreamArrayType_20 = 20,
+    eEVertexStreamArrayType_21 = 21,
+    eEVertexStreamArrayType_22 = 22,
+    eEVertexStreamArrayType_23 = 23,
+    eEVertexStreamArrayType_24 = 24,
+    eEVertexStreamArrayType_25 = 25,
+    eEVertexStreamArrayType_26 = 26,
+    eEVertexStreamArrayType_27 = 27,
+    eEVertexStreamArrayType_28 = 28,
+    eEVertexStreamArrayType_29 = 29,
+    eEVertexStreamArrayType_30 = 30,
+    eEVertexStreamArrayType_31 = 31,
+    eEVertexStreamArrayType_32 = 32,
+    eEVertexStreamArrayType_33 = 33,
+    eEVertexStreamArrayType_34 = 34,
+    eEVertexStreamArrayType_35 = 35,
+    eEVertexStreamArrayType_36 = 36,
+    eEVertexStreamArrayType_37 = 37,
+    eEVertexStreamArrayType_38 = 38,
+    eEVertexStreamArrayType_39 = 39,
+    eEVertexStreamArrayType_40 = 40,
+    eEVertexStreamArrayType_41 = 41,
+    eEVertexStreamArrayType_42 = 42,
+    eEVertexStreamArrayType_43 = 43,
+    eEVertexStreamArrayType_44 = 44,
+    eEVertexStreamArrayType_45 = 45,
+    eEVertexStreamArrayType_46 = 46,
+    eEVertexStreamArrayType_47 = 47,
+    eEVertexStreamArrayType_48 = 48,
+    eEVertexStreamArrayType_49 = 49,
+    eEVertexStreamArrayType_50 = 50,
+    eEVertexStreamArrayType_51 = 51,
+    eEVertexStreamArrayType_52 = 52,
+    eEVertexStreamArrayType_53 = 53,
+    eEVertexStreamArrayType_54 = 54,
+    eEVertexStreamArrayType_55 = 55,
+    eEVertexStreamArrayType_56 = 56,
+    eEVertexStreamArrayType_57 = 57,
+    eEVertexStreamArrayType_58 = 58,
+    eEVertexStreamArrayType_59 = 59,
+    eEVertexStreamArrayType_60 = 60,
+    eEVertexStreamArrayType_61 = 61,
+    eEVertexStreamArrayType_62 = 62,
+    eEVertexStreamArrayType_63 = 63,
+    /**
+     * Tangent Vector (G3MC Manual)
+     */
+    eEVertexStreamArrayType_64               = 64,
+    eEVertexStreamArrayType_65               = 65,
+    eEVertexStreamArrayType_66               = 66,
+    eEVertexStreamArrayType_67               = 67,
+    eEVertexStreamArrayType_68               = 68,
+    eEVertexStreamArrayType_69               = 69,
+    eEVertexStreamArrayType_70               = 70,
+    eEVertexStreamArrayType_71               = 71,
+    eEVertexStreamArrayType_72               = 72,
+    eEVertexStreamArrayType_UVLightmapGroups = 73,
+};
 
 #endif

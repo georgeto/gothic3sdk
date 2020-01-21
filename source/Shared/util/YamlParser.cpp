@@ -332,7 +332,7 @@ bEResult mCYamlParser::ReadMappingNode(mSReadContext & a_Context, yaml_node_t co
     if(StartsWith(Tag, '!'))
     {
         Tag = Tag.Mid(1);
-        GE_ARRAY_FOR_EACH_CONST(bCString, Prefix, a_Context.m_arrClassPrefixes)
+        GE_ARRAY_FOR_EACH(Prefix, a_Context.m_arrClassPrefixes)
         {
             pObjectType = bCPropertyObjectSingleton::GetInstance().FindTemplate(*Prefix + Tag);
             if(pObjectType)
@@ -429,7 +429,7 @@ bEResult mCYamlParser::LogError(GELPCChar a_strFormat, ...)
 void mCYamlParser::PrintBacktrace(mSReadContext const & a_Context)
 {
     m_Logger.LogString("Backtrace:\n");
-    GE_ARRAY_FOR_EACH_REV_CONST(mSReadState, State, a_Context.m_arrState)
+    GE_ARRAY_FOR_EACH_REV(State, a_Context.m_arrState)
     {
         switch(State->m_pNode->type)
         {

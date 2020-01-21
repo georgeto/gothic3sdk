@@ -95,6 +95,17 @@ void bTValArray< T >::RemoveAt( GEInt _i )
 }
 
 template< typename T >
+void bTValArray< T >::RemoveRange( GEInt _i, GEInt _n )
+{
+    GEInt _u = this->GetCount();
+    if( (0 <= _i) && (_i < _u) && (0 < _n) && (_i + _n <= _u) )
+    {
+        bTArrayBase< T >::Move( this->m_pArray + _i, this->m_pArray + _i + _n, _u - _i - _n );
+        this->m_u32Count -= _n;
+    }
+}
+
+template< typename T >
 void bTValArray< T >::Reserve( GEInt _n )
 {
     if( _n > this->GetCapacity() )

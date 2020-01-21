@@ -65,4 +65,13 @@ class GE_DLLIMPORT bCErrorAdmin
         void  PrintStackFrame( bSException_Pointers * );
 };
 
+GELPCChar GE_STDCALL GetFirstStackTraceString( GEU32, _EXCEPTION_POINTERS * );
+GEInt     GE_STDCALL GetFirstStackTraceStringVB( GEU32, _EXCEPTION_POINTERS *, GELPChar, GEUInt );
+
+GELPCChar GE_STDCALL GetNextStackTraceString( GEU32, _EXCEPTION_POINTERS * );
+GEInt     GE_STDCALL GetNextStackTraceStringVB( GEU32, _EXCEPTION_POINTERS *, GELPChar, GEUInt );
+
+GELPCChar GE_STDCALL GetRegisterString( _EXCEPTION_POINTERS * );
+GEInt     GE_STDCALL GetRegisterStringVB( _EXCEPTION_POINTERS *, GELPChar, GEUInt );
+
 #endif

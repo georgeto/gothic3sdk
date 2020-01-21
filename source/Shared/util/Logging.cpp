@@ -7,6 +7,10 @@ mCLoggerBase::mCLoggerBase() : m_uCurrentIndent(0), m_bEnabled(GETrue)
 {
 }
 
+mCLoggerBase::~mCLoggerBase()
+{
+}
+
 void mCLoggerBase::PushIndent()
 {
     m_uCurrentIndent++;
@@ -41,14 +45,18 @@ mCFileLogger & mCFileLogger::GetInstance(GELPCChar a_strName)
     return mCLoggingAdmin<mCFileLogger>::GetLogger(bCString("logs\\") + a_strName + ".log", GETrue);
 }
 
-mCFileLogger::mCFileLogger()
-    : m_pFile(0)
-{
-}
-
 mCFileLogger::mCFileLogger( GELPCChar a_strFile )
 {
     m_pFile = fopen(a_strFile, "w");
+}
+
+mCFileLogger::~mCFileLogger()
+{
+    if(m_pFile)
+    {
+        fclose(m_pFile);
+        m_pFile =  nullptr;
+    }
 }
 
 void mCFileLogger::LogString(GELPCChar a_strMessage)
@@ -88,25 +96,20 @@ void mCFileLogger::LogFormatPrefix(GELPCChar a_strPrefix, GELPCChar a_strFormat,
     fflush(m_pFile);
 }
 
-void mCFileLogger::Free()
-{
-    if(m_pFile)
-        fclose(m_pFile);
-}
-
 FILE * mCFileLogger::GetFile()
 {
     return m_pFile;
-}
-
-mCStdLogger::mCStdLogger()
-{
 }
 
 mCStdLogger::mCStdLogger(GELPCChar)
 {
 
 }
+
+mCStdLogger::~mCStdLogger()
+{
+}
+
 
 void mCStdLogger::LogString(GELPCChar a_strMessage)
 {
@@ -125,10 +128,6 @@ void mCStdLogger::LogFormat(GELPCChar a_strFormat, ...)
     va_start(Arguments, a_strFormat);
     std::vprintf(Indent(a_strFormat).GetText(), Arguments);
     va_end(Arguments);
-}
-
-void mCStdLogger::Free()
-{
 }
 
 static mCLoggerBase * g_pDefaultLogger = &mCLoggingAdmin<mCStdLogger>::GetLogger("Default");

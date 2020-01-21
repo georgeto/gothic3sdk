@@ -11,7 +11,7 @@ class GE_DLLIMPORT EffectSystem
         static Effect GE_STDCALL StartEffect( bCString const &, bCMatrix const &, Entity const & );
         static Effect GE_STDCALL StartEffect( bCString const &, bCVector const & );
         static Effect GE_STDCALL StartEffect( bCString const &, bCVector const &, Entity const & );
-        static GEBool GE_STDCALL StopEffect( Effect const &, GEBool );
+        static GEBool GE_STDCALL StopEffect( Effect const &, GEBool a_bDecay );
 
     public:
          EffectSystem( void );

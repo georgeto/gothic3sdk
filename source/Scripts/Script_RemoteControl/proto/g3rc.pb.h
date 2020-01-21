@@ -762,12 +762,21 @@ class GotoRequest : public ::google::protobuf::MessageLite {
   inline ::g3rc::Vector* release_position();
   inline void set_allocated_position(::g3rc::Vector* position);
 
+  // optional bool put_to_ground = 4;
+  inline bool has_put_to_ground() const;
+  inline void clear_put_to_ground();
+  static const int kPutToGroundFieldNumber = 4;
+  inline bool put_to_ground() const;
+  inline void set_put_to_ground(bool value);
+
   inline IdentifierCase identifier_case() const;
   // @@protoc_insertion_point(class_scope:g3rc.GotoRequest)
  private:
   inline void set_has_name();
   inline void set_has_guid();
   inline void set_has_position();
+  inline void set_has_put_to_ground();
+  inline void clear_has_put_to_ground();
 
   inline bool has_identifier();
   void clear_identifier();
@@ -777,6 +786,7 @@ class GotoRequest : public ::google::protobuf::MessageLite {
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
+  bool put_to_ground_;
   union IdentifierUnion {
     ::std::string* name_;
     ::std::string* guid_;
@@ -3099,6 +3109,30 @@ inline void GotoRequest::set_allocated_position(::g3rc::Vector* position) {
     set_has_position();
     identifier_.position_ = position;
   }
+}
+
+// optional bool put_to_ground = 4;
+inline bool GotoRequest::has_put_to_ground() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void GotoRequest::set_has_put_to_ground() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void GotoRequest::clear_has_put_to_ground() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void GotoRequest::clear_put_to_ground() {
+  put_to_ground_ = false;
+  clear_has_put_to_ground();
+}
+inline bool GotoRequest::put_to_ground() const {
+  // @@protoc_insertion_point(field_get:g3rc.GotoRequest.put_to_ground)
+  return put_to_ground_;
+}
+inline void GotoRequest::set_put_to_ground(bool value) {
+  set_has_put_to_ground();
+  put_to_ground_ = value;
+  // @@protoc_insertion_point(field_set:g3rc.GotoRequest.put_to_ground)
 }
 
 inline bool GotoRequest::has_identifier() {

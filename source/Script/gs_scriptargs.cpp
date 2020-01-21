@@ -59,3 +59,13 @@ gSArgsFor__AI_ChangeAction::~gSArgsFor__AI_ChangeAction(void)
 {
 
 }
+
+gSArgsFor__AI_SelectWeapon::~gSArgsFor__AI_SelectWeapon(void)
+{
+
+}
+
+gSArgsFor__AI_LoopAction::~gSArgsFor__AI_LoopAction(void)
+{
+
+}

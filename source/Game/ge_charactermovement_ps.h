@@ -6,25 +6,25 @@ struct gSSpatialState;
 enum gECharMovementMode
 {
     //FIXME: gECharMovementMode constants.
-    gECharMovementMode_0          = 0x0,
-    gECharMovementMode_1          = 0x1,
-    gECharMovementMode_Sneak      = 2,
-    gECharMovementMode_Walk       = 3,
-    gECharMovementMode_Run        = 4,
-    gECharMovementMode_Sprint     = 5,
-    gECharMovementMode_JumpSteer  = 6,
-    gECharMovementMode_Swim       = 7,
-    gECharMovementMode_8          = 8,
-    gECharMovementMode_9          = 9,
-    gECharMovementMode_Wade       = 10,
-    gECharMovementMode_11         = 11,
-    gECharMovementMode_Slide      = 12,
-    gECharMovementMode_FallSteer  = 13,
-    gECharMovementMode_14         = 14,
-    gECharMovementMode_15         = 15,
-    gECharMovementMode_16         = 16,
-    gECharMovementMode_17         = 17,
-    gECharMovementMode_ForceDWORD = GE_FORCE_DWORD
+    gECharMovementMode_0           = 0x0,
+    gECharMovementMode_1           = 0x1, // Standing
+    gECharMovementMode_Sneak       = 2,
+    gECharMovementMode_Walk        = 3,
+    gECharMovementMode_Run         = 4,
+    gECharMovementMode_Sprint      = 5,
+    gECharMovementMode_JumpSteer   = 6,
+    gECharMovementMode_Swim        = 7,
+    gECharMovementMode_Dive        = 8,
+    gECharMovementMode_9           = 9,
+    gECharMovementMode_Wade        = 10,
+    gECharMovementMode_11          = 11,
+    gECharMovementMode_Slide       = 12,
+    gECharMovementMode_FallSteer   = 13,
+    gECharMovementMode_RagDollDead = 14,
+    gECharMovementMode_15          = 15,
+    gECharMovementMode_16          = 16,
+    gECharMovementMode_17          = 17,
+    gECharMovementMode_ForceDWORD  = GE_FORCE_DWORD
 };
 
 class GE_DLLIMPORT gCCharacterMovement_PS :

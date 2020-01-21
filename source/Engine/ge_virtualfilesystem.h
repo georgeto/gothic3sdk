@@ -14,8 +14,10 @@ class GE_DLLIMPORT eCVirtualFileSystem :
     public: virtual GEBool ChangeDir( bCString const & );
     public: virtual GEBool MakeDir( bCString const & );
     public: virtual GEBool DeleteDir( bCString const & );
-    public: virtual GEBool FindFiles( bCString, bTObjArray<bCString> & );
-    public: virtual GEBool FindDirectories( bCString, bTObjArray<bCString> & );
+    // Lists all files under the specified root directory.
+    public: virtual GEBool FindFiles( bCString a_SearchRoot, bTObjArray<bCString> & o_FoundFiles );
+    // Lists all directories under the specified root directory.
+    public: virtual GEBool FindDirectories( bCString a_SearchRoot, bTObjArray<bCString> & o_FoundDirectories );
     public: virtual       ~eCVirtualFileSystem( void );
     public: using bCFileSystem::GetCurrentDirPath;
     public: using bCFileSystem::ExistsFile;

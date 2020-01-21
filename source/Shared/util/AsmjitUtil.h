@@ -46,6 +46,7 @@ asmjit::Error ParseUntilSize(asmjit::X86CodeAsm & dest, void * srcAddress, size_
 bool DecodeInstruction(void * srcAddress, _DInst & decodedInstruction, size_t size = 15);
 bool WriteNops(unsigned long srcAdress, size_t size);
 bool SkipCode(unsigned long address, size_t size);
+void SkipCode(asmjit::X86CodeAsm & code, size_t size);
 
 bool ReadMemory(void * dest, void * source, size_t size);
 bool WriteMemory(void * dest, void const * source, size_t size);

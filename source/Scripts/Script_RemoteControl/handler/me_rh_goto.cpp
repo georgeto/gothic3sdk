@@ -6,6 +6,11 @@
 
 using namespace g3rc;
 
+mCGotoRequestHandler::mCGotoRequestHandler()
+    : m_uPutToGroundTries(0)
+{
+}
+
 void mCGotoRequestHandler::HandleRequest()
 {
     GotoRequest const & Request = m_RequestContainer->goto_request();
@@ -36,6 +41,15 @@ void mCGotoRequestHandler::HandleRequest()
         bFoundPosition = GETrue;
     }
 
+    if(Request.has_put_to_ground() && Request.put_to_ground())
+    {
+        m_PutToGroundLocation = TargetPosition;
+        m_PutToGroundLocation.SetY(1000000.0f);
+        m_uPutToGroundTries = 200;
+    }
+    else
+        m_uPutToGroundTries = 0;
+
     if( bFoundPosition )
     {
         if( eCEntity * pPlayer = gCSession::GetInstance().GetPlayer() )
@@ -46,4 +60,33 @@ void mCGotoRequestHandler::HandleRequest()
 
     m_ResponseContainer->mutable_void_response();
     return Success();
+}
+
+void mCGotoRequestHandler::Process()
+{
+    if(m_uPutToGroundTries > 0)
+    {
+        m_uPutToGroundTries--;
+        eCEntity * pPlayer = gCSession::GetInstance().GetPlayer();
+        if(!pPlayer)
+            return;
+
+        eCPhysicsScene & PhysicsScene = eCPhysicsScene::GetInstance();
+        if(PhysicsScene.TraceRayNearestHit(m_PutToGroundLocation, bCVector(0, -1, 0), pPlayer, eETraceRayHints_TestStaticShapes | eETraceRayHints_TestDynamicShapes | eETraceRayHints_Impact | eETraceRayHints_MaxDistanceNotFromDirection))
+        {
+            pPlayer->SetWorldPosition( PhysicsScene.GetQueryReport().m_NearestWorldImpact );
+            m_uPutToGroundTries = 0;
+        }
+        else if(m_uPutToGroundTries <= 150 && m_uPutToGroundTries > 108)
+        {
+            // Move player to bring other "layers" into physics scene
+            bCVector PlayerPosition = m_PutToGroundLocation;
+            if(m_uPutToGroundTries >= 110)
+                // 30000 -> -10000
+                PlayerPosition.SetY((static_cast<GEInt>(m_uPutToGroundTries) - 120) * 1000);
+            else if(m_uPutToGroundTries == 109)
+                PlayerPosition.SetY(0);
+            pPlayer->SetWorldPosition(PlayerPosition);
+        }
+    }
 }

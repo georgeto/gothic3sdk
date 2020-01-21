@@ -104,6 +104,19 @@ void bTObjArray< T >::RemoveAt( GEInt _i )
 }
 
 template< typename T >
+void bTObjArray< T >::RemoveRange( GEInt _i, GEInt _n )
+{
+    GEInt const _u = this->GetCount();
+    if( (0 <= _i) && (_i < _u) && (0 < _n) && (_i + _n <= _u) )
+    {
+        bTArrayBase< T >::Delete( this->m_pArray + _i, _n );
+        bTArrayBase< T >::Move( this->m_pArray + _i, this->m_pArray + _i + _n, _u - _i - _n );
+        bTArrayBase< T >::New( this->m_pArray + _u - _n, _n );
+        this->m_u32Count -= _n;
+    }
+}
+
+template< typename T >
 void bTObjArray< T >::Reserve( GEInt _n )
 {
     if( _n > this->GetCapacity() )

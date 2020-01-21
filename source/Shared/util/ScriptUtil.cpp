@@ -10,111 +10,120 @@ mCScriptHookRegistry::~mCScriptHookRegistry()
     m_arrHooks.DeleteAll();
 }
 
-GEBool mCScriptHookRegistry::ReplaceScriptAIState(gSScriptAIState const & a_ScriptState)
+GEBool mCScriptHookRegistry::ReplaceScriptAIState(gSScriptAIState const & a_ScriptState, gFScriptAIState * o_pOriginalScript)
 {
-    if (m_arrScriptAIStates.IndexOf(a_ScriptState) != -1)
+    mTOriginalWrapper<gSScriptAIState, gFScriptAIState> ScriptState { a_ScriptState, o_pOriginalScript };
+    if (m_arrScriptAIStates.IndexOf(ScriptState) != -1)
     {
         GetDefaultLogger().LogFormat("[mCScriptHookRegistry] Unable to replace ScriptAIState %s, because it already has another replacement registered.\n", a_ScriptState.m_strName);
         return GEFalse;
     }
     else
     {
-        m_arrScriptAIStates.Add(a_ScriptState);
+        m_arrScriptAIStates.Add(ScriptState);
         return GETrue;
     }
 }
 
-GEBool mCScriptHookRegistry::ReplaceScriptAIFunction(gSScriptAIFunction const & a_ScriptFunction)
+GEBool mCScriptHookRegistry::ReplaceScriptAIFunction(gSScriptAIFunction const & a_ScriptFunction, gFScriptAIFunction * o_pOriginalScript)
 {
-    if (m_arrScriptAIFunctions.IndexOf(a_ScriptFunction) != -1)
+    mTOriginalWrapper<gSScriptAIFunction, gFScriptAIFunction> ScriptFunction { a_ScriptFunction, o_pOriginalScript };
+    if (m_arrScriptAIFunctions.IndexOf(ScriptFunction) != -1)
     {
         GetDefaultLogger().LogFormat("[mCScriptHookRegistry] Unable to replace ScriptAIFunction %s, because it already has another replacement registered.\n", a_ScriptFunction.m_strName);
         return GEFalse;
     }
     else
     {
-        m_arrScriptAIFunctions.Add(a_ScriptFunction);
+        m_arrScriptAIFunctions.Add(ScriptFunction);
         return GETrue;
     }
 }
 
-GEBool mCScriptHookRegistry::ReplaceScriptAICallback(gSScriptAICallback const & a_ScriptCallback)
+GEBool mCScriptHookRegistry::ReplaceScriptAICallback(gSScriptAICallback const & a_ScriptCallback, gFScriptAICallback * o_pOriginalScript)
 {
-    if (m_arrScriptAICallbacks.IndexOf(a_ScriptCallback) != -1)
+    mTOriginalWrapper<gSScriptAICallback, gFScriptAICallback> ScriptCallback { a_ScriptCallback, o_pOriginalScript };
+    if (m_arrScriptAICallbacks.IndexOf(ScriptCallback) != -1)
     {
         GetDefaultLogger().LogFormat("[mCScriptHookRegistry] Unable to replace ScriptAICallback %s, because it already has another replacement registered.\n", a_ScriptCallback.m_strName);
         return GEFalse;
     }
     else
     {
-        m_arrScriptAICallbacks.Add(a_ScriptCallback);
+        m_arrScriptAICallbacks.Add(ScriptCallback);
         return GETrue;
     }
 }
 
-GEBool mCScriptHookRegistry::ReplaceScriptAIRoutine(gSScriptAIRoutine const & a_ScriptRoutine)
+GEBool mCScriptHookRegistry::ReplaceScriptAIRoutine(gSScriptAIRoutine const & a_ScriptRoutine, gFScriptAIRoutine * o_pOriginalScript)
 {
-    if (m_arrScriptAIRoutines.IndexOf(a_ScriptRoutine) != -1)
+    mTOriginalWrapper<gSScriptAIRoutine, gFScriptAIRoutine> ScriptRoutine { a_ScriptRoutine, o_pOriginalScript };
+    if (m_arrScriptAIRoutines.IndexOf(ScriptRoutine) != -1)
     {
         GetDefaultLogger().LogFormat("[mCScriptHookRegistry] Unable to replace ScriptAIRoutine %s, because it already has another replacement registered.\n", a_ScriptRoutine.m_strName);
         return GEFalse;
     }
     else
     {
-        m_arrScriptAIRoutines.Add(a_ScriptRoutine);
+        m_arrScriptAIRoutines.Add(ScriptRoutine);
         return GETrue;
     }
 }
 
-GEBool mCScriptHookRegistry::ReplaceScript(gSScript const & a_Script)
+GEBool mCScriptHookRegistry::ReplaceScript(gSScript const & a_Script, gFScript * o_pOriginalScript)
 {
-    if (m_arrScripts.IndexOf(a_Script) != -1)
+    mTOriginalWrapper<gSScript, gFScript> Script { a_Script, o_pOriginalScript };
+    if (m_arrScripts.IndexOf(Script) != -1)
     {
         GetDefaultLogger().LogFormat("[mCScriptHookRegistry] Unable to register hook for Script %s, because it already has another hook registered.\n", a_Script.m_strName);
         return GEFalse;
     }
     else
     {
-        m_arrScripts.Add(a_Script);
+        m_arrScripts.Add(Script);
         return GETrue;
     }
 }
 
 void mCScriptHookRegistry::Hook()
 {
-    GE_ARRAY_FOR_EACH_CONST(gSScriptAIState, ScriptState, m_arrScriptAIStates)
+    gCScriptAdminExt & ScriptAdmin = GetScriptAdminExt();
+    GE_ARRAY_FOR_EACH(ScriptState, m_arrScriptAIStates)
     {
-        ME_REPLACE_SCRIPT_AI_STATE(ScriptState->m_strName, ScriptState->m_funcScriptAIState);
+        ME_REPLACE_SCRIPT_AI_STATE(ScriptState->Script.m_strName, ScriptState->Script.m_funcScriptAIState, ScriptState->pOriginalScript);
     }
 
-    GE_ARRAY_FOR_EACH_CONST(gSScriptAIFunction, ScriptFunction, m_arrScriptAIFunctions)
+    GE_ARRAY_FOR_EACH(ScriptFunction, m_arrScriptAIFunctions)
     {
-        ME_REPLACE_SCRIPT_AI_FUNCTION(ScriptFunction->m_strName, ScriptFunction->m_funcScriptAIFunction);
+        ME_REPLACE_SCRIPT_AI_FUNCTION(ScriptFunction->Script.m_strName, ScriptFunction->Script.m_funcScriptAIFunction, ScriptFunction->pOriginalScript);
     }
 
-    GE_ARRAY_FOR_EACH_CONST(gSScriptAICallback, ScriptCallback, m_arrScriptAICallbacks)
+    GE_ARRAY_FOR_EACH(ScriptCallback, m_arrScriptAICallbacks)
     {
-        ME_REPLACE_SCRIPT_AI_CALLBACK(ScriptCallback->m_strName, ScriptCallback->m_funcScriptAICallback);
+        ME_REPLACE_SCRIPT_AI_CALLBACK(ScriptCallback->Script.m_strName, ScriptCallback->Script.m_funcScriptAICallback, ScriptCallback->pOriginalScript);
     }
 
-    GE_ARRAY_FOR_EACH_CONST(gSScriptAIRoutine, ScriptRoutine, m_arrScriptAIRoutines)
+    GE_ARRAY_FOR_EACH(ScriptRoutine, m_arrScriptAIRoutines)
     {
-        ME_REPLACE_SCRIPT_AI_ROUTINE(ScriptRoutine->m_strName, ScriptRoutine->m_funcScriptAIRoutine);
+        ME_REPLACE_SCRIPT_AI_ROUTINE(ScriptRoutine->Script.m_strName, ScriptRoutine->Script.m_funcScriptAIRoutine, ScriptRoutine->pOriginalScript);
     }
 
-    GE_ARRAY_FOR_EACH_CONST(gSScript, Script, m_arrScripts)
+    GE_ARRAY_FOR_EACH(Script, m_arrScripts)
     {
-        gSScript const * pOriginalScript = GetScriptAdminExt().GetScript(Script->m_strName);
+        gSScript const * pOriginalScript = ScriptAdmin.GetScript(Script->Script.m_strName);
         if (pOriginalScript)
         {
             mCFunctionHook * pHook = GE_NEW(mCFunctionHook);
-            pHook->Hook(pOriginalScript->m_funcScript, Script->m_funcScript, mCBaseHook::mEHookType_OnlyStack);
+            pHook->Hook(pOriginalScript->m_funcScript, Script->Script.m_funcScript);
             m_arrHooks.Add(pHook);
+
+            if(Script->pOriginalScript)
+                *Script->pOriginalScript = pHook->GetOriginalFunction<gFScript>();
         }
         else
-            GetDefaultLogger().LogFormat("[mCScriptHookRegistry] Unable to find original script with name %s.\n", Script->m_strName);
+            GetDefaultLogger().LogFormat("[mCScriptHookRegistry] Unable to find original script with name %s.\n", Script->Script.m_strName);
 
-        ME_REPLACE_SCRIPT(Script->m_strName, Script->m_funcScript);
+        __ME_REPLACE_SCRIPT(Script->Script.m_strName, Script->Script.m_funcScript);
     }
 }
 
@@ -255,6 +264,11 @@ Entity GetRandomFoundRefinedFreepoint()
     return g_arrFoundFreepointsRefined->GetAt(Entity::GetRandomNumber(g_arrFoundFreepointsRefined->GetCount()));
 }
 
+bTObjArray<gSItemComboCategorization> & GetItemComboCategorization()
+{
+    return *reinterpret_cast<bTObjArray<gSItemComboCategorization> *>(RVA_ScriptGame(0x118AC0));
+}
+
 GEU32 GetItemQuality(bCString const & a_ItemName) {
     eCSceneAdmin * pSceneAdmin = FindModule<eCSceneAdmin>();
     if(!pSceneAdmin)
@@ -264,3 +278,10 @@ GEU32 GetItemQuality(bCString const & a_ItemName) {
     return pItem ? pItem->GetQuality() : 0;
 }
 
+gEWeaponCategory GetHeldWeaponCategory(Entity const & a_Entity)
+{
+    typedef gEWeaponCategory(GE_STDCALL *mFGetHeldWeaponCategory)(Entity);
+    static mFGetHeldWeaponCategory s_fGetHeldWeaponCategory = force_cast<mFGetHeldWeaponCategory>(RVA_ScriptGame(0x3240));
+
+    return s_fGetHeldWeaponCategory(a_Entity);
+}

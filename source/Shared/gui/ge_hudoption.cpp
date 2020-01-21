@@ -3,7 +3,12 @@
 #include "Gui.h"
 
 gCHUDOptionBool::gCHUDOptionBool(bCString const & a_strDescription, GEBool * a_pValue)
-    : gCHUDOptionBase(a_strDescription, a_pValue)
+    : gCHUDOptionBase(a_strDescription, a_pValue), m_strLabelOn("HUD_Slider_Value_On"), m_strLabelOff("HUD_Slider_Value_Off")
+{
+}
+
+gCHUDOptionBool::gCHUDOptionBool(bCString const & a_strDescription, GEBool * a_pValue, bCString const & a_strLabelOn, bCString const & a_strLabelOff)
+    : gCHUDOptionBase(a_strDescription, a_pValue), m_strLabelOn(a_strLabelOn), m_strLabelOff(a_strLabelOff)
 {
 }
 
@@ -14,7 +19,7 @@ void gCHUDOptionBool::InitSlider(CFFGFCSlider * a_pSlider)
 
 void gCHUDOptionBool::LoadLabelValue(gCHUDLabel *a_pLabelValue)
 {
-    a_pLabelValue->SetWindowTextA(eCLocString(GetValue() ? "HUD_Slider_Value_On" :  "HUD_Slider_Value_Off"));
+    a_pLabelValue->SetWindowTextA(eCLocString(GetValue() ? m_strLabelOn :  m_strLabelOff));
 }
 
 void gCHUDOptionBool::SaveSliderValue(CFFGFCSlider * a_pSlider)

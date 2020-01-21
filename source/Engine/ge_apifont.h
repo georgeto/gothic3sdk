@@ -6,9 +6,9 @@ class eCAPITexture;
 class GE_DLLIMPORT eCAPIFont
 {
     public: virtual bEResult GetGlyphData( GEUInt, bCRect &, bCVector2 &, eCAPITexture * &, struct eCGfxShared::eSGfxLayersDesc & ) = 0;
+    public: virtual bEResult GetTextIndices( bCString const &, GEU16 * &, GEU16 & ) = 0;
     public: virtual bEResult GetTextIndices( bCUnicodeString const &, GEU16 * &, GEU16 & ) = 0;
-    public: virtual bEResult GetTextIndices( bCString const &, GEU16 * &, GEU16 & )        = 0;
-    public: virtual bEResult GetDeviceContext( struct HDC__ * & )                          = 0;
+    public: virtual bEResult GetDeviceContext( struct HDC__ * & ) = 0;
     public: virtual bEResult DrawTextA( bCUnicodeString, bCRect *, GEU32, GEU32 ) = 0;
     public: virtual         ~eCAPIFont( void );
 
@@ -25,6 +25,8 @@ class GE_DLLIMPORT eCAPIFont
     protected:
         eCAPIFont( void );
 
+    private:
+        GEU32 m_u32ReferenceCount;
 };
 
 #endif

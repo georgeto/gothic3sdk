@@ -2,8 +2,6 @@
 #define GI_TEXTUREBAKER_H_INCLUDED
 
 class eCGfxVertexDecl;
-class eCResourceMeshComplex_PS;
-class eCMeshElement;
 
 class GE_DLLIMPORT iCTextureBaker
 {

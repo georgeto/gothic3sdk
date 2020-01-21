@@ -56,7 +56,13 @@ class GE_DLLIMPORT eCNode :
         void Invalidate( void );
         void MoveToNode( eCNode * );
         void SetID( bCPropertyID );
-
+    private:
+        eCNode *               m_pParent;
+        bTSmallArray<eCNode *> m_arrChilds;
+        bCPropertyID           m_ID;
+        eCContextBase *        m_pCurrentContext;
 };
+
+GE_ASSERT_SIZEOF( eCNode, 0x30 )
 
 #endif

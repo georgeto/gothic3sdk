@@ -71,7 +71,8 @@ class GE_DLLIMPORT eCArchiveFile :
         GEBool     IsOpenForWrite( void ) const;
         GEBool     IsReadOnly( void ) const;
         GEBool     IsValid( void ) const;
-        GEBool     Open( bEArchiveFileAccessMode, GEBool );
+        // Fails if the file does not exist. In that case use eCArchiveManager::CreateFileA() to create the file.
+        GEBool     Open( bEArchiveFileAccessMode a_enuAccessMode, GEBool a_bHandleGenomfleHeader );
         void       SetReadOnly( GEBool );
         void       SetType( bCString & ) const;
         void       SetVersion( GEU16 );

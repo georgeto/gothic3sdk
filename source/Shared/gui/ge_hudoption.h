@@ -55,7 +55,11 @@ class gCHUDOptionBool
 
     public:
         gCHUDOptionBool( bCString const & a_strDescription, GEBool * a_pValue );
+        gCHUDOptionBool( bCString const & a_strDescription, GEBool * a_pValue, bCString const & a_strLabelOn, bCString const & a_strLabelOff );
 
+    private:
+        bCString m_strLabelOn;
+        bCString m_strLabelOff;
 };
 
 template<typename T>

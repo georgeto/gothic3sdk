@@ -37,13 +37,6 @@ namespace Genome
 #define GE_STATIC_ASSERT_EQUALS( ACTUAL, EXPECTED ) typedef ::Genome::sizeof_test< sizeof( ::Genome::SIZEOF_ASSERTION_EQUALS< ACTUAL == ( EXPECTED ), EXPECTED, ACTUAL > ) > GE_PASTE_TOKENS ( Genome_sizeof_, __COUNTER__ );
 #define GE_ASSERT_SIZEOF( TYPE, SIZE ) GE_STATIC_ASSERT_EQUALS( sizeof( TYPE ), SIZE );
 
-namespace Genome
-{
-    template<typename T> struct argument_type;
-    template<typename T, typename U> struct argument_type<T( U )> { typedef U type; };
-}
-#define GE_EXTRACT_TYPE( ... ) Genome::argument_type< void( __VA_ARGS__ ) >::type
-
 #define GE_STATIC_BLOCK _GE_STATIC_BLOCK( GE_PASTE_TOKENS( _static_block_, __COUNTER__ ) )
 #define _GE_STATIC_BLOCK( prefix ) \
     __GE_STATIC_BLOCK( GE_PASTE_TOKENS( prefix, _fn ), GE_PASTE_TOKENS( prefix, _var ) )

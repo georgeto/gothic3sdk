@@ -72,6 +72,12 @@ typename bTArrayBase< T >::bCIterator bTArrayBase< T >::Begin( void )
 }
 
 template< typename T >
+GEBool bTArrayBase< T >::Contains( T const & _e ) const
+{
+    return this->IndexOf( _e ) != bEIndex_Invalid;
+}
+
+template< typename T >
 T const * bTArrayBase< T >::GetArray( void ) const
 {
     return this->m_pArray;

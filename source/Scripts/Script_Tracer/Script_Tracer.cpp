@@ -4,6 +4,7 @@
 #include "util/Logging.h"
 #include "util/Hook.h"
 #include "util/Util.h"
+#include "util/ScriptUtil.h"
 
 #include "Script.h"
 
@@ -52,6 +53,31 @@ class mCFunctionPointerHookContext : public mCHookContext
 
     public:
         GELPVoid m_OriginalFunc;
+};
+
+class mCPropertySetHookContext : public mCFunctionHookContext
+{
+    private:
+        virtual GELPVoid GetUntypedOriginalFunction( void ) const
+        {
+            return m_Hook.GetOriginalFunction<GELPVoid>();
+        }
+
+    public:
+        GELPCChar m_strPropertySet;
+        mEPropertySetOffset m_Offset;
+};
+
+class mCSetterHookContext : public mCPropertySetHookContext
+{
+    private:
+        virtual GELPVoid GetUntypedOriginalFunction( void ) const
+        {
+            return m_Hook.GetOriginalFunction<GELPVoid>();
+        }
+
+    public:
+        GELPCChar m_strFormat;
 };
 
 GELPVoid CreateHookTrampoline(GELPVoid a_pTarget, mCHookContext * a_pContext)
@@ -174,20 +200,57 @@ GEBool GE_STDCALL TraceScriptAIState( mCHookContext const & a_Context, bTObjStac
     return bResult;
 }
 
+void GE_STDCALL TracePropertySetVoid( mCPropertySetHookContext const & a_Context )
+{
+    EntityPropertySet const * pPropertySet = a_Context.m_Hook.GetSelf<EntityPropertySet const *>();
+    Entity SelfEntity(*GetEntity(pPropertySet, a_Context.m_Offset));
+    GEBool bEnabled = IsTracingEnabled(SelfEntity);
+    if(bEnabled)
+    {
+        g_Logger->LogFormatPrefix("[%s]", " -> [%s] %s(SelfEntity=%s)\n", GetSystemTimeString().GetText(), a_Context.m_strPropertySet, a_Context.m_strFuncName.GetText(), SelfEntity.GetName().GetText());
+        g_Logger->PushIndent();
+    }
+    a_Context.GetOriginalFunction<void (*)()>()();
+    if(bEnabled)
+    {
+        g_Logger->PopIndent();
+        g_Logger->LogFormatPrefix("[%s]", " <- [%s] %s\n", GetSystemTimeString().GetText(), a_Context.m_strPropertySet, a_Context.m_strFuncName);
+    }
+}
+
+template<typename V>
+void GE_STDCALL TracePropertySetSetter( mCSetterHookContext const & a_Context, V a_Value )
+{
+    EntityPropertySet const * pPropertySet = a_Context.m_Hook.GetSelf<EntityPropertySet const *>();
+    Entity SelfEntity(*GetEntity(pPropertySet, a_Context.m_Offset));
+    GEBool bEnabled = IsTracingEnabled(SelfEntity);
+    if(bEnabled)
+    {
+        g_Logger->LogFormatPrefix("[%s]", " -> [%s] %s(SelfEntity=%s, Value=" + bCString(a_Context.m_strFormat) + ")\n", GetSystemTimeString().GetText(), a_Context.m_strPropertySet, a_Context.m_strFuncName.GetText(), SelfEntity.GetName().GetText(), a_Value);
+        g_Logger->PushIndent();
+    }
+    a_Context.GetOriginalFunction<void (*)(V)>()(a_Value);
+    if(bEnabled)
+    {
+        g_Logger->PopIndent();
+        g_Logger->LogFormatPrefix("[%s]", " <- [%s] %s\n", GetSystemTimeString().GetText(), a_Context.m_strPropertySet, a_Context.m_strFuncName);
+    }
+}
+
 #define INSTRUMENT_SCRIPTS(SCRIPT_TYPE) \
     GetDefaultLogger().LogString("Instrumenting " ## #SCRIPT_TYPE ## "s...\n"); \
-    GE_MAP_FOR_EACH_VP(bCString, ScriptItem, gS ## SCRIPT_TYPE *, pScript, GetScriptAdminExt().Get ## SCRIPT_TYPE ## s()) \
+    GE_MAP_FOR_EACH_VP(ScriptItem, pScript, GetScriptAdminExt().Get ## SCRIPT_TYPE ## s()) \
     { \
         mCFunctionHookContext * pHookContext = GE_NEW(mCFunctionHookContext); \
         pHookContext->m_strFuncName = pScript->m_strName; \
         GELPVoid pTrampoline = CreateHookTrampoline(Trace ## SCRIPT_TYPE, pHookContext); \
-        pHookContext->m_Hook.Hook(pScript->m_func ## SCRIPT_TYPE, pTrampoline, mCBaseHook::mEHookType_OnlyStack); \
+        pHookContext->m_Hook.Hook(pScript->m_func ## SCRIPT_TYPE, pTrampoline); \
     } \
     GetDefaultLogger().LogFormat("%d " ## #SCRIPT_TYPE ## "s instrumented...\n", GetScriptAdminExt().Get ## SCRIPT_TYPE ## s().GetCount());
 
 #define INSTRUMENT_SCRIPTS_FUNC_PTR(SCRIPT_TYPE) \
     GetDefaultLogger().LogString("Instrumenting " ## #SCRIPT_TYPE ## "s...\n"); \
-    GE_MAP_FOR_EACH_VP(bCString, ScriptItem, gS ## SCRIPT_TYPE *, pScript, GetScriptAdminExt().Get ## SCRIPT_TYPE ## s()) \
+    GE_MAP_FOR_EACH_VP(ScriptItem, pScript, GetScriptAdminExt().Get ## SCRIPT_TYPE ## s()) \
     { \
         mCFunctionPointerHookContext * pHookContext = GE_NEW(mCFunctionPointerHookContext); \
         pHookContext->m_strFuncName = pScript->m_strName; \
@@ -196,6 +259,29 @@ GEBool GE_STDCALL TraceScriptAIState( mCHookContext const & a_Context, bTObjStac
         pScript->m_func ## SCRIPT_TYPE = static_cast<gF ## SCRIPT_TYPE>(pTrampoline); \
     } \
     GetDefaultLogger().LogFormat("%d " ## #SCRIPT_TYPE ## "s instrumented...\n", GetScriptAdminExt().Get ## SCRIPT_TYPE ## s().GetCount());
+
+#define INSTRUMENT_PROPERTY_VOID(PROPERTY_SET, FUNC) \
+    { \
+        GetDefaultLogger().LogString("Instrumenting PS" ## #PROPERTY_SET ## "::" ## #FUNC ## "...\n"); \
+        mCPropertySetHookContext * pHookContext = GE_NEW(mCPropertySetHookContext); \
+        pHookContext->m_strFuncName = #FUNC; \
+        pHookContext->m_strPropertySet = "PS" ## #PROPERTY_SET; \
+        pHookContext->m_Offset = mEPropertySetOffset_ ## PROPERTY_SET; \
+        GELPVoid pTrampoline = CreateHookTrampoline(&TracePropertySetVoid, pHookContext); \
+        pHookContext->m_Hook.Hook(&PS ## PROPERTY_SET ## :: ## FUNC, pTrampoline, mCBaseHook::mEHookType_ThisCall); \
+    }
+
+#define INSTRUMENT_PROPERTY_SETTER(PROPERTY_SET, FUNC, FORMAT, VALUE_TYPE) \
+    { \
+        GetDefaultLogger().LogString("Instrumenting PS" ## #PROPERTY_SET ## "::" ## #FUNC ## "...\n"); \
+        mCSetterHookContext * pHookContext = GE_NEW(mCSetterHookContext); \
+        pHookContext->m_strFuncName = "PS" ## #PROPERTY_SET ## "::" ## #FUNC; \
+        pHookContext->m_strPropertySet = "PS" ## #PROPERTY_SET; \
+        pHookContext->m_Offset = mEPropertySetOffset_ ## PROPERTY_SET; \
+        pHookContext->m_strFormat = FORMAT; \
+        GELPVoid pTrampoline = CreateHookTrampoline(force_cast<GELPVoid>(&TracePropertySetSetter<VALUE_TYPE>), pHookContext); \
+        pHookContext->m_Hook.Hook(&PS ## PROPERTY_SET ## :: ## FUNC, pTrampoline, mCBaseHook::mEHookType_ThisCall); \
+    }
 
 void EnableTracing()
 {
@@ -208,6 +294,22 @@ void EnableTracing()
     INSTRUMENT_SCRIPTS_FUNC_PTR(ScriptAICallback);
     INSTRUMENT_SCRIPTS_FUNC_PTR(ScriptAIFunction);
     INSTRUMENT_SCRIPTS_FUNC_PTR(ScriptAIState);
+
+    INSTRUMENT_PROPERTY_VOID(Routine, ContinueRoutine);
+    INSTRUMENT_PROPERTY_VOID(Routine, FullStop);
+    INSTRUMENT_PROPERTY_VOID(Routine, StopAICombatMove);
+    INSTRUMENT_PROPERTY_VOID(Routine, StopAIGoto);
+    INSTRUMENT_PROPERTY_VOID(Routine, StopAIOutput);
+    INSTRUMENT_PROPERTY_VOID(Routine, StopAIPlayAnimation);
+    INSTRUMENT_PROPERTY_VOID(Routine, StopAIWait);
+    INSTRUMENT_PROPERTY_SETTER(Routine, SetLocalCallback, "%s", bCString);
+    INSTRUMENT_PROPERTY_SETTER(Routine, SetState, "%s", bCString);
+    INSTRUMENT_PROPERTY_SETTER(Routine, SetStateTime, "%f", GEFloat);
+    INSTRUMENT_PROPERTY_SETTER(Routine, SetTask, "%s", bCString);
+    INSTRUMENT_PROPERTY_SETTER(Routine, SetTaskCallback, "%s", bCString);
+    INSTRUMENT_PROPERTY_SETTER(Routine, SetTaskTime, "%f", GEFloat);
+    INSTRUMENT_PROPERTY_SETTER(Routine, SetTimeScale, "%f", GEFloat);
+    INSTRUMENT_PROPERTY_SETTER(Routine, StartOutput, "%s", bCString);
 }
 
 extern "C" __declspec( dllexport )

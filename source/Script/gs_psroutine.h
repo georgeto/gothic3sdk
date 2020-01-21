@@ -23,6 +23,7 @@ public:
     bCString GetCurrentState( void ) const;
     bCString GetCurrentTask( void ) const;
     bCString GetLastTask( void ) const;
+    // Unit is seconds, advanced by gCScriptProcessingUnit::ProcessScript
     GEFloat  GetStateTime( void ) const;
     GEFloat  GetTaskTime( void ) const;
     GEBool   IsValid( void ) const;

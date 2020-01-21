@@ -42,10 +42,12 @@ gSScriptInit const * GE_STDCALL ScriptInit( void )
     LoadSettings();
 
     static mCCallHook Hook_GetIncrementedLearnPoints1;
-    Hook_GetIncrementedLearnPoints1.Hook(mCCallHook::GetHookParams(RVA_ScriptGame(0x4E659), &GetIncrementedLearnPoints, mCBaseHook::mEHookType_ThisCall), 0x09);
+    Hook_GetIncrementedLearnPoints1
+        .Prepare(RVA_ScriptGame(0x4E659), &GetIncrementedLearnPoints, mCBaseHook::mEHookType_ThisCall)
+        .ReplaceSize(0x09).Hook();
 
     static mCCallHook Hook_GetIncrementedLearnPoints2;
-    Hook_GetIncrementedLearnPoints2.Hook(mCCallHook::GetHookParams(RVA_ScriptGame(0x4E76E), &GetIncrementedLearnPoints, mCBaseHook::mEHookType_ThisCall), 0x02, 0x06);
+    Hook_GetIncrementedLearnPoints2.Hook(RVA_ScriptGame(0x4E76E), &GetIncrementedLearnPoints, mCBaseHook::mEHookType_ThisCall);
     WriteNops(RVA_ScriptGame(0x4E77A), 0x03); // add eax, 0x0A
 
     return &GetScriptInit();

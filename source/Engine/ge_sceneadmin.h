@@ -85,7 +85,21 @@ class GE_DLLIMPORT eCSceneAdmin :
         GEBool UnregisterResourceDataEntity( eCResourceDataEntity * );
         GEBool UnregisterSpatialContext( eCGeometrySpatialContext & );
         GEBool UnregisterTemplateEntity( eCTemplateEntity * );
-
+    public:
+        bTPtrMap<bCPropertyID, eCEntity *> m_mapEntities;
+        bTPtrMap<bCPropertyID, eCResourceDataEntity *> m_mapResourceDataEntities;
+        bTPtrMap<bCPropertyID, eCTemplateEntity *> m_mapTemplateEntities;
+        bTPtrMap<bCString, bTPtrArray<eCEntity *>> m_mapNameInfoEntities;
+        bTPtrMap<bCString, bTPtrArray<eCTemplateEntity *>> m_mapNameInfoTemplateEntities;
+        GEBool m_bIsEditorModeEnabled;
+        GE_PADDING( 3 )
+        eCEntityAdmin m_EntityAdmin;
+        GEU32 m_uNumberOfStaticEntities;
+        GEU32 m_uNumberOfDynamicEntities;
+        bTPtrArray<eCGeometrySpatialContext *> m_arrGeometrySpatialContexts;
+        bCBox m_WorldBox;
 };
+
+GE_ASSERT_SIZEOF( eCSceneAdmin, 0x194 )
 
 #endif

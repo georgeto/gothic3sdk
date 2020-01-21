@@ -2,9 +2,6 @@
 
 #include "util/Memory.h"
 
-static const GEU32 JMP_SIZE = 5;
-static const GEU32 CALL_SIZE = 5;
-
 mCRestorable::mCRestorable(void)
 {
 }
@@ -32,6 +29,12 @@ void mCRestorable::Restore()
     m_arrBackupItems.Clear();
 }
 
+void mCRestorable::ApplyAsm(asmjit::X86CodeAsm& a_Assembler, GEUInt a_u32ReplaceSize)
+{
+    Backup(reinterpret_cast<void *>(a_Assembler.getCodeInfo().getBaseAddress()), a_u32ReplaceSize);
+    G3SCRIPT_ASSERT(WriteAssemblerData(a_Assembler, a_u32ReplaceSize, false, true));
+}
+
 mCDataPatch::mCDataPatch(GEU32 a_uDataAddress, GELPCVoid a_pNewData, GEU32 a_uSize)
 {
     Patch(a_uDataAddress, a_pNewData, a_uSize);
@@ -41,6 +44,25 @@ void mCDataPatch::Patch(GEU32 a_uDataAddress, GELPCVoid a_pNewData, GEU32 a_uSiz
 {
     Backup(reinterpret_cast<GELPVoid>(a_uDataAddress), a_uSize);
     WriteMemory(reinterpret_cast<GELPVoid>(a_uDataAddress), a_pNewData, a_uSize);
+}
+
+mCCodePatch::mCCodePatch(GEU32 a_uAddress, GEU32 a_uReplaceSize, mFCodeSupplier a_CodeSupplier)
+{
+    Patch(a_uAddress, a_uReplaceSize, a_CodeSupplier);
+}
+
+void mCCodePatch::Patch(GEU32 a_uAddress, GEU32 a_uReplaceSize, mFCodeSupplier a_CodeSupplier)
+{
+    using namespace asmjit;
+    using namespace asmjit::x86;
+
+    X86CodeAsm AsmCode(a_uAddress);
+    a_CodeSupplier(AsmCode);
+
+    // Skip the remaining code in the replace size range
+    SkipCode(AsmCode, a_uReplaceSize);
+
+    ApplyAsm(AsmCode, a_uReplaceSize);
 }
 
 mCSkipCode::mCSkipCode(GEU32 a_uAddress, GEU32 a_uSize)
@@ -62,13 +84,7 @@ mCBaseHook::mCBaseHook(void)
 {
 }
 
-void mCBaseHook::ApplyHook(asmjit::X86CodeAsm& a_Assembler, GEUInt a_u32ReplaceSize)
-{
-    Backup(reinterpret_cast<void *>(a_Assembler.getCodeInfo().getBaseAddress()), a_u32ReplaceSize);
-    G3SCRIPT_ASSERT(WriteAssemblerData(a_Assembler, a_u32ReplaceSize, false, true));
-}
-
-GELPVoid mCBaseHook::DoRegisterMagic(mSHookParams const & a_HookParams)
+GELPVoid mCBaseHook::DoRegisterMagic(mCHookParams const & a_HookParams)
 {
     using namespace asmjit;
     using namespace asmjit::x86;
@@ -166,16 +182,17 @@ mCFunctionHook::mCFunctionHook(void)
 {
 }
 
-GEBool mCFunctionHook::Hook(mSHookParams const & a_HookParams, GEBool a_bTransparent)
+GEBool mCFunctionHook::Hook(mCFunctionHookParams const & a_HookParams)
 {
     asmjit::X86CodeAsm assembler;
-    if(ParseUntilSize(assembler, a_HookParams.m_pOriginalFunc, JMP_SIZE))
+    GEUInt uRelocateSize = 0;
+    if(ParseUntilSize(assembler, a_HookParams.m_pOriginalFunc, JMP_SIZE, 0, &uRelocateSize))
         return false;
 
-    return Hook(a_HookParams, assembler, assembler.getOffset(), a_bTransparent);
+    return HookInternal(a_HookParams, assembler, uRelocateSize);
 }
 
-GEBool mCFunctionHook::Hook(mSHookParams const & a_HookParams, asmjit::X86CodeAsm& a_pAssembler, GEUInt a_u32RelocateSize, GEBool a_bTransparent)
+GEBool mCFunctionHook::HookInternal(mCFunctionHookParams const & a_HookParams, asmjit::X86CodeAsm& a_pAssembler, GEUInt a_u32RelocateSize)
 {
     GEUInt replacedSize = a_u32RelocateSize;
 
@@ -191,7 +208,7 @@ GEBool mCFunctionHook::Hook(mSHookParams const & a_HookParams, asmjit::X86CodeAs
 
     m_pCode = pRelocatedProlog;
     GELPVoid pHookDestination = DoRegisterMagic(a_HookParams);
-    if(a_bTransparent)
+    if(a_HookParams.m_bTransparent)
     {
         // clear inside flag
         X86CodeAsm AsmOnReturn;
@@ -215,9 +232,9 @@ GEBool mCFunctionHook::Hook(mSHookParams const & a_HookParams, asmjit::X86CodeAs
         pHookDestination = JitRuntimeAdd(AsmOnEnter);
 
         asmjit::X86CodeAsm AsmRelocatedPrologNew;
-        if(ParseUntilSize(AsmRelocatedPrologNew, a_HookParams.m_pNewFunc, JMP_SIZE))
+        GEUInt RelocateSizeNew = 0;
+        if(ParseUntilSize(AsmRelocatedPrologNew, a_HookParams.m_pNewFunc, JMP_SIZE, 0, &RelocateSizeNew))
             return false;
-        GEU32 RelocateSizeNew = AsmRelocatedPrologNew.getOffset();
         AsmRelocatedPrologNew.jmp(imm(reinterpret_cast< GEI64 >(a_HookParams.m_pNewFunc) + RelocateSizeNew));
         GELPVoid pRelocatedPrologNew = JitRuntimeAdd(AsmRelocatedPrologNew);
 
@@ -246,14 +263,14 @@ GEBool mCFunctionHook::Hook(mSHookParams const & a_HookParams, asmjit::X86CodeAs
         // hook hook function
         X86CodeAsm AsmTrampolineNew(reinterpret_cast< GEU64 >(a_HookParams.m_pNewFunc));
         AsmTrampolineNew.jmp(imm_ptr(pHookDestinationNew));
-        ApplyHook(AsmTrampolineNew, RelocateSizeNew);
+        ApplyAsm(AsmTrampolineNew, RelocateSizeNew);
     }
 
     // hook original function
     X86CodeAsm AsmTrampoline;
     AsmTrampoline.setBaseAddress(reinterpret_cast< GEU64 >(a_HookParams.m_pOriginalFunc));
     AsmTrampoline.jmp(imm_ptr(pHookDestination));
-    ApplyHook(AsmTrampoline, replacedSize);
+    ApplyAsm(AsmTrampoline, replacedSize);
 
     return true;
 }
@@ -262,18 +279,18 @@ mCVtableHook::mCVtableHook(void)
 {
 }
 
-mCVtableHook::mCVtableHook(mSHookParams const & a_HookParams)
+mCVtableHook::mCVtableHook(mCVtableHookParams const & a_HookParams)
 {
     Hook(a_HookParams);
 }
 
-void mCVtableHook::Hook(mSHookParams const & a_HookParams)
+GEBool mCVtableHook::Hook(mCVtableHookParams const & a_HookParams)
 {
     m_pCode = *reinterpret_cast<GELPVoid *>(a_HookParams.m_pOriginalFunc);
 
     GELPVoid pHookDestination = DoRegisterMagic(a_HookParams);
     Backup(a_HookParams.m_pOriginalFunc, sizeof(GELPVoid));
-    WriteMemory(a_HookParams.m_pOriginalFunc, &pHookDestination, sizeof(GELPVoid));
+    return WriteMemory(a_HookParams.m_pOriginalFunc, &pHookDestination, sizeof(GELPVoid));
 }
 
 mCCallHook::mCCallHook(void)
@@ -281,15 +298,11 @@ mCCallHook::mCCallHook(void)
 {
 }
 
-mCCallHook::mCCallHook(mSCallHookParams const & a_HookParams, GEUInt a_uCallSize, GEUInt a_uRelocateSize, GEBool a_bVariableReturnAddress, GEBool a_bRestoreRegister)
+// TODO: Remove
+mCCallHook::mCCallHook(mCCallHookParams const & a_HookParams)
     : m_u32CallReturnAdr(0)
 {
-    Hook(a_HookParams, a_uCallSize, a_uRelocateSize, a_bVariableReturnAddress, a_bRestoreRegister);
-}
-
-GEBool mCCallHook::Hook(mSCallHookParams const & a_HookParams, GEUInt a_uCallSize, GEUInt a_uRelocateSize, GEBool a_bVariableReturnAddress, GEBool a_bRestoreRegister)
-{
-    return HookInternal(a_HookParams, a_uCallSize, a_uRelocateSize, a_uRelocateSize, a_bVariableReturnAddress, a_bRestoreRegister);
+    Hook(a_HookParams);
 }
 
 void mCCallHook::Disable()
@@ -297,12 +310,17 @@ void mCCallHook::Disable()
     Restore();
 }
 
-GEBool mCCallHook::HookAuto(mSCallHookParams const & a_HookParams, GEBool a_bReplaceCall, GEBool a_bVariableReturnAddress, GEBool a_bRestoreRegister)
+GEBool mCCallHook::Hook(mCCallHookParams const & a_HookParams)
 {
-    GEUInt uCallSize;
-    GEUInt uMinRelocateSize = 0;
+    if(a_HookParams.m_bExplicitSize)
+        return HookInternal(a_HookParams);
 
-    if(a_bReplaceCall)
+    mCCallHookParams HookParams = a_HookParams;
+    HookParams.m_uCallSize = 0;
+    HookParams.m_uMinRelocateSize = 0;
+    HookParams.m_uMaxRelocateSize = 0;
+
+    if(!a_HookParams.m_bInsertCall)
     {
         _DInst inst;
         if(!DecodeInstruction(reinterpret_cast<GELPVoid>(a_HookParams.m_u32CallAdr), inst))
@@ -317,30 +335,22 @@ GEBool mCCallHook::HookAuto(mSCallHookParams const & a_HookParams, GEBool a_bRep
             return false;
         }
 
-        uCallSize = inst.size;
-        if(uCallSize < CALL_SIZE)
-            uMinRelocateSize = CALL_SIZE - uCallSize;
+        HookParams.m_uCallSize = inst.size;
+        if(HookParams.m_uCallSize < CALL_SIZE)
+            HookParams.m_uMinRelocateSize = CALL_SIZE - HookParams.m_uCallSize;
     }
     else
     {
-        uCallSize = 0;
-        uMinRelocateSize = CALL_SIZE;
+        HookParams.m_uCallSize = 0;
+        HookParams.m_uMinRelocateSize = CALL_SIZE;
     }
 
-    return HookInternal(a_HookParams, uCallSize, uMinRelocateSize, 0, a_bVariableReturnAddress, a_bRestoreRegister);
+    return HookInternal(HookParams);
 }
 
-GEBool mCCallHook::HookAuto(mSCallHookParams const & a_HookParams, GEUInt a_uReplaceSize, GEBool a_bVariableReturnAddress, GEBool a_bRestoreRegister)
+GEBool mCCallHook::HookInternal(mCCallHookParams const & a_HookParams)
 {
-    if(a_uReplaceSize >= CALL_SIZE)
-        return HookInternal(a_HookParams, a_uReplaceSize, 0, 0, a_bVariableReturnAddress, a_bRestoreRegister);
-
-    return HookInternal(a_HookParams, a_uReplaceSize, CALL_SIZE - a_uReplaceSize, 0, a_bVariableReturnAddress, a_bRestoreRegister);
-}
-
-GEBool mCCallHook::HookInternal(mSCallHookParams const & a_HookParams, GEUInt a_uCallSize, GEUInt a_uMinRelocateSize, GEUInt a_uMaxRelocateSize, GEBool a_bVariableReturnAddress, GEBool a_bRestoreRegister)
-{
-    if(a_uCallSize + a_uMinRelocateSize < CALL_SIZE)
+    if(a_HookParams.m_uCallSize + a_HookParams.m_uMinRelocateSize < CALL_SIZE)
         return false;
 
     m_pCode = a_HookParams.m_pOriginalFunc;
@@ -351,16 +361,16 @@ GEBool mCCallHook::HookInternal(mSCallHookParams const & a_HookParams, GEUInt a_
     GELPVoid pHookDestination = DoRegisterMagic(a_HookParams);
 
     // RelocateSize will be added later on
-    GEUInt uTotalSize = a_uCallSize;
+    GEUInt uTotalSize = a_HookParams.m_uCallSize;
 
     // variable return address
     // StackArgs need a variable return address, because the call instruction is only emitted after the args are pushed.
-    if(a_bVariableReturnAddress || a_uMinRelocateSize > 0 || a_bRestoreRegister || !a_HookParams.m_arrStackArgs.IsEmpty() || a_HookParams.m_bTestOnReturn)
+    if(a_HookParams.m_bVariableReturnAddress || a_HookParams.m_uMinRelocateSize > 0 || a_HookParams.m_bRestoreRegister || !a_HookParams.m_arrStackArgs.IsEmpty() || a_HookParams.m_bTestOnReturn)
     {
         X86CodeAsm AsmVarRet;
 
         // restore registers after return from call
-        if(a_bRestoreRegister)
+        if(a_HookParams.m_bRestoreRegister)
         {
             // only needed for eax/ecx/edx, compiler will do it for the other registers
             if(a_HookParams.m_RegisterType & mERegisterType_Eax)
@@ -385,11 +395,11 @@ GEBool mCCallHook::HookInternal(mSCallHookParams const & a_HookParams, GEUInt a_
         }
 
         GEU32 uDefaultCallReturnAdr;
-        if(a_uMinRelocateSize > 0)
+        if(a_HookParams.m_uMinRelocateSize > 0)
         {
             X86CodeAsm AsmRelocatedInst;
             GEUInt uRelocateSize;
-            if(ParseUntilSize(AsmRelocatedInst, reinterpret_cast<GELPByte>(a_HookParams.m_u32CallAdr) + a_uCallSize, a_uMinRelocateSize, a_uMaxRelocateSize, &uRelocateSize))
+            if(ParseUntilSize(AsmRelocatedInst, reinterpret_cast<GELPByte>(a_HookParams.m_u32CallAdr) + a_HookParams.m_uCallSize, a_HookParams.m_uMinRelocateSize, a_HookParams.m_uMaxRelocateSize, &uRelocateSize))
                 return false;
             uTotalSize += uRelocateSize;
             AsmRelocatedInst.jmp(imm(a_HookParams.m_u32CallAdr + uTotalSize));
@@ -426,10 +436,10 @@ GEBool mCCallHook::HookInternal(mSCallHookParams const & a_HookParams, GEUInt a_
         GEU32 u32AdditionalOffset = 0;
 
         GEBool bTaintedEax = GEFalse;
-        for (bTValArray<mSCallHookParams::mSRegRelativeArg>::bCConstIterator Iter = a_HookParams.m_arrStackArgs.End(); Iter-- != a_HookParams.m_arrStackArgs.Begin();)
+        for (bTValArray<mCCallHookParams::mSRegRelativeArg>::bCConstIterator Iter = a_HookParams.m_arrStackArgs.End(); Iter-- != a_HookParams.m_arrStackArgs.Begin();)
         {
-            mSCallHookParams::mSRegRelativeArg const & Arg = *Iter;
-            if(Arg.m_enuArgType == mSCallHookParams::mEArgType_RegDirect || Arg.m_enuArgType == mSCallHookParams::mEArgType_RegIndirect)
+            mCCallHookParams::mSRegRelativeArg const & Arg = *Iter;
+            if(Arg.m_enuArgType == mCCallHookParams::mEArgType_RegDirect || Arg.m_enuArgType == mCCallHookParams::mEArgType_RegIndirect)
             {
                 if(!bTaintedEax)
                 {
@@ -455,7 +465,7 @@ GEBool mCCallHook::HookInternal(mSCallHookParams const & a_HookParams, GEUInt a_
                 if (Arg.m_Register == mERegisterType_None) // esp
                     u32Offset += u32AdditionalOffset;
 
-                if(Arg.m_enuArgType == mSCallHookParams::mEArgType_RegIndirect)
+                if(Arg.m_enuArgType == mCCallHookParams::mEArgType_RegIndirect)
                     AsmStackArgs.mov(eax, dword_ptr(eax, u32Offset));
                 else if(u32Offset != 0)
                     AsmStackArgs.add(eax, imm_u(u32Offset));
@@ -463,7 +473,7 @@ GEBool mCCallHook::HookInternal(mSCallHookParams const & a_HookParams, GEUInt a_
                 AsmStackArgs.push(eax);
                 u32AdditionalOffset += 4;
             }
-            else if(Arg.m_enuArgType == mSCallHookParams::mEArgType_Immediate)
+            else if(Arg.m_enuArgType == mCCallHookParams::mEArgType_Immediate)
             {
                 AsmStackArgs.push(imm_u(Arg.m_u32Immediate));
                 u32AdditionalOffset += 4;
@@ -479,7 +489,7 @@ GEBool mCCallHook::HookInternal(mSCallHookParams const & a_HookParams, GEUInt a_
         AsmHook.jmp(imm_ptr(JitRuntimeAdd(AsmStackArgs)));
     }
 
-    ApplyHook(AsmHook, uTotalSize);
+    ApplyAsm(AsmHook, uTotalSize);
 
     return true;
 }

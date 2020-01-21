@@ -35,7 +35,9 @@ gSScriptInit const * GE_STDCALL ScriptInit( void )
     GetScriptAdmin().LoadScriptDLL("Script_Game.dll");
 
     LoadSettings();
-    Hook_CalculateMonsterDamage.Hook(mCCallHook::GetHookParams(RVA_ScriptGame(0x2C06D), &CalculateMonsterDamage, mCBaseHook::mEHookType_Mixed, mCRegisterBase::mERegisterType_Esi), 0x11);
+    Hook_CalculateMonsterDamage
+        .Prepare(RVA_ScriptGame(0x2C06D), &CalculateMonsterDamage, mCBaseHook::mEHookType_Mixed, mCRegisterBase::mERegisterType_Esi)
+        .ReplaceSize(0x11).Hook();
 
     return &GetScriptInit();
 }

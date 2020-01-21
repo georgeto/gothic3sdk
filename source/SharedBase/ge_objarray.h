@@ -16,6 +16,7 @@ class bTObjArray :
         void Remove( T const & _e );
         void RemoveAll( void );
         void RemoveAt( GEInt _i );
+        void RemoveRange( GEInt _i, GEInt _n );
         void Reserve( GEInt _n );
         void SetAt( GEInt _i, T const & _e );
         void SetCount( GEInt _n );

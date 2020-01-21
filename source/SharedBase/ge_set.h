@@ -13,6 +13,9 @@ class bTSet
         GEBool IsEmpty( void ) const;
         GEBool Remove( T const & _e );
 
+        bCOStream & operator >> ( bCOStream & _os ) const;
+        bCIStream & operator << ( bCIStream & _is );
+
     protected:
         bTValMap<T, GEInt> m_Map;
 };

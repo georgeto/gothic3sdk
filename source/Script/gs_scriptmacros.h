@@ -31,12 +31,16 @@
     Entity SelfEntity   = Entity( a_pSPU->GetSelfEntity());  \
     Entity TargetEntity = Entity( a_pSPU->GetTargetEntity());
 
+#define DECLARE_SCRIPT_FUNCTION( N ) DECLARE_SCRIPT_STATE( N )
+
 #define DECLARE_SCRIPT_CALLBACK( N ) \
     GEBool GE_STDCALL N( gCScriptProcessingUnit* a_pSPU )
 
 #define INIT_SCRIPT_CALLBACK()                               \
     Entity SelfEntity   = Entity( a_pSPU->GetSelfEntity());  \
     Entity TargetEntity = Entity( a_pSPU->GetTargetEntity());
+
+#define DECLARE_SCRIPT_ROUTINE( N ) INIT_SCRIPT_CALLBACK( N )
 
 #define BREAK_BLOCK_BASE() \
     static GEU32 __breakBlockCounter = 0;
@@ -81,7 +85,6 @@ GEBool inline CondIncrementCounter( GEU32* a_u32Counter, GEU32 a_u32CurValue )
     RUN_SCRIPT_FUNCTION()
 
 #define RUN_AI_GOTO_EXT( DESTINATION, WALK_MODE, DIRECTION ) \
-    SelfEntity.Routine.SetTaskCallback( "OnGoto" );          \
     PUSH_STATE( "_AI_Goto_Ext" );                            \
     ALLOC_STATE_ARGS( gSArgsFor__AI_Goto_Ext );              \
     args->m_Entity       = SelfEntity;                       \

@@ -4,7 +4,8 @@
 template< typename T >
 inline GEU32 g_GetHashValue( T const & _e )
 {
-    return static_cast< GEU32 >( _e ) >> 4;
+    // Use C-style cast to support pointers as well as type conversions
+    return ( (GEU32)_e ) >> 4;
 }
 
 #define GE_DECLARE_MAP_ITERATORS()                                                                  \
@@ -134,13 +135,18 @@ inline GEU32 g_GetHashValue( T const & _e )
         typedef bCIterator bCForwardIterator;                                                       \
         typedef bCConstIterator bCConstForwardIterator;
 
+#define _GE_NODE_TYPE( MAP ) std::remove_reference< decltype( MAP ) >::type::bSNode
 
-#define _GE_MAP_FOR_EACH( KEY_TYPE, KEY_NAME, KEY_PTR, VALUE_TYPE, VALUE_NAME, VALUE_PTR, NODE_TYPE, MAP )                  \
+#define _GE_KEY_TYPE( MAP ) decltype( _GE_NODE_TYPE( MAP )::m_Key )
+
+#define _GE_VALUE_TYPE( MAP ) decltype( _GE_NODE_TYPE( MAP )::m_Element )
+
+#define _GE_MAP_FOR_EACH( KEY_TYPE, KEY_NAME, KEY_PTR, VALUE_TYPE, VALUE_NAME, VALUE_PTR, MAP )                             \
     __pragma( warning( push ) )                                                                                             \
     __pragma( warning( disable: 4127 ) )                                                                                    \
-    if( GE_EXTRACT_TYPE( KEY_TYPE ) KEY_NAME = 0 );                                                                         \
-    else if( GE_EXTRACT_TYPE( VALUE_TYPE ) VALUE_NAME = 0 );                                                                \
-    else if( GE_EXTRACT_TYPE( NODE_TYPE ) * __NODE = 0 );                                                                   \
+    if( KEY_TYPE KEY_NAME = 0 );                                                                                            \
+    else if( VALUE_TYPE VALUE_NAME = 0 );                                                                                   \
+    else if( _GE_NODE_TYPE( MAP ) * __NODE = 0 );                                                                           \
     else                                                                                                                    \
         for( GEInt i = 0; i < ( MAP ).GetNodes().GetCount() && ( ( __NODE = ( MAP ).GetNodes()[i] ) != 0 || GETrue ); i++ ) \
             while( __NODE != 0                                                                                              \
@@ -149,16 +155,16 @@ inline GEU32 g_GetHashValue( T const & _e )
                    && ( ( __NODE = __NODE->m_pNext ) != 0 || GETrue ) )                                                     \
                 __pragma( warning( pop ) )
 
-#define GE_MAP_FOR_EACH( KEY_TYPE, KEY_NAME, VALUE_TYPE, VALUE_NAME, MAP ) \
-    _GE_MAP_FOR_EACH( KEY_TYPE *, KEY_NAME, &, VALUE_TYPE *, VALUE_NAME, &, (bTValMap<KEY_TYPE, VALUE_TYPE>::bSNode), MAP )
+#define GE_MAP_FOR_EACH( KEY_NAME, VALUE_NAME, MAP ) \
+    _GE_MAP_FOR_EACH( _GE_KEY_TYPE( MAP ) *, KEY_NAME, &, _GE_VALUE_TYPE( MAP ) *, VALUE_NAME, &, (MAP) )
 
-#define GE_MAP_FOR_EACH_KP( KEY_TYPE, KEY_NAME, VALUE_TYPE, VALUE_NAME, MAP ) \
-    _GE_MAP_FOR_EACH( KEY_TYPE, KEY_NAME, , VALUE_TYPE *, VALUE_NAME, &, (bTValMap<KEY_TYPE, VALUE_TYPE>::bSNode), MAP )
+#define GE_MAP_FOR_EACH_KP( KEY_NAME, VALUE_NAME, MAP ) \
+    _GE_MAP_FOR_EACH( _GE_KEY_TYPE( MAP ), KEY_NAME, , _GE_VALUE_TYPE( MAP ) *, VALUE_NAME, &, (MAP) )
 
-#define GE_MAP_FOR_EACH_VP( KEY_TYPE, KEY_NAME, VALUE_TYPE, VALUE_NAME, MAP ) \
-    _GE_MAP_FOR_EACH( KEY_TYPE *, KEY_NAME, &, VALUE_TYPE, VALUE_NAME, , (bTValMap<KEY_TYPE, VALUE_TYPE>::bSNode), MAP )
+#define GE_MAP_FOR_EACH_VP( KEY_NAME, VALUE_NAME, MAP ) \
+    _GE_MAP_FOR_EACH( _GE_KEY_TYPE( MAP ) *, KEY_NAME, &, _GE_VALUE_TYPE( MAP ), VALUE_NAME, , (MAP) )
 
-#define GE_MAP_FOR_EACH_BP( KEY_TYPE, KEY_NAME, VALUE_TYPE, VALUE_NAME, MAP ) \
-    _GE_MAP_FOR_EACH( KEY_TYPE, KEY_NAME, , VALUE_TYPE, VALUE_NAME, , (bTValMap<KEY_TYPE, VALUE_TYPE>::bSNode), MAP )
+#define GE_MAP_FOR_EACH_BP( KEY_NAME, VALUE_NAME, MAP ) \
+    _GE_MAP_FOR_EACH( _GE_KEY_TYPE( MAP ), KEY_NAME, , _GE_VALUE_TYPE( MAP ), VALUE_NAME, , (MAP) )
 
 #endif

@@ -127,4 +127,6 @@ class GE_DLLIMPORT eCEntityPropertySet :
 
 };
 
+GE_ASSERT_SIZEOF( eCEntityPropertySet, 0x14 )
+
 #endif

@@ -34,7 +34,10 @@ gSScriptInit const * GE_STDCALL ScriptInit( void )
     GetScriptAdmin().LoadScriptDLL("Script_Game.dll");
 
     LoadSettings();
-    Hook_ApplyAttackSpeedMultiplicator.Hook(mCCallHook::GetHookParams(RVA_ScriptGame(0x4D5B), &ApplyAttackSpeedMultiplicator, mCBaseHook::mEHookType_OnlyStack).AddStackArg(0x10), 0x00, 0x06);
+    Hook_ApplyAttackSpeedMultiplicator
+        .Prepare(RVA_ScriptGame(0x4D5B), &ApplyAttackSpeedMultiplicator)
+        .InsertCall()
+        .AddStackArg(0x10).Hook();
 
     return &GetScriptInit();
 }

@@ -1506,6 +1506,7 @@ void EntityRequest::Swap(EntityRequest* other) {
 const int GotoRequest::kNameFieldNumber;
 const int GotoRequest::kGuidFieldNumber;
 const int GotoRequest::kPositionFieldNumber;
+const int GotoRequest::kPutToGroundFieldNumber;
 #endif  // !_MSC_VER
 
 GotoRequest::GotoRequest()
@@ -1527,6 +1528,7 @@ GotoRequest::GotoRequest(const GotoRequest& from)
 void GotoRequest::SharedCtor() {
   ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
+  put_to_ground_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   clear_has_identifier();
 }
@@ -1591,6 +1593,7 @@ void GotoRequest::clear_identifier() {
 
 
 void GotoRequest::Clear() {
+  put_to_ground_ = false;
   clear_identifier();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->clear();
@@ -1644,6 +1647,21 @@ bool GotoRequest::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(32)) goto parse_put_to_ground;
+        break;
+      }
+
+      // optional bool put_to_ground = 4;
+      case 4: {
+        if (tag == 32) {
+         parse_put_to_ground:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &put_to_ground_)));
+          set_has_put_to_ground();
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -1691,6 +1709,11 @@ void GotoRequest::SerializeWithCachedSizes(
       3, this->position(), output);
   }
 
+  // optional bool put_to_ground = 4;
+  if (has_put_to_ground()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->put_to_ground(), output);
+  }
+
   output->WriteRaw(unknown_fields().data(),
                    unknown_fields().size());
   // @@protoc_insertion_point(serialize_end:g3rc.GotoRequest)
@@ -1699,6 +1722,13 @@ void GotoRequest::SerializeWithCachedSizes(
 int GotoRequest::ByteSize() const {
   int total_size = 0;
 
+  if (_has_bits_[3 / 32] & (0xffu << (3 % 32))) {
+    // optional bool put_to_ground = 4;
+    if (has_put_to_ground()) {
+      total_size += 1 + 1;
+    }
+
+  }
   switch (identifier_case()) {
     // optional string name = 1;
     case kName: {
@@ -1757,6 +1787,11 @@ void GotoRequest::MergeFrom(const GotoRequest& from) {
       break;
     }
   }
+  if (from._has_bits_[3 / 32] & (0xffu << (3 % 32))) {
+    if (from.has_put_to_ground()) {
+      set_put_to_ground(from.put_to_ground());
+    }
+  }
   mutable_unknown_fields()->append(from.unknown_fields());
 }
 
@@ -1776,6 +1811,7 @@ bool GotoRequest::IsInitialized() const {
 
 void GotoRequest::Swap(GotoRequest* other) {
   if (other != this) {
+    std::swap(put_to_ground_, other->put_to_ground_);
     std::swap(identifier_, other->identifier_);
     std::swap(_oneof_case_[0], other->_oneof_case_[0]);
     std::swap(_has_bits_[0], other->_has_bits_[0]);

@@ -1,6 +1,8 @@
 #ifndef GE_ARRAYBASE_H_INCLUDED
 #define GE_ARRAYBASE_H_INCLUDED
 
+#include <type_traits>
+
 #define GE_DECLARE_ARRAY_ITERATORS()                                                           \
     public:                                                                                    \
         class bCIterator;                                                                      \
@@ -246,43 +248,34 @@
         GE_FATAL_ERROR( "operator " ## #TYPE ## " << bCIStream not implemented!" ) \
     }
 
-#define GE_ARRAY_FOR_EACH( TYPE, NAME, ARRAY )                                                   \
-    __pragma( warning( push ) )                                                                  \
-    __pragma( warning( disable: 4127 ) )                                                         \
-    if( GE_EXTRACT_TYPE( TYPE * ) NAME = 0 );                                                    \
-    else                                                                                         \
-        for( GEInt i = 0; i < ARRAY.GetCount() && ( ( NAME = &ARRAY[i] ) != 0 || GETrue ); i++ ) \
+#define _GE_ARRAY_FOR_EACH( TYPE, NAME, ARRAY, ACCESSOR ) \
+    __pragma( warning( push ) )                           \
+    __pragma( warning( disable: 4127 ) )                  \
+    if( TYPE NAME = 0 );                                  \
+    else                                                  \
+        for( decltype( ARRAY.GetCount() ) i = 0; i < ARRAY.GetCount() && ( ( NAME = ACCESSOR ARRAY[i] ) != 0 || GETrue ); i++ ) \
             __pragma( warning( pop ) )
 
-#define GE_ARRAY_FOR_EACH_CONST( TYPE, NAME, ARRAY ) \
-    GE_ARRAY_FOR_EACH(TYPE const, NAME, ARRAY )
+#define GE_ARRAY_FOR_EACH( NAME, ARRAY ) \
+    _GE_ARRAY_FOR_EACH( std::remove_reference< decltype( (ARRAY)[0] ) >::type *, NAME, (ARRAY), & )
 
-#define GE_ARRAY_FOR_EACH_PTR( TYPE, NAME, ARRAY )                                              \
-    __pragma( warning( push ) )                                                                 \
-    __pragma( warning( disable: 4127 ) )                                                        \
-    if( GE_EXTRACT_TYPE( TYPE ) NAME = 0 );                                                     \
-    else                                                                                        \
-        for( GEInt i = 0; i < ARRAY.GetCount() && ( ( NAME = ARRAY[i] ) != 0 || GETrue ); i++ ) \
+#define GE_ARRAY_FOR_EACH_PTR( NAME, ARRAY ) \
+    _GE_ARRAY_FOR_EACH( std::remove_const< std::remove_reference< decltype( (ARRAY)[0] ) >::type >::type, NAME, (ARRAY), )
+
+#define _GE_ARRAY_FOR_EACH_REV( TYPE, NAME, ARRAY, ACCESSOR ) \
+    __pragma( warning( push ) )                               \
+    __pragma( warning( disable: 4127 ) )                      \
+    if( TYPE NAME = 0 );                                      \
+    else                                                      \
+        for( decltype( ARRAY.GetCount() ) i = ARRAY.GetCount() - 1; i >= 0 && ( ( NAME = ACCESSOR ARRAY[i] ) != 0 || GETrue ); i-- ) \
             __pragma( warning( pop ) )
 
-#define GE_ARRAY_FOR_EACH_REV( TYPE, NAME, ARRAY )                                                    \
-    __pragma( warning( push ) )                                                                       \
-    __pragma( warning( disable: 4127 ) )                                                              \
-    if( GE_EXTRACT_TYPE( TYPE * ) NAME = 0 );                                                         \
-    else                                                                                              \
-        for( GEInt i = ARRAY.GetCount() - 1; i >= 0 && ( ( NAME = &ARRAY[i] ) != 0 || GETrue ); i-- ) \
-            __pragma( warning( pop ) )
+#define GE_ARRAY_FOR_EACH_REV( NAME, ARRAY ) \
+    _GE_ARRAY_FOR_EACH_REV( std::remove_reference< decltype( (ARRAY)[0] ) >::type *, NAME, (ARRAY), & )
 
-#define GE_ARRAY_FOR_EACH_REV_CONST( TYPE, NAME, ARRAY ) \
-    GE_ARRAY_FOR_EACH_REV(TYPE const, NAME, ARRAY )
+#define GE_ARRAY_FOR_EACH_REV_PTR( NAME, ARRAY ) \
+    _GE_ARRAY_FOR_EACH_REV( std::remove_const< std::remove_reference< decltype( (ARRAY)[0] ) >::type >::type, NAME, (ARRAY), )
 
-#define GE_ARRAY_FOR_EACH_PTR_REV( TYPE, NAME, ARRAY )                                               \
-    __pragma( warning( push ) )                                                                      \
-    __pragma( warning( disable: 4127 ) )                                                             \
-    if( GE_EXTRACT_TYPE( TYPE ) NAME = 0 );                                                          \
-    else                                                                                             \
-        for( GEInt i = ARRAY.GetCount() - 1; i >= 0 && ( ( NAME = ARRAY[i] ) != 0 || GETrue ); i-- ) \
-            __pragma( warning( pop ) )
 
 template< typename T >
 class bTArrayBase
@@ -316,6 +309,7 @@ class bTArrayBase
         T &             AccessAt( GEInt _i );
         bCConstIterator Begin( void ) const;
         bCIterator      Begin( void );
+        GEBool          Contains( T const & _e ) const;
         T const *       GetArray( void ) const;
         T const &       GetAt( GEInt _i ) const;
         void            GetAt( GEInt _i, T & _e ) const;

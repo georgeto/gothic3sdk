@@ -6,8 +6,6 @@ class eCFlexibleVtxBuffer;
 struct PMesh;
 enum eEQuadreeChild;
 struct eSQuadTreePolygon;
-class eCMeshElement;
-class eCResourceMeshComplex_PS;
 
 class GE_DLLIMPORT eLoDMesh
 {

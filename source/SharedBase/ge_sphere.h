@@ -113,6 +113,11 @@ class GE_DLLIMPORT bCSphere
         void             Translate( GEFloat );
         void             Widen( GEFloat );
 
+    private:
+        GEFloat  m_fRadius;
+        bCVector m_Position;
 };
+
+GE_ASSERT_SIZEOF( bCSphere, 0x10 )
 
 #endif

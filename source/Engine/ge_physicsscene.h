@@ -19,6 +19,7 @@ enum eETraceRayHints
 {
     eETraceRayHints_TestStaticShapes            = 0x1, // NX_STATIC_SHAPES
     eETraceRayHints_TestDynamicShapes           = 0x2, // NX_DYNAMIC_SHAPES
+    eETraceRayHints_CreatureClassPlayerOrNPC    = 0x8,
     eETraceRayHints_TestIfHasItemPropertySet    = 0x10,
     eETraceRayHints_FaceNormal                  = 0x20, // NX_RAYCAST_FACE_NORMAL
     eETraceRayHints_Normal                      = 0x40, // NX_RAYCAST_NORMAL
@@ -28,6 +29,7 @@ enum eETraceRayHints
     eETraceRayHints_UserData                    = 0x400, // fill userdata array
     eETraceRayHints_MaxDistanceNotFromDirection = 0x1000, // Don't use magnitude of direction vector as max distance, but instead use the constant 3.402823466385289e38. It is assumed, that the direction vector is normalized.
     eETraceRayHints_IncludeCollisionGroup17     = 0x4000,
+    eETraceRayHints_IncludeWater                = 0x8000,
 };
 
 class GE_DLLIMPORT eCPhysicsScene :

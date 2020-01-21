@@ -59,6 +59,10 @@ class GE_DLLIMPORT eCEntityAdmin :
         GEBool RemoveFromProcessingList( eCEntity * );
         GEBool UnregisterDynamicEntityContext( eCEntityDynamicContext & );
 
+    private:
+        GE_PADDING( 0xFC )
 };
+
+GE_ASSERT_SIZEOF( eCEntityAdmin, 0x100 )
 
 #endif

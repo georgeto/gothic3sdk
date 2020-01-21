@@ -205,7 +205,13 @@ class GE_DLLIMPORT eCApplication :
 #pragma pack(push, 1)
 struct eSSetupEngine
 {
-    GEU8    f0[28];
+    GEU8    f0[4];
+    GEInt   SoundMasterVolume;
+    GEInt   SoundMusicVolume;
+    GEInt   SoundVoiceVolume;
+    GEInt   SoundEffectVolume;
+    GEInt   SoundAmbientVolume;
+    GEU8    f18[4];
     GEU8    byte1C;
     GEU8    f1D[3];
     GEU32   Quality;

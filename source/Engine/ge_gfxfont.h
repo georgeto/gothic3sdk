@@ -1,8 +1,6 @@
 #ifndef GE_GFXFONT_H_INCLUDED
 #define GE_GFXFONT_H_INCLUDED
 
-struct eCAPIDevice;
-
 class GE_DLLIMPORT eCGfxFont :
     public bCObjectRefBase
 {

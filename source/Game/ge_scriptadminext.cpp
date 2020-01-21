@@ -60,7 +60,7 @@ gSScript const * gCScriptAdminExt::GetScript( bCString const & name ) const
 
 gSScriptDLL const * gCScriptAdminExt::GetScriptDLL( bCString const & name ) const
 {
-    GE_ARRAY_FOR_EACH_PTR(gSScriptDLL *, pDll, m_arrDLLs)
+    GE_ARRAY_FOR_EACH_PTR(pDll, m_arrDLLs)
     {
         if(name == pDll->m_strFileName)
             return pDll;
