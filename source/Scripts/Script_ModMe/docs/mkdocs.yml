@@ -1,0 +1,15 @@
+site_name: Script_ModMe
+theme:
+  name: readthedocs
+  highlightjs: false
+markdown_extensions:
+  - codehilite
+  - nl2br
+  - admonition
+  - sane_lists
+  - def_list
+nav:
+- Overview: 'index.md'
+- Console commands: 'console.md'
+- Command line: 'commandline.md'
+- Other: 'other.md'
