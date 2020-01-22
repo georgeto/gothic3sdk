@@ -141,7 +141,7 @@ bCString CMD_World_Sub::CompileLightmaps( bTObjArray< bCString > a_arrParams )
 
     bCString AreaMessage;
 
-    if(a_arrParams.GetCount() >= 2 || a_arrParams.GetCount() <= 4)
+    if(a_arrParams.GetCount() >= 2 && a_arrParams.GetCount() <= 4)
     {
         GEInt iMinPositionX, iMaxPositionX, iMinPositionZ, iMaxPositionZ;
 
