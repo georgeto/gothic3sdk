@@ -170,14 +170,23 @@ GEBool GE_STDCALL TraceScriptAIFunction( mCHookContext const & a_Context, bTObjS
     GEBool bEnabled = IsTracingEnabled(SelfEntity);
     if(bEnabled)
     {
-        g_Logger->LogFormatPrefix("[%s]", " -> [Function] %s(SPU=%p, SelfEntity=%s, TargetEntity=%s)\n", GetSystemTimeString().GetText(), a_Context.m_strFuncName.GetText(), a_pSPU, SelfEntity.GetName().GetText(), Entity( a_pSPU->GetTargetEntity()).GetName().GetText());
+        GEU32 BreakBlock = a_rRunTimeStack.AccessAt( a_rRunTimeStack.GetCount() - 1 ).m_iBreakBlock;
+        g_Logger->LogFormatPrefix("[%s]", " %s> [Function] %s(BreakBlock=%d, SPU=%p, SelfEntity=%s, TargetEntity=%s)\n",  GetSystemTimeString().GetText(), BreakBlock == 0 ? "-" : "=", a_Context.m_strFuncName.GetText(), BreakBlock, a_pSPU, SelfEntity.GetName().GetText(), Entity( a_pSPU->GetTargetEntity()).GetName().GetText());
         g_Logger->PushIndent();
+
+        if(a_Context.m_strFuncName == "_AI_HoldInventoryItems" && BreakBlock == 0)
+        {
+            gSArgsFor__AI_HoldInventoryItems const * pArgs = static_cast<gSArgsFor__AI_HoldInventoryItems *>(a_rRunTimeStack.Peek().m_pArguments);
+            pArgs->m_Holder.Inventory;
+            g_Logger->LogFormatPrefix("[%s]", "Left Hand: %d  %s\n", GetSystemTimeString().GetText(), pArgs->m_iLeftIndex, pArgs->m_Holder.Inventory.GetTemplateItem(pArgs->m_iLeftIndex).GetName());
+            g_Logger->LogFormatPrefix("[%s]", "Right Hand: %d  %s\n", GetSystemTimeString().GetText(), pArgs->m_iRightIndex, pArgs->m_Holder.Inventory.GetTemplateItem(pArgs->m_iRightIndex).GetName());
+        }
     }
     GEBool bResult = a_Context.GetOriginalFunction<gFScriptAIFunction>()(a_rRunTimeStack, a_pSPU);
     if(bEnabled)
     {
         g_Logger->PopIndent();
-        g_Logger->LogFormatPrefix("[%s]", " <- [Function] %s: %s\n", GetSystemTimeString().GetText(), a_Context.m_strFuncName, BoolToString(bResult));
+        g_Logger->LogFormatPrefix("[%s]", " <%s [Function] %s: %s\n", GetSystemTimeString().GetText(), bResult ? "-" : "=", a_Context.m_strFuncName, BoolToString(bResult));
     }
     return bResult;
 }
@@ -188,14 +197,15 @@ GEBool GE_STDCALL TraceScriptAIState( mCHookContext const & a_Context, bTObjStac
     GEBool bEnabled = IsTracingEnabled(SelfEntity);
     if(bEnabled)
     {
-        g_Logger->LogFormatPrefix("[%s]", " -> [State] %s(SPU=%p, SelfEntity=%s, TargetEntity=%s)\n", GetSystemTimeString().GetText(), a_Context.m_strFuncName.GetText(), a_pSPU, SelfEntity.GetName().GetText(), Entity( a_pSPU->GetTargetEntity()).GetName().GetText());
+        GEU32 BreakBlock = a_rRunTimeStack.AccessAt( a_rRunTimeStack.GetCount() - 1 ).m_iBreakBlock;
+        g_Logger->LogFormatPrefix("[%s]", " %s> [State] %s(BreakBlock=%d, SPU=%p, SelfEntity=%s, TargetEntity=%s)\n", GetSystemTimeString().GetText(),  BreakBlock == 0 ? "-" : "=", a_Context.m_strFuncName.GetText(), BreakBlock, a_pSPU, SelfEntity.GetName().GetText(), Entity( a_pSPU->GetTargetEntity()).GetName().GetText());
         g_Logger->PushIndent();
     }
     GEBool bResult = a_Context.GetOriginalFunction<gFScriptAIState>()(a_rRunTimeStack, a_pSPU);
     if(bEnabled)
     {
         g_Logger->PopIndent();
-        g_Logger->LogFormatPrefix("[%s]", " <- [State] %s: %s\n", GetSystemTimeString().GetText(), a_Context.m_strFuncName, BoolToString(bResult));
+        g_Logger->LogFormatPrefix("[%s]", " <% [State] %s: %s\n", GetSystemTimeString().GetText(), bResult ? "-" : "=", a_Context.m_strFuncName, BoolToString(bResult));
     }
     return bResult;
 }
@@ -244,7 +254,7 @@ void GE_STDCALL TracePropertySetSetter( mCSetterHookContext const & a_Context, V
         mCFunctionHookContext * pHookContext = GE_NEW(mCFunctionHookContext); \
         pHookContext->m_strFuncName = pScript->m_strName; \
         GELPVoid pTrampoline = CreateHookTrampoline(Trace ## SCRIPT_TYPE, pHookContext); \
-        pHookContext->m_Hook.Hook(pScript->m_func ## SCRIPT_TYPE, pTrampoline); \
+        pHookContext->m_Hook.Hook(pScript->m_func ## SCRIPT_TYPE, pTrampoline, mCBaseHook::mEHookType_OnlyStack); \
     } \
     GetDefaultLogger().LogFormat("%d " ## #SCRIPT_TYPE ## "s instrumented...\n", GetScriptAdminExt().Get ## SCRIPT_TYPE ## s().GetCount());
 

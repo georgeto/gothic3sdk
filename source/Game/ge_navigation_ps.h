@@ -3,6 +3,8 @@
 
 enum gEGotoStatus;
 class gCPrefPath_PSObj;
+class gCNavPath_PS;
+class gCDynamicCollisionCircle_PS;
 
 GE_IMPORT_PROPERTY_SET( gCNavigation_PS, eCEntityPropertySet )
     public:    virtual GEU16                                      GetVersion( void ) const;
@@ -75,7 +77,7 @@ GE_IMPORT_PROPERTY_SET( gCNavigation_PS, eCEntityPropertySet )
         GEFloat                  m_fUnderWaterDepth;
         bTValArray<bCVector>     m_arrCurrentDestination;
         bTValArray<bCPropertyID> m_arrCurrentDestinationID;
-        bTPtrArray<gCNavPath_PS> m_arrCurrentNavPath;
+        bTPtrArray<gCNavPath_PS *> m_arrCurrentNavPath;
         bCVector                 m_CurrentTarget;
         bTValArray<bCMotion>     m_arrCurrentInterPose;
         GEInt                    m_iLastNegZoneStake;

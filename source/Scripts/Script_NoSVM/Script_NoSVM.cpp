@@ -27,7 +27,7 @@ void GE_STDCALL StartSayEx( Entity & a_Entity, bCString a_str1, bCString a_str2,
     if(!bOnlyWeaponWarning || a_str2.Contains("WeaponDown"))
     {
         Entity * pSpeaker = Hook_StartSayEx.GetSelf<Entity *>();
-        bCUnicodeString strMessage = gCSVMManager::GetLocString(pSpeaker->NPC.GetProperty<PSNpc::PropertyVoice>(), a_str2);
+        bCUnicodeString strMessage = gCSVMManager::GetLocString(pSpeaker->NPC.Voice, a_str2);
         bCUnicodeString strEntityName = eCLocString("FO_" + pSpeaker->GetName());
 
         if(!strMessage.IsEmpty() && !strEntityName.IsEmpty())

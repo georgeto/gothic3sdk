@@ -68,6 +68,7 @@
     <ClInclude Include="Engine\ge_audiomodule.h" />
     <ClInclude Include="Engine\ge_buttonctrl.h" />
     <ClInclude Include="Engine\ge_camerabase.h" />
+    <ClInclude Include="Engine\ge_clipboardclient.h" />
     <ClInclude Include="Engine\ge_collisionshape.h" />
     <ClInclude Include="Engine\ge_collisionshapebase_ps.h" />
     <ClInclude Include="Engine\ge_collisionshape_ps.h" />
@@ -93,6 +94,7 @@
     <ClInclude Include="Engine\ge_dx9vertexdata.h" />
     <ClInclude Include="Engine\ge_dx9volume.h" />
     <ClInclude Include="Engine\ge_dynamicentity.h" />
+    <ClInclude Include="Engine\ge_editctrl.h" />
     <ClInclude Include="Engine\ge_elodmesh.h" />
     <ClInclude Include="Engine\ge_enginecomponentbase.h" />
     <ClInclude Include="Engine\ge_entity.h" />

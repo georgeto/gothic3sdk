@@ -327,6 +327,8 @@
     <ClInclude Include="Engine\ge_gfxvertexdata.h" />
     <ClInclude Include="Engine\ge_lightmap.h" />
     <ClInclude Include="Engine\ge_lightmapbatcher.h" />
+    <ClInclude Include="Engine\ge_editctrl.h" />
+    <ClInclude Include="Engine\ge_clipboardclient.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp" />

@@ -38,7 +38,7 @@ namespace
 ME_MODULE(EasyStart)
 {
     // Tutorial nicht anzeigen
-    HookOpenTutorial.Hook(GetProcAddress("Game.dll", "?OpenTutorial@gCGUIManager@@QAE_NABVbCUnicodeString@@@Z"), &OpenTutorial, mCBaseHook::mEHookType_ThisCall);
+    HookOpenTutorial.Hook(PROC_Game("?OpenTutorial@gCGUIManager@@QAE_NABVbCUnicodeString@@@Z"), &OpenTutorial, mCBaseHook::mEHookType_ThisCall);
 
     bCCommandLine CommandLine(eCApplication::GetInstance().GetCommandLineA());
     bTStringObjMap<bCString> const & Options = CommandLine.GetOptions();

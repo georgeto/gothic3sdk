@@ -79,7 +79,7 @@ GE_IMPORT_PROPERTY_SET( gCInfoManager_PS, eCEntityPropertySet )
         GEBool                          HasInfos( eCEntity * );
         GEBool                          IsDialogInfo( gCInfo_PS const & ) const;
         GEBool                          IsParentInfoAvailable( gCInfo_PS const & ) const;
-        GEBool                          IsRunning( void );
+     // GEBool                          IsRunning( void );
         GEBool                          IsSuccessOrFailedInfoAvailable( gCQuest_PS const & ) const;
         GEBool                          IsWaitingForScript( void );
         GEBool                          LoadInfosFromInis( void );

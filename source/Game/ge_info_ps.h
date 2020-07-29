@@ -5,9 +5,7 @@ class gCNPC_PS;
 class gCInfoManager_PS;
 class gCQuestManager_PS;
 
-class GE_DLLIMPORT gCInfo_PS :
-    public bCObjectRefBase
-{
+GE_IMPORT_PROPERTY_SET( gCInfo_PS, bCObjectRefBase )
     public: virtual GEBool            IsEditorRelevant( void ) const;
     public: virtual eEPropertySetType GetPropertySetType( void ) const;
     public: virtual bEResult          ReadRuntimeData( bCIStream & );
@@ -43,6 +41,48 @@ class GE_DLLIMPORT gCInfo_PS :
         static gEInfoNPCStatus GE_STDCALL              StringToNPCstatus( bCString const & );
 
     public:
+        GE_IMPORT_DECLARE_PROPERTY( bCString, Name,      m_strName )
+        GE_IMPORT_DECLARE_PROPERTY( GEU32,    SortID,    m_sortID )
+        GE_IMPORT_DECLARE_PROPERTY( bCString, Owner,     m_owner )
+        GE_IMPORT_DECLARE_PROPERTY( GEBool,   InfoGiven, m_bInfoGiven )
+        GE_PADDING( 3 )
+        GE_IMPORT_DECLARE_PROPERTY( bCString, Parent, m_strParent )
+        GE_IMPORT_DECLARE_PROPERTY( bCString, Quest,  m_strQuest )
+        GE_IMPORT_DECLARE_ENUMPROP( gEInfoCondType, ConditionType, m_enuCondType )
+        GE_IMPORT_DECLARE_ENUMPROP( gEInfoType,     Type,          m_enuType )
+        GE_IMPORT_DECLARE_PROPERTY( GEI32,                      GoldCost,                 m_iInfoGoldCost )
+        GE_IMPORT_DECLARE_PROPERTY( bCString,                   ConditionOwnerNearEntity, m_condOwnerNearEntity )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<class bCString>, ConditionPlayerKnows,     m_arrCondPlayerKnows )
+        GE_IMPORT_DECLARE_PROPERTY( bCString,                   ConditionItemContainer,   m_condItemContainer )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<class bCString>, CondItems,                m_arrCondItems )
+        GE_IMPORT_DECLARE_PROPERTY( bTValArray<GEU32>,          CondItemAmounts,          m_arrCondItemAmounts )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<class bCString>, CondSecondaryNPC,         m_arrCondSecondaryNPC )
+        GE_IMPORT_DECLARE_PROPERTY( bTValArray<GEU32>,          CondSecondaryNPCStatus,   m_arrCondSecondaryNPCStatus )
+        GE_IMPORT_DECLARE_PROPERTY( eCTemplateEntityProxy,      TeachSkill,               m_teachSkill )
+        GE_IMPORT_DECLARE_PROPERTY( bCString,                   TeachAttrib,              m_teachAttrib )
+        GE_IMPORT_DECLARE_PROPERTY( GEI32,                      TeachAttribValue,         m_teachAttribValue )
+        GE_IMPORT_DECLARE_PROPERTY( GEBool,                     ClearChildren,            m_bClearChildren )
+        GE_IMPORT_DECLARE_PROPERTY( GEBool,                     Permanent,                m_bPermanent )
+        GE_PADDING( 2 )
+
+    public:
+        GEU32 m_uEndTimestamp;
+
+    public:
+        GE_IMPORT_DECLARE_PROPERTY( bCString,                   Folder,                  m_strFolder )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<class bCString>, ConditionPlayerKnowsNot, m_arrCondPlayerKnowsNot )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<class bCString>, CondWearsItem,           m_arrCondWearsItem )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<class bCString>, CondHasSkill,            m_arrCondHasSkill )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<class bCString>, CondReputGroup,          m_arrCondReputGroup )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<GEU32>,          CondReputAmount,         m_arrCondReputAmount )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<class bCString>, CondReputRelation,       m_arrCondReputRelation )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<class bCString>, CondPAL,                 m_arrCondPAL )
+        GE_IMPORT_DECLARE_PROPERTY( bTObjArray<class bCString>, CondPlayerPartyMember,   m_arrCondPlayerPartyMember )
+        GE_IMPORT_DECLARE_PROPERTY( GEBool,                     SuppressLog,             m_bSuppressLog )
+        GE_PADDING( 3 )
+        GE_IMPORT_DECLARE_OBJECTPROP( gCInfoScript_PS, bCObjectRefBase, InfoScript, m_infoScript )
+
+    public:
         gCInfo_PS( gCInfo_PS const & );
         gCInfo_PS( void );
 
@@ -50,127 +90,31 @@ class GE_DLLIMPORT gCInfo_PS :
         gCInfo_PS const & operator = ( gCInfo_PS const & );
 
     public:
-        GEBool &                                                   AccessClearChildren( void );
-        bTObjArray<bCString> &                                     AccessCondHasSkill( void );
-        bTValArray<GEU32> &                                        AccessCondItemAmounts( void );
-        bTObjArray<bCString> &                                     AccessCondItems( void );
-        bTObjArray<bCString> &                                     AccessCondPAL( void );
-        bTObjArray<bCString> &                                     AccessCondPlayerPartyMember( void );
-        bTObjArray<GEU32> &                                        AccessCondReputAmount( void );
-        bTObjArray<bCString> &                                     AccessCondReputGroup( void );
-        bTObjArray<bCString> &                                     AccessCondReputRelation( void );
-        bTObjArray<bCString> &                                     AccessCondSecondaryNPC( void );
-        bTValArray<GEU32> &                                        AccessCondSecondaryNPCStatus( void );
-        bTObjArray<bCString> &                                     AccessCondWearsItem( void );
-        bCString &                                                 AccessConditionItemContainer( void );
-        bCString &                                                 AccessConditionOwnerNearEntity( void );
-        bTObjArray<bCString> &                                     AccessConditionPlayerKnows( void );
-        bTObjArray<bCString> &                                     AccessConditionPlayerKnowsNot( void );
-        bTPropertyContainer<gEInfoCondType> &                      AccessConditionType( void );
-        bCString &                                                 AccessFolder( void );
-        GEI32 &                                                    AccessGoldCost( void );
-        GEBool &                                                   AccessInfoGiven( void );
-        bTPropertyObject<gCInfoScript_PS, bCObjectRefBase> &       AccessInfoScript( void );
-        bCString &                                                 AccessName( void );
-        bCString &                                                 AccessOwner( void );
-        bCString &                                                 AccessParent( void );
-        GEBool &                                                   AccessPermanent( void );
-        bCString &                                                 AccessQuest( void );
-        GEU32 &                                                    AccessRunningTimeHours( void );
-        GEU32 &                                                    AccessSortID( void );
-        GEBool &                                                   AccessSuppressLog( void );
-        bCString &                                                 AccessTeachAttrib( void );
-        GEI32 &                                                    AccessTeachAttribValue( void );
-        eCTemplateEntityProxy &                                    AccessTeachSkill( void );
-        bTPropertyContainer<gEInfoType> &                          AccessType( void );
-        GEBool                                                     Execute( gCInfoManager_PS * );
-        eCEntity *                                                 FindEntityFromString( bCString const & ) const;
-        GEBool const &                                             GetClearChildren( void ) const;
-        bTObjArray<bCString> const &                               GetCondHasSkill( void ) const;
-        bTValArray<GEU32> const &                                  GetCondItemAmounts( void ) const;
-        bTObjArray<bCString> const &                               GetCondItems( void ) const;
-        bTObjArray<bCString> const &                               GetCondPAL( void ) const;
-        bTObjArray<bCString> const &                               GetCondPlayerPartyMember( void ) const;
-        bTObjArray<GEU32> const &                                  GetCondReputAmount( void ) const;
-        bTObjArray<bCString> const &                               GetCondReputGroup( void ) const;
-        bTObjArray<bCString> const &                               GetCondReputRelation( void ) const;
-        bTObjArray<bCString> const &                               GetCondSecondaryNPC( void ) const;
-        bTValArray<GEU32> const &                                  GetCondSecondaryNPCStatus( void ) const;
-        bTObjArray<bCString> const &                               GetCondWearsItem( void ) const;
-        bCString const &                                           GetConditionItemContainer( void ) const;
-        bCString const &                                           GetConditionOwnerNearEntity( void ) const;
-        bTObjArray<bCString> const &                               GetConditionPlayerKnows( void ) const;
-        bTObjArray<bCString> const &                               GetConditionPlayerKnowsNot( void ) const;
-        bTPropertyContainer<gEInfoCondType> const &                GetConditionType( void ) const;
-        bCUnicodeString                                            GetDialogDescription( void ) const;
-        bCString const &                                           GetFolder( void ) const;
-        GEI32 const &                                              GetGoldCost( void ) const;
-        GEBool const &                                             GetInfoGiven( void ) const;
-        bTPropertyObject<gCInfoScript_PS, bCObjectRefBase> const & GetInfoScript( void ) const;
-        gCInfoManager_PS *                                         GetInfoManager( void );
-        gCInfoManager_PS const *                                   GetInfoManager( void ) const;
-        bCString const &                                           GetName( void ) const;
-        bCString const &                                           GetOwner( void ) const;
-        eCEntity *                                                 GetOwnerEntity( void ) const;
-        bCString const &                                           GetParent( void ) const;
-        GEBool const &                                             GetPermanent( void ) const;
-        bCString const &                                           GetQuest( void ) const;
-        gCQuestManager_PS *                                        GetQuestManager( void );
-        gCQuestManager_PS const *                                  GetQuestManager( void ) const;
-        GEU32 const &                                              GetRunningTimeHours( void ) const;
-        GEU32 const &                                              GetSortID( void ) const;
-        GEBool const &                                             GetSuppressLog( void ) const;
-        bCString const &                                           GetTeachAttrib( void ) const;
-        GEI32 const &                                              GetTeachAttribValue( void ) const;
-        eCTemplateEntityProxy const &                              GetTeachSkill( void ) const;
-        bCUnicodeString                                            GetTitle( void ) const;
-        bTPropertyContainer<gEInfoType> const &                    GetType( void ) const;
-        GEBool                                                     IsAvailable( void ) const;
-        GEBool                                                     IsChildInfo( void ) const;
-        GEBool                                                     IsDead( eCEntity * ) const;
-        GEBool                                                     IsInfoValid( void ) const;
-        GEBool                                                     IsOwnerPlayer( void ) const;
-        GEBool                                                     IsPermanent( void ) const;
-        GEBool                                                     OnDelivery( void );
-        void                                                       OnEndInfo( void );
-        void                                                       Read( eCArchiveFile & );
-        void                                                       Read( bCString const & );
-        void                                                       SetAsAssigned( void );
-        void                                                       SetClearChildren( GEBool const & );
-        void                                                       SetCondHasSkill( bTObjArray<bCString> const & );
-        void                                                       SetCondItemAmounts( bTValArray<GEU32> const & );
-        void                                                       SetCondItems( bTObjArray<bCString> const & );
-        void                                                       SetCondPAL( bTObjArray<bCString> const & );
-        void                                                       SetCondPlayerPartyMember( bTObjArray<bCString> const & );
-        void                                                       SetCondReputAmount( bTObjArray<GEU32> const & );
-        void                                                       SetCondReputGroup( bTObjArray<bCString> const & );
-        void                                                       SetCondReputRelation( bTObjArray<bCString> const & );
-        void                                                       SetCondSecondaryNPC( bTObjArray<bCString> const & );
-        void                                                       SetCondSecondaryNPCStatus( bTValArray<GEU32> const & );
-        void                                                       SetCondWearsItem( bTObjArray<bCString> const & );
-        void                                                       SetConditionItemContainer( bCString const & );
-        void                                                       SetConditionOwnerNearEntity( bCString const & );
-        void                                                       SetConditionPlayerKnows( bTObjArray<bCString> const & );
-        void                                                       SetConditionPlayerKnowsNot( bTObjArray<bCString> const & );
-        void                                                       SetConditionType( bTPropertyContainer<gEInfoCondType> const & );
-        void                                                       SetFolder( bCString const & );
-        void                                                       SetGoldCost( GEI32 const & );
-        void                                                       SetInfoGiven( GEBool const & );
-        void                                                       SetInfoScript( bTPropertyObject<gCInfoScript_PS, bCObjectRefBase> const & );
-        void                                                       SetName( bCString const & );
-        void                                                       SetOwner( bCString const & );
-        void                                                       SetParent( bCString const & );
-        void                                                       SetPermanent( GEBool const & );
-        void                                                       SetQuest( bCString const & );
-        void                                                       SetRunningTimeHours( GEU32 const & );
-        void                                                       SetSortID( GEU32 const & );
-        void                                                       SetSuppressLog( GEBool const & );
-        void                                                       SetTeachAttrib( bCString const & );
-        void                                                       SetTeachAttribValue( GEI32 const & );
-        void                                                       SetTeachSkill( eCTemplateEntityProxy const & );
-        void                                                       SetType( bTPropertyContainer<gEInfoType> const & );
-        bCString                                                   Validate( void ) const;
-        GEBool                                                     Write( bCString const & ) const;
+        GEU32 &                   AccessRunningTimeHours( void );
+        GEBool                    Execute( gCInfoManager_PS * );
+        eCEntity *                FindEntityFromString( bCString const & ) const;
+        bCUnicodeString           GetDialogDescription( void ) const;
+        gCInfoManager_PS *        GetInfoManager( void );
+        gCInfoManager_PS const *  GetInfoManager( void ) const;
+        eCEntity *                GetOwnerEntity( void ) const;
+        gCQuestManager_PS *       GetQuestManager( void );
+        gCQuestManager_PS const * GetQuestManager( void ) const;
+        GEU32 const &             GetRunningTimeHours( void ) const;
+        bCUnicodeString           GetTitle( void ) const;
+        GEBool                    IsAvailable( void ) const;
+        GEBool                    IsChildInfo( void ) const;
+        GEBool                    IsDead( eCEntity * ) const;
+        GEBool                    IsInfoValid( void ) const;
+        GEBool                    IsOwnerPlayer( void ) const;
+        GEBool                    IsPermanent( void ) const;
+        GEBool                    OnDelivery( void );
+        void                      OnEndInfo( void );
+        void                      Read( eCArchiveFile & );
+        void                      Read( bCString const & );
+        void                      SetAsAssigned( void );
+        void                      SetRunningTimeHours( GEU32 const & );
+        bCString                  Validate( void ) const;
+        GEBool                    Write( bCString const & ) const;
 
     protected:
         GEBool     AreConditionsFulfilled( void ) const;
@@ -180,41 +124,6 @@ class GE_DLLIMPORT gCInfo_PS :
         void       Invalidate( void );
 
     public:
-        bCString Name;
-        GEI32    SortID;
-        bCString Owner;
-        GEBool   InfoGiven;
-        GE_PADDING( 3 )
-        bCString Parent;
-        bCString                            Quest;
-        bTPropertyContainer<gEInfoCondType> ConditionType;
-        bTPropertyContainer<gEInfoType>     Type;
-        GEI32                               GoldCost;
-        bCString                            ConditionOwnerNearEntity;
-        bTObjArray<bCString>                ConditionPlayerKnows;
-        bCString                            ConditionItemContainer;
-        bTObjArray<bCString>                CondItems;
-        bTValArray<GEU32>                   CondItemAmounts;
-        bTObjArray<bCString>                CondSecondaryNPC;
-        bTValArray<GEU32>                   CondSecondaryNPCStatus;
-        eCTemplateEntityProxy               TeachSkill;
-        bCString                            TeachAttrib;
-        GEI32                               TeachAttribValue;
-        GEBool                              ClearChildren;
-        GEBool                              Permanent;
-        GE_PADDING( 6 )
-        bCString Folder;
-        bTObjArray<bCString> ConditionPlayerKnowsNot;
-        bTObjArray<bCString> CondWearsItem;
-        bTObjArray<bCString> CondHasSkill;
-        bTObjArray<bCString> CondReputGroup;
-        bTObjArray<GEU32>    CondReputAmount;
-        bTObjArray<bCString> CondReputRelation;
-        bTObjArray<bCString> CondPAL;
-        bTObjArray<bCString> CondPlayerPartyMember;
-        GEBool               SuppressLog;
-        GE_PADDING( 3 )
-        bTPropertyObject<gCInfoScript_PS, bCObjectRefBase> InfoScript;
         gCInfoManager_PS * m_pInfoManager;
 };
 

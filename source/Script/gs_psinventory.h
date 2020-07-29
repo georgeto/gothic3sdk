@@ -72,7 +72,7 @@ public:
     void           SetGeneratedPlunder( GEBool );
     GEInt          SetQuality( GEInt, GEU32, GEU32 );
     void           SortStacks( void );
-    GEInt          SplitStack( GEInt, GEInt );
+    GEInt          SplitStack( GEInt a_iItemIndex, GEInt a_iNewStackAmount );
     void           StackTradingGold( void );
     void           SwapSlots( gESlot, gESlot );
     GEInt          Synthesize( Entity const &, GEInt );

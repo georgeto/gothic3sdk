@@ -15,7 +15,8 @@
         protected:                                                \
             friend PSItemWrapper;                                 \
             typedef Property ## N PropertySetProperty;            \
-    };
+    };                                                            \
+    GS_DECLARE_PROPERTY_WRAPPER( N, T )
 
 class bCString;
 

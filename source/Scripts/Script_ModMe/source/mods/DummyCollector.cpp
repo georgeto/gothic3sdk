@@ -193,7 +193,7 @@ ME_MODULE_DEPENDS(DummyCollector, {"CommandHandler"})
 {
     g_PrefetcherHierarchyLock = reinterpret_cast<bCCriticalSectionWin32 *>(RVA_Engine(0x609DF4));
 
-    Hook_CollectProcessingRange.Hook(GetProcAddress("Game.dll", "?CollectProcessingRange@gCDummyCollectorAdmin@@IAEXXZ"), &CollectProcessingRange, mCBaseHook::mEHookType_ThisCall);
+    Hook_CollectProcessingRange.Hook(PROC_Game("?CollectProcessingRange@gCDummyCollectorAdmin@@IAEXXZ"), &CollectProcessingRange, mCBaseHook::mEHookType_ThisCall);
     Hook_GetEntitiesInProcessingRange.Hook(RVA_Game(0x3F664), &GetEntitiesInProcessingRange, mCBaseHook::mEHookType_ThisCall);
 
     mCCommandHandler & CommandHandler = mCCommandHandler::GetInstance();

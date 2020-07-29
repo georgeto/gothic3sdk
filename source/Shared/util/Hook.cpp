@@ -77,6 +77,23 @@ mCRegisterBase::mCRegisterBase(void)
 
 }
 
+asmjit::X86Gp const & mCRegisterBase::ToX86Register(mERegisterType a_RegisterType)
+{
+    using namespace asmjit::x86;
+
+    switch (a_RegisterType) {
+        case mERegisterType_None: return esp;
+        case mERegisterType_Eax: return eax;
+        case mERegisterType_Ecx: return ecx;
+        case mERegisterType_Edx: return edx;
+        case mERegisterType_Ebx: return ebx;
+        case mERegisterType_Ebp: return ebp;
+        case mERegisterType_Esi: return esi;
+        case mERegisterType_Edi: return edi;
+        default: return esp;
+    }
+}
+
 GELPVoid mCBaseHook::m_pLastSelf = 0;
 
 mCBaseHook::mCBaseHook(void)
@@ -84,26 +101,21 @@ mCBaseHook::mCBaseHook(void)
 {
 }
 
-GELPVoid mCBaseHook::DoRegisterMagic(mCHookParams const & a_HookParams)
+void mCBaseHook::DoRegisterMagic(asmjit::X86CodeAsm & a_Assembler, mCHookParams const & a_HookParams)
 {
     using namespace asmjit;
     using namespace asmjit::x86;
 
-    GELPVoid pHookDestination = 0;
     switch(a_HookParams.m_HookType)
     {
         case mEHookType_OnlyStack:
-            pHookDestination = a_HookParams.m_pNewFunc;
             break;
 
         case mEHookType_ThisCall:
         {
             // save ecx
-            X86CodeAsm AsmSaveEcx;
-            AsmSaveEcx.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_pSelf)), ecx);
-            AsmSaveEcx.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_pLastSelf)), ecx);
-            AsmSaveEcx.jmp(imm(reinterpret_cast< GEI64 >(a_HookParams.m_pNewFunc)));
-            pHookDestination = JitRuntimeAdd(AsmSaveEcx);
+            a_Assembler.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_pSelf)), ecx);
+            a_Assembler.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_pLastSelf)), ecx);
 
             if(m_pCode != 0)
             {
@@ -120,23 +132,20 @@ GELPVoid mCBaseHook::DoRegisterMagic(mCHookParams const & a_HookParams)
         case mEHookType_Mixed:
         {
             // save registers
-            X86CodeAsm AsmSaveReg;
             if(a_HookParams.m_RegisterType & mERegisterType_Eax)
-                AsmSaveReg.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Eax)), eax);
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Eax)), eax);
             if(a_HookParams.m_RegisterType & mERegisterType_Ecx)
-                AsmSaveReg.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ecx)), ecx);
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ecx)), ecx);
             if(a_HookParams.m_RegisterType & mERegisterType_Edx)
-                AsmSaveReg.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Edx)), edx);
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Edx)), edx);
             if(a_HookParams.m_RegisterType & mERegisterType_Ebx)
-                AsmSaveReg.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ebx)), ebx);
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ebx)), ebx);
             if(a_HookParams.m_RegisterType & mERegisterType_Ebp)
-                AsmSaveReg.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ebp)), ebp);
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ebp)), ebp);
             if(a_HookParams.m_RegisterType & mERegisterType_Esi)
-                AsmSaveReg.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Esi)), esi);
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Esi)), esi);
             if(a_HookParams.m_RegisterType & mERegisterType_Edi)
-                AsmSaveReg.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Edi)), edi);
-            AsmSaveReg.jmp(imm(reinterpret_cast< GEI64 >(a_HookParams.m_pNewFunc)));
-            pHookDestination = JitRuntimeAdd(AsmSaveReg);
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Edi)), edi);
 
             if(m_pCode != 0)
             {
@@ -174,8 +183,45 @@ GELPVoid mCBaseHook::DoRegisterMagic(mCHookParams const & a_HookParams)
             break;
         }
     }
-    return pHookDestination;
 }
+
+
+void mCAbstractRegArgHook::PushArguments(asmjit::X86CodeAsm & a_Assembler, mCAbstractRegArgHookParams const & a_Params)
+{
+    using namespace asmjit;
+    using namespace asmjit::x86;
+
+    GEU32 u32AdditionalOffset = 0;
+    GE_ARRAY_FOR_EACH_REV(Arg, a_Params.m_arrStackArgs)
+    {
+        if(Arg->m_enuArgType == mCAbstractRegArgHookParams::mEArgType_RegDirect)
+        {
+            a_Assembler.push(ToX86Register(Arg->m_Register));
+
+            GEU32 u32Offset = Arg->m_u32Offset;
+            if (Arg->m_Register == mERegisterType_None) // esp
+                u32Offset += u32AdditionalOffset;
+
+            if(u32Offset != 0)
+                a_Assembler.add(dword_ptr(esp), imm(u32Offset));
+        }
+        else if(Arg->m_enuArgType == mCAbstractRegArgHookParams::mEArgType_RegIndirect)
+        {
+            GEU32 u32Offset = Arg->m_u32Offset;
+            if (Arg->m_Register == mERegisterType_None) // esp
+                u32Offset += u32AdditionalOffset;
+
+            a_Assembler.push(dword_ptr(ToX86Register(Arg->m_Register), u32Offset));
+        }
+        else if(Arg->m_enuArgType == mCAbstractRegArgHookParams::mEArgType_Immediate)
+        {
+            a_Assembler.push(imm_u(Arg->m_u32Immediate));
+        }
+
+        u32AdditionalOffset += 4;
+    }
+}
+
 
 mCFunctionHook::mCFunctionHook(void)
     : m_bInside(false), m_u32HookRet(0)
@@ -202,12 +248,52 @@ GEBool mCFunctionHook::HookInternal(mCFunctionHookParams const & a_HookParams, a
     using namespace asmjit;
     using namespace asmjit::x86;
 
+
+    // Move stack arguments back into register when calling the original function.
+    X86CodeAsm AsmBeforeProlog;
+    if(a_HookParams.m_bRestoreRegisterArgs && !a_HookParams.m_arrStackArgs.IsEmpty())
+    {
+        GE_ARRAY_FOR_EACH_REV(Arg, a_HookParams.m_arrStackArgs)
+        {
+            // Only direct register arguments without offset are allowed.
+            if(Arg->m_enuArgType != mCAbstractRegArgHookParams::mEArgType_RegDirect || Arg->m_u32Offset != 0)
+                return false;
+
+            GEInt iArgStackOffset = (i + 1) * 4;
+
+            // Use last register argument to move return address.
+            if(i == a_HookParams.m_arrStackArgs.GetCount() - 1)
+            {
+                // Load return address into register.
+                AsmBeforeProlog.mov(ToX86Register(Arg->m_Register), dword_ptr(esp));
+
+                // Exchange return address with last register argument.
+                AsmBeforeProlog.xchg(ToX86Register(Arg->m_Register), dword_ptr(esp, iArgStackOffset));
+            }
+            else
+            {
+                // Load argument into register.
+                AsmBeforeProlog.mov(ToX86Register(Arg->m_Register), dword_ptr(esp, iArgStackOffset));
+            }
+        }
+
+        // Adjust stack pointer.
+        AsmBeforeProlog.add(esp, a_HookParams.m_arrStackArgs.GetCount() * 4);
+    }
+
     // finish original function prolog
     a_pAssembler.jmp(imm(reinterpret_cast< GEI64 >(a_HookParams.m_pOriginalFunc) + replacedSize));
-    GELPVoid pRelocatedProlog = JitRuntimeAdd(a_pAssembler);
-
+    GELPVoid pRelocatedProlog;
+    if(!AsmBeforeProlog.IsEmpty())
+    {
+        AsmBeforeProlog.Append(a_pAssembler);
+        pRelocatedProlog = JitRuntimeAdd(AsmBeforeProlog);
+    }
+    else
+        pRelocatedProlog = JitRuntimeAdd(a_pAssembler);
     m_pCode = pRelocatedProlog;
-    GELPVoid pHookDestination = DoRegisterMagic(a_HookParams);
+
+    X86CodeAsm AsmOnEnter;
     if(a_HookParams.m_bTransparent)
     {
         // clear inside flag
@@ -217,7 +303,6 @@ GEBool mCFunctionHook::HookInternal(mCFunctionHookParams const & a_HookParams, a
         GELPVoid pOnReturn = JitRuntimeAdd(AsmOnReturn);
 
         // overwrite return address
-        X86CodeAsm AsmOnEnter;
         AsmOnEnter.cmp(byte_ptr_abs(reinterpret_cast< GEU64 >(&m_bInside)), imm(true));
         // jmp to original function, if hooked function is called from inside hook
         AsmOnEnter.je(imm_ptr(pRelocatedProlog));
@@ -228,8 +313,6 @@ GEBool mCFunctionHook::HookInternal(mCFunctionHookParams const & a_HookParams, a
         AsmOnEnter.mov(eax, imm_ptr(pOnReturn));
         AsmOnEnter.mov(ptr(esp), eax);
         // otherwise jmp to hook
-        AsmOnEnter.jmp(imm_ptr(pHookDestination));
-        pHookDestination = JitRuntimeAdd(AsmOnEnter);
 
         asmjit::X86CodeAsm AsmRelocatedPrologNew;
         GEUInt RelocateSizeNew = 0;
@@ -266,10 +349,36 @@ GEBool mCFunctionHook::HookInternal(mCFunctionHookParams const & a_HookParams, a
         ApplyAsm(AsmTrampolineNew, RelocateSizeNew);
     }
 
+    if(!a_HookParams.m_arrStackArgs.IsEmpty())
+    {
+        // Optimize the common case of a this call
+        if(a_HookParams.m_arrStackArgs.GetCount() == 1
+        && a_HookParams.m_arrStackArgs[0].m_enuArgType == mCAbstractRegArgHookParams::mEArgType_RegDirect
+        && a_HookParams.m_arrStackArgs[0].m_Register == mCRegisterBase::mERegisterType_Ecx
+        && a_HookParams.m_arrStackArgs[0].m_u32Offset == 0)
+        {
+            AsmOnEnter.xchg(dword_ptr(esp), ecx);
+            AsmOnEnter.push(ecx);
+        }
+        else
+        {
+            // Move saved return address to make room for arguments
+            AsmOnEnter.xchg(dword_ptr(esp), eax);
+            AsmOnEnter.mov(dword_ptr(esp, a_HookParams.m_arrStackArgs.GetCount() * -4), eax);
+            AsmOnEnter.mov(eax, dword_ptr(esp));
+            AsmOnEnter.add(esp, 4);
+            PushArguments(AsmOnEnter, a_HookParams);
+            AsmOnEnter.sub(esp, 4);
+        }
+    }
+
+    DoRegisterMagic(AsmOnEnter, a_HookParams);
+    AsmOnEnter.jmp(imm_ptr(a_HookParams.m_pNewFunc));
+
     // hook original function
     X86CodeAsm AsmTrampoline;
     AsmTrampoline.setBaseAddress(reinterpret_cast< GEU64 >(a_HookParams.m_pOriginalFunc));
-    AsmTrampoline.jmp(imm_ptr(pHookDestination));
+    AsmTrampoline.jmp(imm_ptr(JitRuntimeAdd(AsmOnEnter)));
     ApplyAsm(AsmTrampoline, replacedSize);
 
     return true;
@@ -288,9 +397,16 @@ GEBool mCVtableHook::Hook(mCVtableHookParams const & a_HookParams)
 {
     m_pCode = *reinterpret_cast<GELPVoid *>(a_HookParams.m_pOriginalFunc);
 
-    GELPVoid pHookDestination = DoRegisterMagic(a_HookParams);
+    using namespace asmjit;
+    using namespace asmjit::x86;
+
+    X86CodeAsm AsmTrampoline;
+    DoRegisterMagic(AsmTrampoline, a_HookParams);
+    AsmTrampoline.jmp(imm_ptr(a_HookParams.m_pNewFunc));
+
     Backup(a_HookParams.m_pOriginalFunc, sizeof(GELPVoid));
-    return WriteMemory(a_HookParams.m_pOriginalFunc, &pHookDestination, sizeof(GELPVoid));
+    GELPVoid pTrampoline = JitRuntimeAdd(AsmTrampoline);
+    return WriteMemory(a_HookParams.m_pOriginalFunc, &pTrampoline, sizeof(GELPVoid));
 }
 
 mCCallHook::mCCallHook(void)
@@ -358,135 +474,114 @@ GEBool mCCallHook::HookInternal(mCCallHookParams const & a_HookParams)
     using namespace asmjit;
     using namespace asmjit::x86;
 
-    GELPVoid pHookDestination = DoRegisterMagic(a_HookParams);
-
     // RelocateSize will be added later on
     GEUInt uTotalSize = a_HookParams.m_uCallSize;
 
-    // variable return address
-    // StackArgs need a variable return address, because the call instruction is only emitted after the args are pushed.
-    if(a_HookParams.m_bVariableReturnAddress || a_HookParams.m_uMinRelocateSize > 0 || a_HookParams.m_bRestoreRegister || !a_HookParams.m_arrStackArgs.IsEmpty() || a_HookParams.m_bTestOnReturn)
+    // Prolog
+    X86CodeAsm AsmProlog;
+    if(!a_HookParams.m_arrStackArgs.IsEmpty())
     {
-        X86CodeAsm AsmVarRet;
-
-        // restore registers after return from call
-        if(a_HookParams.m_bRestoreRegister)
-        {
-            // only needed for eax/ecx/edx, compiler will do it for the other registers
-            if(a_HookParams.m_RegisterType & mERegisterType_Eax)
-                AsmVarRet.mov(eax, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Eax)));
-            if(a_HookParams.m_RegisterType & mERegisterType_Ecx)
-                AsmVarRet.mov(ecx, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ecx)));
-            if(a_HookParams.m_RegisterType & mERegisterType_Edx)
-                AsmVarRet.mov(edx, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Edx)));
-            if(a_HookParams.m_RegisterType & mERegisterType_Ebx)
-                AsmVarRet.mov(ebx, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ebx)));
-            if(a_HookParams.m_RegisterType & mERegisterType_Ebp)
-                AsmVarRet.mov(ebp, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ebp)));
-            if(a_HookParams.m_RegisterType & mERegisterType_Esi)
-                AsmVarRet.mov(esi, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Esi)));
-            if(a_HookParams.m_RegisterType & mERegisterType_Edi)
-                AsmVarRet.mov(edi, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Edi)));
-        }
-
-        if(a_HookParams.m_bTestOnReturn)
-        {
-            AsmVarRet.test(al, al);
-        }
-
-        GEU32 uDefaultCallReturnAdr;
-        if(a_HookParams.m_uMinRelocateSize > 0)
-        {
-            X86CodeAsm AsmRelocatedInst;
-            GEUInt uRelocateSize;
-            if(ParseUntilSize(AsmRelocatedInst, reinterpret_cast<GELPByte>(a_HookParams.m_u32CallAdr) + a_HookParams.m_uCallSize, a_HookParams.m_uMinRelocateSize, a_HookParams.m_uMaxRelocateSize, &uRelocateSize))
-                return false;
-            uTotalSize += uRelocateSize;
-            AsmRelocatedInst.jmp(imm(a_HookParams.m_u32CallAdr + uTotalSize));
-
-            // Default return address points to relocated instructions
-            uDefaultCallReturnAdr = reinterpret_cast<GEU32>(JitRuntimeAdd(AsmRelocatedInst));
-        }
-        else
-            uDefaultCallReturnAdr = a_HookParams.m_u32CallAdr + uTotalSize;
-
-        // jump to variable return address
-        AsmVarRet.jmp(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32CallReturnAdr)));
-        GELPVoid pOnReturn = JitRuntimeAdd(AsmVarRet);
-
-        // hook return address
-        X86CodeAsm AsmSetupVarRet;
-        // load default return address
-        AsmSetupVarRet.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32CallReturnAdr)), imm(uDefaultCallReturnAdr));
-        // overwrite return address stored on stack by call instruction
-        AsmSetupVarRet.mov(dword_ptr(esp), imm_ptr(pOnReturn));
-        AsmSetupVarRet.jmp(imm_ptr(pHookDestination));
-        pHookDestination = JitRuntimeAdd(AsmSetupVarRet);
+        PushArguments(AsmProlog, a_HookParams);
     }
 
-    // hook original function
-    X86CodeAsm AsmHook(a_HookParams.m_u32CallAdr);
-    if(a_HookParams.m_arrStackArgs.IsEmpty())
+    // Epilog
+    X86CodeAsm AsmEpilog;
+    // Restore registers after return from call
+    if(a_HookParams.m_bRestoreRegister)
     {
-        AsmHook.call(imm_ptr(pHookDestination));
+        // Only needed for eax/ecx/edx, compiler will do it for the other registers
+        if(a_HookParams.m_RegisterType & mERegisterType_Eax)
+            AsmEpilog.mov(eax, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Eax)));
+        if(a_HookParams.m_RegisterType & mERegisterType_Ecx)
+            AsmEpilog.mov(ecx, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ecx)));
+        if(a_HookParams.m_RegisterType & mERegisterType_Edx)
+            AsmEpilog.mov(edx, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Edx)));
+        if(a_HookParams.m_RegisterType & mERegisterType_Ebx)
+            AsmEpilog.mov(ebx, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ebx)));
+        if(a_HookParams.m_RegisterType & mERegisterType_Ebp)
+            AsmEpilog.mov(ebp, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Ebp)));
+        if(a_HookParams.m_RegisterType & mERegisterType_Esi)
+            AsmEpilog.mov(esi, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Esi)));
+        if(a_HookParams.m_RegisterType & mERegisterType_Edi)
+            AsmEpilog.mov(edi, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Edi)));
+    }
+
+    if(a_HookParams.m_bTestOnReturn)
+    {
+        AsmEpilog.test(al, al);
+    }
+
+    if(a_HookParams.m_u32TrueReturnAdr != 0)
+    {
+        AsmEpilog.jnz(imm(a_HookParams.m_u32TrueReturnAdr));
+    }
+
+    if(a_HookParams.m_u32FalseReturnAdr != 0)
+    {
+        AsmEpilog.jz(imm(a_HookParams.m_u32FalseReturnAdr));
+    }
+
+    X86CodeAsm AsmRelocatedInst;
+    if(a_HookParams.m_uMinRelocateSize > 0)
+    {
+        GEUInt uRelocateSize;
+        if(ParseUntilSize(AsmRelocatedInst, reinterpret_cast<GELPByte>(a_HookParams.m_u32CallAdr) + a_HookParams.m_uCallSize, a_HookParams.m_uMinRelocateSize, a_HookParams.m_uMaxRelocateSize, &uRelocateSize))
+            return false;
+        uTotalSize += uRelocateSize;
+    }
+
+    // Variable return address
+    GEU32 uCallReturnAdr = a_HookParams.m_u32CallAdr + uTotalSize;
+    if(a_HookParams.m_bVariableReturnAddress)
+    {
+        GEU32 uDefautVariableReturnAddress = uCallReturnAdr;
+        if(!AsmRelocatedInst.IsEmpty())
+        {
+            AsmRelocatedInst.jmp(imm(uCallReturnAdr));
+            uDefautVariableReturnAddress = reinterpret_cast<GEU32>(JitRuntimeAdd(AsmRelocatedInst));
+        }
+
+        // Prolog: Load default return address
+        AsmProlog.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32CallReturnAdr)), imm(uDefautVariableReturnAddress));
+
+        // Epilog: Jump to variable return address
+        AsmEpilog.jmp(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32CallReturnAdr)));
     }
     else
     {
-        X86CodeAsm AsmStackArgs;
-        GEU32 u32AdditionalOffset = 0;
-
-        GEBool bTaintedEax = GEFalse;
-        for (bTValArray<mCCallHookParams::mSRegRelativeArg>::bCConstIterator Iter = a_HookParams.m_arrStackArgs.End(); Iter-- != a_HookParams.m_arrStackArgs.Begin();)
+        if(!AsmRelocatedInst.IsEmpty())
         {
-            mCCallHookParams::mSRegRelativeArg const & Arg = *Iter;
-            if(Arg.m_enuArgType == mCCallHookParams::mEArgType_RegDirect || Arg.m_enuArgType == mCCallHookParams::mEArgType_RegIndirect)
-            {
-                if(!bTaintedEax)
-                {
-                    // save eax, we use it now for some calculations
-                    AsmStackArgs.mov(dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Eax)), eax);
-                    bTaintedEax = GETrue;
-                }
-
-                switch (Arg.m_Register) {
-                    case mCRegisterBase::mERegisterType_None: AsmStackArgs.mov(eax, esp); break;
-                    case mCRegisterBase::mERegisterType_Eax: AsmStackArgs.mov(eax, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Eax))); break;
-                    case mCRegisterBase::mERegisterType_Ecx: AsmStackArgs.mov(eax, ecx); break;
-                    case mCRegisterBase::mERegisterType_Edx: AsmStackArgs.mov(eax, edx); break;
-                    case mCRegisterBase::mERegisterType_Ebx: AsmStackArgs.mov(eax, ebx); break;
-                    case mCRegisterBase::mERegisterType_Ebp: AsmStackArgs.mov(eax, ebp); break;
-                    case mCRegisterBase::mERegisterType_Esi: AsmStackArgs.mov(eax, esi); break;
-                    case mCRegisterBase::mERegisterType_Edi: AsmStackArgs.mov(eax, edi); break;
-                    default:
-                        continue;
-                }
-
-                GEU32 u32Offset = Arg.m_u32Offset;
-                if (Arg.m_Register == mERegisterType_None) // esp
-                    u32Offset += u32AdditionalOffset;
-
-                if(Arg.m_enuArgType == mCCallHookParams::mEArgType_RegIndirect)
-                    AsmStackArgs.mov(eax, dword_ptr(eax, u32Offset));
-                else if(u32Offset != 0)
-                    AsmStackArgs.add(eax, imm_u(u32Offset));
-
-                AsmStackArgs.push(eax);
-                u32AdditionalOffset += 4;
-            }
-            else if(Arg.m_enuArgType == mCCallHookParams::mEArgType_Immediate)
-            {
-                AsmStackArgs.push(imm_u(Arg.m_u32Immediate));
-                u32AdditionalOffset += 4;
-            }
+            if(AsmEpilog.Append(AsmRelocatedInst))
+                return GEFalse;
         }
 
-        // restore eax
-        if(bTaintedEax)
-            AsmStackArgs.mov(eax, dword_ptr_abs(reinterpret_cast< GEU64 >(&m_u32Eax)));
+        if(!AsmEpilog.IsEmpty())
+            AsmEpilog.jmp(imm(uCallReturnAdr));
+    }
 
-        AsmStackArgs.call(imm_ptr(pHookDestination));
+    DoRegisterMagic(AsmProlog, a_HookParams);
 
-        AsmHook.jmp(imm_ptr(JitRuntimeAdd(AsmStackArgs)));
+    // Hook call site
+    X86CodeAsm AsmHook(a_HookParams.m_u32CallAdr);
+    if(!AsmProlog.IsEmpty() || !AsmEpilog.IsEmpty())
+    {
+        // Push return address to stack
+        if(AsmEpilog.IsEmpty())
+            // Call returns to the end of the call site
+            AsmProlog.push(imm(uCallReturnAdr));
+        else
+            // Call returns to the epilog
+            AsmProlog.push(imm_ptr(JitRuntimeAdd(AsmEpilog)));
+        AsmProlog.jmp(imm_ptr(a_HookParams.m_pNewFunc));
+
+        AsmHook.jmp(imm_ptr(JitRuntimeAdd(AsmProlog)));
+    }
+    else
+    {
+        AsmHook.call(imm_ptr(a_HookParams.m_pNewFunc));
+
+        // Add jump instruction or nops to skip replaced code
+        SkipCode(AsmHook, uTotalSize);
     }
 
     ApplyAsm(AsmHook, uTotalSize);

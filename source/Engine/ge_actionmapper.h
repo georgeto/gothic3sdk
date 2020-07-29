@@ -69,6 +69,9 @@ class GE_DLLIMPORT eCActionMapper :
         // ActionMapper tries to find a keybinding for the event using its name as a key into the DebugControls section of ini/controls.ini.
         // When a_u32SubmenuId is specified the action mapper creates a menu item for the event in the corresponding menu (menus are created in eCApplication::CreateMainMenu).
         // When a_strConsoleCommandName is specified the action mapper creates a console command for the event.
+        // Arguments for the a_pDelegateBase:
+        //   a_pInvoker can be of any type, most of the time it is a window, the GuiManager or menu item.
+        //   a_pEvent is a subclass of eCEvent
         eCMenuItem *                          AddEvent( bCString const & a_strName, bCDelegateBase * a_pDelegateBase, GEU32 a_u32SubmenuId = 0xFFFFFFFF, GEU32 a_u32EventId = 0xFFFFFFFF, bCString const & a_strConsoleCommandName = g_strDefault, bCString const & a_strConsoleCommandDescription = g_strDefault );
         // Use this function when adding events after eCActionMapper::OnStartup has been executed, to force reexecution of eCActionMapper::ParseEvents. Otherwise Keybindings won't work. (See also RegisterScriptEvent)
         eCMenuItem *                          AddLazyEvent( bCString const & a_strName, bCDelegateBase * a_pDelegateBase, GEU32 a_u32SubmenuId = 0xFFFFFFFF, GEU32 a_u32EventId = 0xFFFFFFFF, bCString const & a_strConsoleCommandName = g_strDefault, bCString const & a_strConsoleCommandDescription = g_strDefault );

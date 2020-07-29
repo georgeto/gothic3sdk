@@ -100,6 +100,7 @@
     <ClInclude Include="Game\ge_navigation_ps.h" />
     <ClInclude Include="Game\ge_navpath_ps.h" />
     <ClInclude Include="Game\ge_navzone_ps.h" />
+    <ClInclude Include="Game\ge_negzone_ps.h" />
     <ClInclude Include="Game\ge_negzone_psobj.h" />
     <ClInclude Include="Game\ge_npc_ps.h" />
     <ClInclude Include="Game\ge_party_ps.h" />
@@ -116,6 +117,7 @@
     <ClInclude Include="Game\ge_sector.h" />
     <ClInclude Include="Game\ge_session.h" />
     <ClInclude Include="Game\ge_sessioncheats.h" />
+    <ClInclude Include="Game\ge_sessioneditor.h" />
     <ClInclude Include="Game\ge_sessioninfo.h" />
     <ClInclude Include="Game\ge_skill_ps.h" />
     <ClInclude Include="Game\ge_stat.h" />

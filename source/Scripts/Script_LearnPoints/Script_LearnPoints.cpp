@@ -30,7 +30,7 @@ GEI32 GE_STDCALL GetIncrementedLearnPoints()
 	if(g_iHealthPointsOnLevelUp != 0)
 		pPlayerMemory->AddHitPointsMax(g_iHealthPointsOnLevelUp);
 
-	return pPlayerMemory->GetProperty<PSPlayerMemory::PropertyLPAttribs>() + g_iLearnPointsOnLevelUp;
+	return pPlayerMemory->LPAttribs + g_iLearnPointsOnLevelUp;
 }
 
 extern "C" __declspec( dllexport )

@@ -39,13 +39,22 @@
 GELPVoid LoadModule(GELPCChar a_strModule);
 GELPVoid GetProcAddress(GELPCChar a_strModule, GELPCChar a_strProc);
 
-inline GEU32 RVA_ScriptGame(GEU32 offset) { return reinterpret_cast<GEU32>(LoadModule("Script_Game.dll")) + offset; };
-inline GEU32 RVA_Script(GEU32 offset) { return reinterpret_cast<GEU32>(LoadModule("Script.dll")) + offset; };
-inline GEU32 RVA_Game(GEU32 offset)       { return reinterpret_cast<GEU32>(LoadModule("Game.dll")) + offset; };
-inline GEU32 RVA_Engine(GEU32 offset)     { return reinterpret_cast<GEU32>(LoadModule("Engine.dll")) + offset; };
-inline GEU32 RVA_Importer(GEU32 offset)   { return reinterpret_cast<GEU32>(LoadModule("Importer.dll")) + offset; };
-inline GEU32 RVA_SharedBase(GEU32 offset) { return reinterpret_cast<GEU32>(LoadModule("SharedBase.dll")) + offset; };
-inline GEU32 RVA_Gui(GEU32 offset)        { return reinterpret_cast<GEU32>(LoadModule("GUI.dll")) + offset; };
-inline GEU32 RVA_Executable(GEU32 offset)       { return reinterpret_cast<GEU32>(LoadModule(0)) + offset; };
+inline GEU32 RVA_ScriptGame(GEU32 a_uOffset) { return reinterpret_cast<GEU32>(LoadModule("Script_Game.dll")) + a_uOffset; };
+inline GEU32 RVA_Script(GEU32 a_uOffset)     { return reinterpret_cast<GEU32>(LoadModule("Script.dll")) + a_uOffset; };
+inline GEU32 RVA_Game(GEU32 a_uOffset)       { return reinterpret_cast<GEU32>(LoadModule("Game.dll")) + a_uOffset; };
+inline GEU32 RVA_Engine(GEU32 a_uOffset)     { return reinterpret_cast<GEU32>(LoadModule("Engine.dll")) + a_uOffset; };
+inline GEU32 RVA_Importer(GEU32 a_uOffset)   { return reinterpret_cast<GEU32>(LoadModule("Importer.dll")) + a_uOffset; };
+inline GEU32 RVA_SharedBase(GEU32 a_uOffset) { return reinterpret_cast<GEU32>(LoadModule("SharedBase.dll")) + a_uOffset; };
+inline GEU32 RVA_Gui(GEU32 a_uOffset)        { return reinterpret_cast<GEU32>(LoadModule("GUI.dll")) + a_uOffset; };
+inline GEU32 RVA_Executable(GEU32 a_uOffset) { return reinterpret_cast<GEU32>(LoadModule(0)) + a_uOffset; };
+
+inline GELPVoid PROC_ScriptGame(GELPCChar a_strName) { return GetProcAddress("Script_Game.dll", a_strName); };
+inline GELPVoid PROC_Script(GELPCChar a_strName)     { return GetProcAddress("Script.dll", a_strName); };
+inline GELPVoid PROC_Game(GELPCChar a_strName)       { return GetProcAddress("Game.dll", a_strName); };
+inline GELPVoid PROC_Engine(GELPCChar a_strName)     { return GetProcAddress("Engine.dll", a_strName); };
+inline GELPVoid PROC_Importer(GELPCChar a_strName)   { return GetProcAddress("Importer.dll", a_strName); };
+inline GELPVoid PROC_SharedBase(GELPCChar a_strName) { return GetProcAddress("SharedBase.dll", a_strName); };
+inline GELPVoid PROC_Gui(GELPCChar a_strName)        { return GetProcAddress("GUI.dll", a_strName); };
+inline GELPVoid PROC_Executable(GELPCChar a_strName) { return GetProcAddress(static_cast<GELPCChar>(nullptr), a_strName); };
 
 #endif

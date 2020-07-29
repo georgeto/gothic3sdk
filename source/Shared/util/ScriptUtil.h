@@ -117,7 +117,7 @@ void __set_if_present(F a_Value, F * o_pOptional = nullptr)
 #define ME_DEFINE_AND_REPLACE_SCRIPT_AI_ROUTINE( NAME ) __ME_DEFINE_AND_REPLACE_GENERIC_SCRIPT( NAME, ScriptAIRoutine, DECLARE_SCRIPT_ROUTINE( NAME ) )
 
 #define ME_DEFINE_AND_REGISTER_SCRIPT( NAME ) __ME_DEFINE_AND_REGISTER_GENERIC_SCRIPT( NAME, Script, DECLARE_SCRIPT( NAME ) )
-#define ME_DEFINE_AND_HOOK_SCRIPT( NAME, ... ) \
+#define ME_DEFINE_AND_HOOK_SCRIPT( NAME ) \
     DECLARE_SCRIPT( NAME ); \
     gFScript NAME ## _Original; \
     GE_STATIC_BLOCK { ME_HOOK_SCRIPT( #NAME, NAME, &NAME ## _Original ); } \
@@ -185,17 +185,31 @@ void                 RefineFoundFreepoints( gEUseType a_enuUseType );
 Entity               GetFirstFoundRefinedFreepoint();
 Entity               GetRandomFoundRefinedFreepoint();
 
+void                 ClearNextActionsIfPlayer( Entity const & a_Entity );
+void                 PopCurrentActionIfPlayer( Entity const & a_Entity );
+
+// Item that the player shall hold in the left hand.
+// Set to the index of the item stack, as long as the player holds the item.
+GEInt GetPlayerIntendedLeftHandWeaponIndex();
+// Item that the player shall hold in the right hand.
+// Set to the index of the item stack, as long as the player holds the item.
+GEInt GetPlayerIntendedRightHandWeaponIndex();
+// Item that the player should use next (e.g. in PS_QuickUse or PS_MagicPotion).
+void SetUseItemIndexIfPlayer(Entity const & a_Entity, GEInt a_iItemIndex);
+
+
 // The enum names are pure guesswork.
 enum gEItemComboCategory
 {
     gEItemComboCategory_Deny           = 0,
     gEItemComboCategory_Utility        = 1,
-    gEItemComboCategory_CombatItem     = 2, // Unconventional weapon? Don't remove in RemoveNonCombatItems?
+    gEItemComboCategory_CombatItem     = 2, // Unconventional weapon? Don't remove in RemoveNonCombatItems? Ahhh... Can be equipped kept while the HUD is shown (e.g. Shovel or Staff, see PS_HUD).
     gEItemComboCategory_Carry_Smithing = 3,
     gEItemComboCategory_Melee          = 4,
     gEItemComboCategory_Ranged         = 5, // (Bow / CrossBow)
     gEItemComboCategory_Cast           = 6,
-    gEItemComboCategory_Illegal        = 7,
+    gEItemComboCategory_EquipSlotAmmo  = 7, // SlotAmmo, Left = None, Right = Arrow / Bolt
+    gEItemComboCategory_EmptyHands     = 8,
 };
 
 struct gSItemComboCategorization
@@ -206,14 +220,35 @@ struct gSItemComboCategorization
 };
 bTObjArray<gSItemComboCategorization> & GetItemComboCategorization();
 
+gEItemComboCategory GetItemComboCategory(gEUseType a_enuUseTypeLeft, gEUseType a_enuUseTypeRight);
+
+gEItemComboCategory GetItemComboCategory(Entity const & a_Holder, GEInt a_iLeftItem, GEInt a_iRightItem);
+
+// Updates PlayerIntendedLeftHandWeaponIndex and PlayerIntendedRightHandWeaponIndex.
+gEItemComboCategory EvaluateUseWeaponStack(Entity const & a_Player, GEInt a_iWeaponIndex);
+
 template<typename T>
-T * GetPropertySetInstance(EntityPropertySet & a_pPropertySet)
+typename T::INSTANCE_CLASS * ToInstance(T & a_pPropertySet)
 {
-    return *reinterpret_cast<T **>(&a_pPropertySet);
+    return *reinterpret_cast<typename T::INSTANCE_CLASS **>(static_cast<EntityPropertySet *>(&a_pPropertySet));
+}
+
+template<typename T>
+typename T::INSTANCE_CLASS const * ToInstance(T const & a_pPropertySet)
+{
+    return *reinterpret_cast<typename T::INSTANCE_CLASS * const *>(static_cast<EntityPropertySet const *>(&a_pPropertySet));
 }
 
 GEU32 GetItemQuality(bCString const & a_ItemName);
 
 gEWeaponCategory GetHeldWeaponCategory(Entity const & a_Entity);
+
+#define RUN_AI_HOLD_INTERACT_ITEMS( LEFT_ITEM, RIGHT_ITEM ) \
+    PUSH_STATE( "_AI_HoldInteractItems" );                     \
+    ALLOC_STATE_ARGS( gSArgsFor__AI_HoldItems );               \
+    args->m_Holder    = SelfEntity;                            \
+    args->m_LeftItem  = LEFT_ITEM;                             \
+    args->m_RightItem = RIGHT_ITEM;                            \
+    RUN_SCRIPT_FUNCTION();
 
 #endif

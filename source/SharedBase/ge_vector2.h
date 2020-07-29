@@ -98,6 +98,11 @@ class GE_DLLIMPORT bCVector2
         void              Translate( GEFloat );
         void              TransposedTransform( bCMatrix2 const & );
 
+    public:
+        GEFloat m_fX;
+        GEFloat m_fY;
 };
+
+GE_ASSERT_SIZEOF( bCVector2, 0x08 )
 
 #endif

@@ -212,8 +212,29 @@ class GE_DLLIMPORT gCScriptProcessingUnit
         void     UpdateStateTime( gCScriptRoutine_PS * );
         void     UpdateTaskTime( gCScriptRoutine_PS * );
 
-    private:
-        GE_PADDING( 0x188 )
+    public:
+        bTObjStack<gScriptRunTimeSingleState> m_StateStack;
+        bCString                              m_strCurrentTask;
+        bCString                              m_strTaskCallback;
+        GEFloat                               m_fTaskCallbackRelatedFloat_1000;
+        GEFloat                               m_fLocalCallbackRelatedFloat_100;
+        eCEntityProxy                         m_SelfEntity;
+        eCEntityProxy                         m_OtherEntity;
+        GEInt                                 m_iIntParameter;
+        GEFloat                               m_fTaskTime;
+        GEFloat                               m_fStateTime;
+        GEBool                                m_bTaskRelated;
+        GE_PADDING( 3 )
+        bCString                              m_strCaughtTask;
+        GELPVoid                              m_pAudioChannel;
+        GELPVoid                              m_pAudioSound;
+        GELPVoid                              m_pfInstrCallback;
+        eCEntityProxy                         m_Speaker;
+        GEBool                                m_bOutputFinished;
+        GE_PADDING( 3 )
+        GEFloat                               m_fInstrPlayTime;
+        GEFloat                               m_fInstrDuration;
+        GE_PADDING( 0xEC )
 };
 
 GE_ASSERT_SIZEOF( gCScriptProcessingUnit, 0x18C )

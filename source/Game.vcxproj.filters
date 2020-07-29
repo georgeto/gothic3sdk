@@ -162,6 +162,8 @@
     <ClInclude Include="Game\ge_party_ps.h" />
     <ClInclude Include="Game\ge_lock_ps.h" />
     <ClInclude Include="Game\ge_effect_ps.h" />
+    <ClInclude Include="Game\ge_negzone_ps.h" />
+    <ClInclude Include="Game\ge_sessioneditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\ge_scriptadmin.cpp">

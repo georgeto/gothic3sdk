@@ -22,10 +22,10 @@ mCCommandHandler & mCCommandHandler::GetInstance()
 
 void mCCommandHandler::Initialize()
 {
-    HookOnExecute.Hook(GetProcAddress("Engine.dll", "?OnExecute@eCConsole@@MAE_NABVbCString@@AAV2@@Z"), &OnExecuteHook, mCFunctionHook::mEHookType_ThisCall);
-    HookOnComplete.Hook(GetProcAddress("Engine.dll", "?OnComplete@eCConsole@@MAE_NAAVbCString@@@Z"), &OnCompleteHook, mCFunctionHook::mEHookType_ThisCall);
-    HookPrintChoices.Hook(GetProcAddress("Engine.dll", "?PrintChoices@eCConsole@@UAEXABVbCString@@@Z"), &PrintChoicesHook, mCFunctionHook::mEHookType_ThisCall);
-    HookPrintOutput.Hook(GetProcAddress("Engine.dll", "?PrintOutput@eCConsole@@QAEXABVbCString@@ABVbCByteAlphaColor@@@Z"), &PrintOutputHook, mCFunctionHook::mEHookType_ThisCall);
+    HookOnExecute.Hook(PROC_Engine("?OnExecute@eCConsole@@MAE_NABVbCString@@AAV2@@Z"), &OnExecuteHook, mCFunctionHook::mEHookType_ThisCall);
+    HookOnComplete.Hook(PROC_Engine("?OnComplete@eCConsole@@MAE_NAAVbCString@@@Z"), &OnCompleteHook, mCFunctionHook::mEHookType_ThisCall);
+    HookPrintChoices.Hook(PROC_Engine("?PrintChoices@eCConsole@@UAEXABVbCString@@@Z"), &PrintChoicesHook, mCFunctionHook::mEHookType_ThisCall);
+    HookPrintOutput.Hook(PROC_Engine("?PrintOutput@eCConsole@@QAEXABVbCString@@ABVbCByteAlphaColor@@@Z"), &PrintOutputHook, mCFunctionHook::mEHookType_ThisCall);
 
 
     // On command execution failure console now doesn't appends ': <command>' to the error message
@@ -246,8 +246,139 @@ GEBool mCCommandHandler::IsAutoCompleteBackward()
     return eCApplication::GetInstance().GetKeyboard().KeyPressed( eCInpShared::eEKeyboardStateOffset_LEFT_SHIFT );
 }
 
+namespace
+{
+    GEInt NextCursorPosition(eCEditCtrl & a_EditCtrl, GEInt a_iDirection)
+    {
+        static const GELPCChar s_WordChars = "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        static const GELPCChar s_SeparatorChars = " ()[]{}-+*/'\\&/=´:;,.|<>@";
+
+        bCString strText = a_EditCtrl.GetText();
+        GEInt iCursorPos = a_EditCtrl.GetCursorPos();
+        if(a_iDirection <= 0)
+        {
+            GEInt iPrevWordBoundary = strText.ReverseFindOneOf(s_WordChars, iCursorPos - 1 < 0 ? 0: iCursorPos - 1);
+            if(iPrevWordBoundary < 0)
+                return 0;
+
+            GEInt iPrevSeparator = strText.ReverseFindOneOf(s_SeparatorChars, iPrevWordBoundary);
+            return iPrevSeparator < 0 ? 0 : iPrevSeparator + 1;
+        }
+        else
+        {
+            GEInt iTextLength = strText.GetLength();
+            GEInt iNextWordBoundary = strText.FindOneOf(s_WordChars, iCursorPos + 1 < iTextLength ? iCursorPos + 1 : iTextLength);
+            if(iNextWordBoundary < 0)
+                return iTextLength;
+
+            GEInt iNextSeparator = strText.FindOneOf(s_SeparatorChars, iNextWordBoundary);
+            return iNextSeparator < 0 ? iTextLength : iNextSeparator;
+        }
+    }
+
+    // Use different key than ESCAPE to trigger abortion of auto complete browsing.
+    // Necessary, because ESCAPE opens the main menu.
+    mCFunctionHook Hook_eCConsoleDlg_OnKeyDown;
+    GEInt eCConsoleDlg_OnKeyDown( /* eCConsoleDlg & This, */ eCInpShared::eEKeyboardStateOffset a_Key, eCInpShared::eSInputMessage const & a_Message )
+    {
+        // Map ESCAPE to key that is a nop in eCConsoleDlg::OnKeyDown.
+        if(a_Key == eCInpShared::eEKeyboardStateOffset_ESC)
+            a_Key = eCInpShared::eEKeyboardStateOffset_NUMLOCK;
+
+        // Map the new abort keys (CTRL+Z and CTRL+Y) to escape.
+        GEBool bCtrlPressed = a_Message.GetLeftCtrlState() || a_Message.GetRightCtrlState();
+        if(bCtrlPressed && (a_Key == eCInpShared::eEKeyboardStateOffset_Z || a_Key == eCInpShared::eEKeyboardStateOffset_Y))
+            a_Key = eCInpShared::eEKeyboardStateOffset_ESC;
+
+        return Hook_eCConsoleDlg_OnKeyDown.GetOriginalFunction(eCConsoleDlg_OnKeyDown)(a_Key, a_Message);
+    }
+
+    // Allow word/line deleting in eCEditCtrl
+    mCCallHook Hook_eCEditCtrl_OnKeyDown;
+    void eCEditCtrl_OnKeyDown( eCEditCtrl & a_EditCtrl, eCInpShared::eEKeyboardStateOffset a_Key, eCInpShared::eSInputMessage const & a_Message )
+    {
+        static GEU32 s_adrKeyPressHandled = RVA_Engine(0xCCEFE);
+
+        GEBool bCtrlPressed = a_Message.GetLeftCtrlState() || a_Message.GetRightCtrlState();
+        GEBool bShiftPressed = a_Message.GetLeftShiftState() || a_Message.GetRightShiftState();
+
+        GEBool bKeyPressHandled = GEFalse;
+        switch(a_Key)
+        {
+            case eCInpShared::eEKeyboardStateOffset_BACKSPACE:
+            {
+                if(!bCtrlPressed || !a_EditCtrl.IsSelEmpty())
+                    break;
+
+                if(bShiftPressed)
+                {
+                    a_EditCtrl.SetSel(0, a_EditCtrl.GetCursorPos());
+                    a_EditCtrl.Clear();
+                }
+                else
+                {
+                    GEInt iNextCursorPos = NextCursorPosition(a_EditCtrl, -1);
+                    if(iNextCursorPos < a_EditCtrl.GetCursorPos())
+                    {
+                        a_EditCtrl.SetSel(iNextCursorPos, a_EditCtrl.GetCursorPos());
+                        a_EditCtrl.Clear();
+                    }
+                }
+
+                bKeyPressHandled = GETrue;
+                break;
+            }
+
+            case eCInpShared::eEKeyboardStateOffset_DELETE:
+            {
+                if(!bCtrlPressed || !a_EditCtrl.IsSelEmpty())
+                    break;
+
+                if(bShiftPressed)
+                {
+                    a_EditCtrl.SetSel(a_EditCtrl.GetCursorPos(), a_EditCtrl.GetText().GetLength());
+                    a_EditCtrl.Clear();
+                }
+                else
+                {
+                    GEInt iNextCursorPos = NextCursorPosition(a_EditCtrl, 1);
+                    if(iNextCursorPos > a_EditCtrl.GetCursorPos())
+                    {
+                        a_EditCtrl.SetSel(a_EditCtrl.GetCursorPos(), iNextCursorPos);
+                        a_EditCtrl.Clear();
+                    }
+                }
+
+                bKeyPressHandled = GETrue;
+                break;
+            }
+
+            case eCInpShared::eEKeyboardStateOffset_A:
+                if(bCtrlPressed)
+                {
+                    a_EditCtrl.SetSel(0, a_EditCtrl.GetText().GetLength());
+                    bKeyPressHandled = GETrue;
+                }
+
+                break;
+        }
+
+        if(bKeyPressHandled)
+            Hook_eCEditCtrl_OnKeyDown.SetReturnAddress(s_adrKeyPressHandled);
+    }
+}
+
 ME_MODULE(CommandHandler)
 {
+    Hook_eCConsoleDlg_OnKeyDown.Hook(PROC_Engine("?OnKeyDown@eCConsoleDlg@@UAEHW4eEKeyboardStateOffset@eCInpShared@@ABUeSInputMessage@3@@Z"), eCConsoleDlg_OnKeyDown, mCBaseHook::mEHookType_ThisCall);
+
+    Hook_eCEditCtrl_OnKeyDown
+        .Prepare(RVA_Engine(0xCCCF5), eCEditCtrl_OnKeyDown)
+        .AddRegArg(mCRegisterBase::mERegisterType_Esi)  // EditCtrl
+        .AddRegArg(mCRegisterBase::mERegisterType_Edi)  // Key
+        .AddRegArg(mCRegisterBase::mERegisterType_Ebp)  // Message
+        .InsertCall().VariableReturnAddress().Hook();
+
     mCCommandHandler::GetInstance().Initialize();
     RegisterToolsCommands();
     RegisterFileCommands();

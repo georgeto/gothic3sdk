@@ -42,8 +42,7 @@ namespace
             strMessage += bCString::GetFormattedString(" (%s,%d)", a_pcFile, a_iLine);
         strMessage += "\n";
 
-        static mCFileLogger & Logger = mCFileLogger::GetInstance("g3debug");
-        Logger.LogString(strMessage);
+        mCFileLogger::GetInstance("g3debug").LogString(strMessage);
 
         return GEFalse;
     }

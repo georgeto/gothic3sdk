@@ -18,8 +18,10 @@ namespace asmjit {
             X86CodeAsm(uint64_t baseAddress = asmjit::Globals::kNoBaseAddress);
 
         public:
+            asmjit::Error Append(X86CodeAsm & a_CodeAsm);
             asmjit::CodeHolder & GetCode();
             asmjit::CodeHolder const & GetCode() const;
+            bool IsEmpty() const;
             void reset();
             void setBaseAddress(uint64_t baseAddress);
 
@@ -43,6 +45,7 @@ asmjit::FileLogger & GetAsmjitLogger();
 bool WriteAssemblerData(asmjit::X86CodeAsm &a, size_t assertSize = 0, bool resetAssembler = false, bool fillWithNops = false);
 bool ReadAssemblerData(asmjit::X86CodeAsm & dest, void* srcAddress, size_t size);
 asmjit::Error ParseUntilSize(asmjit::X86CodeAsm & dest, void * srcAddress, size_t minSize, size_t maxSize = 0, size_t * outDecodedSize = 0);
+asmjit::Error ParseUntilSize(asmjit::X86CodeAsm & dest, size_t baseAddress, void * dataBuffer, size_t minSize, size_t maxSize = 0, size_t * outDecodedSize = 0);
 bool DecodeInstruction(void * srcAddress, _DInst & decodedInstruction, size_t size = 15);
 bool WriteNops(unsigned long srcAdress, size_t size);
 bool SkipCode(unsigned long address, size_t size);

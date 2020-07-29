@@ -1,9 +1,20 @@
 #ifndef GE_NAVIGATIONMAP_H_INCLUDED
 #define GE_NAVIGATIONMAP_H_INCLUDED
 
+class gCNavigationAdmin;
 class gCCharacterMovement_PS;
 class gCNavOffset_PS;
 class gCCollisionCircle_PSObj;
+class gCAnchor_PS;
+class gCCollisionCircle_PS;
+class gCDoor_PS;
+class gCInteraction_PS;
+class gCNavZone_PS;
+class gCNavPath_PS;
+class gCNegZone_PS;
+class gCPrefPath_PS;
+class gCWaterZone_PS;
+class gCDynamicCollisionCircle_PS;
 
 class GE_DLLIMPORT gCNavigationMap
 {
@@ -80,7 +91,9 @@ class GE_DLLIMPORT gCNavigationMap
         GEFloat                                                m_fMaxRasterZ;
         GEFloat                                                m_fRasterSizeX;
         GEFloat                                                m_fRasterSizeZ;
-        GE_PADDING( 32 );
+        GEInt                                                  m_iPassedHistoryLength_DefaultsTo5;
+        eCEntityProxy                                          m_UnkEntityProxy;
+        bCPropertyID                                           m_OutOfNavAreaID;
 
     public: virtual ~gCNavigationMap( void );
 
@@ -152,12 +165,12 @@ class GE_DLLIMPORT gCNavigationMap
         bEResult RunPreferredPath( gCNavigation_PS * );
         GEBool   SetCurrentTarget( gCNavigation_PS *, gCCharacterMovement_PS *, GEBool );
         GEBool   TestEntityObstacles( gCNavigation_PS *, bCVector &, GEBool &, bCPropertyID &, bCStretch &, gCNavZone_PS *, GEI8 & );
-        GEBool   TestNavZone( gCNavigation_PS *, bCVector &, GEBool &, bCPropertyID &, bCStretch &, gCNavZone_PS * );
+        GEBool   TestNavZone( gCNavigation_PS *, bCVector & o_Evade, GEBool & o_bAlwaysZero, bCPropertyID & o_EvadeZoneID, bCStretch & a_Stretch, gCNavZone_PS * a_pNavZone );
         GEBool   TestNegZones( gCNavigation_PS *, bCVector &, GEBool &, bCPropertyID &, bCStretch &, gCNavZone_PS * );
 
 };
 
-GE_ASSERT_SIZEOF( gCNavigationMap, 0x100 )
+GE_ASSERT_SIZEOF( gCNavigationMap, 0x114 )
 
 //Section 3fg
 struct gSWayNetList1//@0x14

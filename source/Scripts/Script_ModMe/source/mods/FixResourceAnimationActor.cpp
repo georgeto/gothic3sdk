@@ -91,7 +91,7 @@ ME_MODULE(FixResourceAnimationActor)
     if(arrFiles.IsEmpty())
         return;
 
-    Hook_eCWrapper_emfx2Actor_Read.Hook(GetProcAddress("Engine.dll", "?Read@eCWrapper_emfx2Actor@@UAE?AW4bEResult@@AAVbCIStream@@@Z"), &eCWrapper_emfx2Actor_Read, mCBaseHook::mEHookType_ThisCall);
+    Hook_eCWrapper_emfx2Actor_Read.Hook(PROC_Engine("?Read@eCWrapper_emfx2Actor@@UAE?AW4bEResult@@AAVbCIStream@@@Z"), &eCWrapper_emfx2Actor_Read, mCBaseHook::mEHookType_ThisCall);
     Hook_eCWrapper_emfx2Actor_ReadAmbientOcclusion.Hook(RVA_Engine(0x4FFB0), &eCWrapper_emfx2Actor_ReadAmbientOcclusion, mCBaseHook::mEHookType_Mixed, mCRegisterBase::mERegisterType_Edi);
 
 

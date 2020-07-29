@@ -523,6 +523,11 @@ gCClock_PS * GetClock(void) {
     return pWorld ? GetPropertySet<gCClock_PS>(pWorld->GetWorldEntity(), eEPropertySetType_Clock) : 0;
 }
 
+gCSessionEditor * GetSessionEditor()
+{
+    return reinterpret_cast<gCSessionEditor *>(reinterpret_cast<GELPByte>(&gCSession::GetInstance()) + 0x58);
+}
+
 GEInt GetBaseMaximum(gCAttribute const & a_pAttribute)
 {
     if(gCStat const * pStat = dynamic_cast<gCStat const *>(&a_pAttribute))

@@ -531,6 +531,7 @@ class EntityRequest : public ::google::protobuf::MessageLite {
     kName = 1,
     kGuid = 2,
     kFocus = 3,
+    kEditor = 6,
     IDENTIFIER_NOT_SET = 0,
   };
 
@@ -604,6 +605,13 @@ class EntityRequest : public ::google::protobuf::MessageLite {
   inline bool focus() const;
   inline void set_focus(bool value);
 
+  // optional bool editor = 6;
+  inline bool has_editor() const;
+  inline void clear_editor();
+  static const int kEditorFieldNumber = 6;
+  inline bool editor() const;
+  inline void set_editor(bool value);
+
   // optional .g3rc.Position moveto = 4;
   inline bool has_moveto() const;
   inline void clear_moveto();
@@ -626,6 +634,7 @@ class EntityRequest : public ::google::protobuf::MessageLite {
   inline void set_has_name();
   inline void set_has_guid();
   inline void set_has_focus();
+  inline void set_has_editor();
   inline void set_has_moveto();
   inline void clear_has_moveto();
   inline void set_has_put_to_ground();
@@ -645,6 +654,7 @@ class EntityRequest : public ::google::protobuf::MessageLite {
     ::std::string* name_;
     ::std::string* guid_;
     bool focus_;
+    bool editor_;
   } identifier_;
   ::google::protobuf::uint32 _oneof_case_[1];
 
@@ -2846,15 +2856,42 @@ inline void EntityRequest::set_focus(bool value) {
   identifier_.focus_ = value;
 }
 
+// optional bool editor = 6;
+inline bool EntityRequest::has_editor() const {
+  return identifier_case() == kEditor;
+}
+inline void EntityRequest::set_has_editor() {
+  _oneof_case_[0] = kEditor;
+}
+inline void EntityRequest::clear_editor() {
+  if (has_editor()) {
+    identifier_.editor_ = false;
+    clear_has_identifier();
+  }
+}
+inline bool EntityRequest::editor() const {
+  if (has_editor()) {
+    return identifier_.editor_;
+  }
+  return false;
+}
+inline void EntityRequest::set_editor(bool value) {
+  if (!has_editor()) {
+    clear_identifier();
+    set_has_editor();
+  }
+  identifier_.editor_ = value;
+}
+
 // optional .g3rc.Position moveto = 4;
 inline bool EntityRequest::has_moveto() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void EntityRequest::set_has_moveto() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void EntityRequest::clear_has_moveto() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void EntityRequest::clear_moveto() {
   if (moveto_ != NULL) moveto_->::g3rc::Position::Clear();
@@ -2893,13 +2930,13 @@ inline void EntityRequest::set_allocated_moveto(::g3rc::Position* moveto) {
 
 // optional bool put_to_ground = 5;
 inline bool EntityRequest::has_put_to_ground() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void EntityRequest::set_has_put_to_ground() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 inline void EntityRequest::clear_has_put_to_ground() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void EntityRequest::clear_put_to_ground() {
   put_to_ground_ = false;

@@ -26,6 +26,10 @@ void mCEntityRequestHandler::HandleRequest()
             pEntity = pPlayerFocus->AccessCurrentEntity().GetEntity();
         }
     }
+    else if( Request.has_editor() )
+    {
+        pEntity = GetSessionEditor()->GetCurrentEntity();
+    }
 
     if( pEntity )
     {

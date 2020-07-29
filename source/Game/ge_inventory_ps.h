@@ -82,16 +82,16 @@ class GE_DLLIMPORT gCInventory_PS :
         void                     Dump( void ) const;
         GEBool                   EquipStack( GEInt );
         GEBool                   EquipStackToSlot( GEInt, gESlot );
-        gCInventoryStack const * FindStack( bCPropertyID const &, gEInventoryFindQuality, GEU32 a_u32Quality, GEInt a_iStartIndexExclusive = -1 ) const; // Nur bei gEInventoryFindQuality_Equal ist a_u32Quality relevant
-        gCInventoryStack const * FindStack( bCString const &, gEInventoryFindQuality, GEU32 a_u32Quality, GEInt a_iStartIndexExclusive = -1 ) const;
-        gCInventoryStack const * FindStack( eCTemplateEntity const *, gEInventoryFindQuality, GEU32 a_u32Quality, GEInt a_iStartIndexExclusive = -1 ) const;
+        gCInventoryStack const * FindStack( bCPropertyID const &, gEInventoryFindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0, GEInt a_iStartIndexExclusive = -1 ) const; // Nur bei gEInventoryFindQuality_Equal ist a_u32Quality relevant
+        gCInventoryStack const * FindStack( bCString const &, gEInventoryFindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0, GEInt a_iStartIndexExclusive = -1 ) const;
+        gCInventoryStack const * FindStack( eCTemplateEntity const *, gEInventoryFindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0, GEInt a_iStartIndexExclusive = -1 ) const;
         gCInventoryStack const * FindStack( gESlot ) const;
-        gCInventoryStack const * FindStack( gEUseType, gEInventoryFindQuality, GEU32 a_u32Quality, GEInt a_iStartIndexExclusive = -1 ) const;
-        GEInt                    FindStackIndex( bCPropertyID const &, gEInventoryFindQuality, GEU32 a_u32Quality, GEInt a_iStartIndexExclusive = -1 ) const;
-        GEInt                    FindStackIndex( bCString const &, gEInventoryFindQuality, GEU32 a_u32Quality, GEInt a_iStartIndexExclusive = -1 ) const;
-        GEInt                    FindStackIndex( eCTemplateEntity const *, gEInventoryFindQuality, GEU32 a_u32Quality, GEInt a_iStartIndexExclusive = -1 ) const;
+        gCInventoryStack const * FindStack( gEUseType, gEInventoryFindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0, GEInt a_iStartIndexExclusive = -1 ) const;
+        GEInt                    FindStackIndex( bCPropertyID const &, gEInventoryFindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0, GEInt a_iStartIndexExclusive = -1 ) const;
+        GEInt                    FindStackIndex( bCString const &, gEInventoryFindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0, GEInt a_iStartIndexExclusive = -1 ) const;
+        GEInt                    FindStackIndex( eCTemplateEntity const *, gEInventoryFindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0, GEInt a_iStartIndexExclusive = -1 ) const;
         GEInt                    FindStackIndex( gESlot ) const;
-        GEInt                    FindStackIndex( gEUseType, gEInventoryFindQuality, GEU32 a_u32Quality, GEInt a_iStartIndexExclusive = -1 ) const;
+        GEInt                    FindStackIndex( gEUseType, gEInventoryFindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0, GEInt a_iStartIndexExclusive = -1 ) const;
         GEInt                    FindStackIndexByHotKey( GEU32 ) const;
         GEBool                   GeneratePlunderInvFromTreasureSets( void );
         GEBool                   GenerateTradeInvFromTreasureSets( void );
@@ -155,7 +155,7 @@ class GE_DLLIMPORT gCInventory_PS :
         void                     SetTreasureSet5( bCString const & );
         GEBool                   ShowSlot( GEBool, gESlot );
         void                     SortStacks( void );
-        GEBool                   SplitStack( GEInt, GEU32, GEInt & );
+        GEBool                   SplitStack( GEInt a_iItemIndex, GEU32 a_uNewStackAmount, GEInt & );
         GEBool                   TransferAllTo( gCInventory_PS *, gEStackType );
         GEBool                   TransferItemsTo( gCInventory_PS *, GEInt, GEInt, gEStackType );
         GEBool                   TransferStackTo( gCInventory_PS *, GEInt, gEStackType );

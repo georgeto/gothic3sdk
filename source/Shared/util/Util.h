@@ -10,6 +10,11 @@ T *                    CastAtOffset(S * a_From, GEInt a_iOffset);
 template< typename T, typename S >
 T const *              CastAtOffset(S const * a_From, GEInt a_iOffset);
 
+template< typename T >
+inline T               Min(T a_Value1, T a_Value2);
+template< typename T >
+inline T               Max(T a_Value1, T a_Value2);
+
 bCString               Trim(bCString const & a_rString, GEBool a_bTrimLeft = GETrue, GEBool a_bTrimRight = GETrue);
 bCString               GetWord( bCString const & a_rString, GEInt a_iWordNumber, bCString const & a_rDelimiters, GEBool a_bTrimLeft = GETrue, GEBool a_bTrimRight = GETrue );
 bCString               NextWord(bCString const & a_rString, GEInt a_iStartIndex, bCString const & a_rDelimiters, GEBool a_bTrimLeft = GETrue, GEBool a_bTrimRight = GETrue);
@@ -72,6 +77,7 @@ eCDynamicEntity *      GetHero( void );
 eCDynamicEntity *      GetPlayer( void );
 GEBool                 IsPlayer(eCEntity const * a_pEntity);
 gCClock_PS *           GetClock( void );
+gCSessionEditor *      GetSessionEditor();
 
 // Returns: Maxmium value of the attribute, without temporary bonuses/maluses and drain (HP, MP, SP)
 GEInt                  GetBaseMaximum(gCAttribute const & a_pAttribute);
@@ -80,28 +86,66 @@ GELPByte               GetGamePage( gCGUIManager * a_pGUIManager, gEGamePage a_P
 
 void                   UnregisterModule( eCEngineComponentBase const * a_pModule );
 
+template< typename T, typename C >
+GE_FORCE_INLINE GEBool FindInventoryStacksIC(gCInventory_PS const & a_Inventory, T a_Item, C a_fCallback, gEInventoryFindQuality a_FindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0)
+{
+    GEInt iPrevIndex = -1;
+    while((iPrevIndex = a_Inventory.FindStackIndex(a_Item, a_FindQuality, a_u32Quality, iPrevIndex)) != -1)
+    {
+        if(a_fCallback(iPrevIndex))
+            return GETrue;
+    }
+    return GEFalse;
+}
+
+template< typename T, typename C >
+GE_FORCE_INLINE void FindInventoryStacksI(gCInventory_PS const & a_Inventory, T a_Item, C a_fCallback, gEInventoryFindQuality a_FindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0)
+{
+    FindInventoryStacksIC(a_Inventory, a_Item, [&](GEInt iItemIndex) { a_fCallback(iItemIndex); return GEFalse; }, a_FindQuality, a_u32Quality);
+}
+
+template< typename T, typename C >
+GE_FORCE_INLINE GEBool FindInventoryStacksSC(gCInventory_PS const & a_Inventory, T a_Item, C a_fCallback, gEInventoryFindQuality a_FindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0)
+{
+    return FindInventoryStacksIC(a_Inventory, a_Item, [&](GEInt iItemIndex) { return a_fCallback(*a_Inventory.GetStack(iItemIndex)); }, a_FindQuality, a_u32Quality);
+}
+
+template< typename T, typename C >
+GE_FORCE_INLINE void FindInventoryStacksS(gCInventory_PS const & a_Inventory, T a_Item, C a_fCallback, gEInventoryFindQuality a_FindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0)
+{
+    FindInventoryStacksI(a_Inventory, a_Item, [&](GEInt iItemIndex) { a_fCallback(*a_Inventory.GetStack(iItemIndex)); }, a_FindQuality, a_u32Quality);
+}
+
+template< typename T, typename C >
+GE_FORCE_INLINE GEBool FindInventoryStacksISC(gCInventory_PS const & a_Inventory, T a_Item, C a_fCallback, gEInventoryFindQuality a_FindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0)
+{
+    return FindInventoryStacksIC(a_Inventory, a_Item, [&](GEInt iItemIndex) { return a_fCallback(iItemIndex, *a_Inventory.GetStack(iItemIndex)); }, a_FindQuality, a_u32Quality);
+}
+
+template< typename T, typename C >
+GE_FORCE_INLINE void FindInventoryStacksIS(gCInventory_PS const & a_Inventory, T a_Item, C a_fCallback, gEInventoryFindQuality a_FindQuality = gEInventoryFindQuality_Ignore, GEU32 a_u32Quality = 0)
+{
+    FindInventoryStacksI(a_Inventory, a_Item, [&](GEInt iItemIndex) { a_fCallback(iItemIndex, *a_Inventory.GetStack(iItemIndex)); }, a_FindQuality, a_u32Quality);
+}
+
 template< typename T >
 GEInt GetItemAmount(gCInventory_PS const & a_Inventory, T a_Item)
 {
     GEInt iAmount = 0;
-    GEInt iPrevIndex = -1;
-    while((iPrevIndex = a_Inventory.FindStackIndex(a_Item, gEInventoryFindQuality_Ignore, 0, iPrevIndex)) != -1)
-    {
-        iAmount += a_Inventory.GetStack(iPrevIndex)->GetAmount();
-    }
+    FindInventoryStacksS(a_Inventory, a_Item, [&](gCInventoryStack const & ItemStack) { iAmount += ItemStack.GetAmount(); });
     return iAmount;
 }
 
 template< typename T >
-GEBool IsEquipped(gCInventory_PS const & Inventory, T a_Item)
+GEBool IsEquipped(gCInventory_PS const & a_Inventory, T a_Item)
 {
-	GEInt iPrevIndex = -1;
-	while((iPrevIndex = Inventory.FindStackIndex(a_Item, gEInventoryFindQuality_Ignore, 0, iPrevIndex)) != -1)
-	{
-		if(Inventory.GetStack(iPrevIndex)->GetSlot() != gESlot_None)
-			return GETrue;
-	}
-	return GEFalse;
+    return FindInventoryStacksSC(a_Inventory, a_Item, [](gCInventoryStack const & ItemStack) { return ItemStack.GetSlot() != gESlot_None; });
+}
+
+template< typename T >
+GEBool HasItems(gCInventory_PS const & a_Inventory, T a_Item, gEStackType a_StackType)
+{
+    return FindInventoryStacksSC(a_Inventory, a_Item, [&](gCInventoryStack const & ItemStack) { return ItemStack.GetType() == a_StackType; });
 }
 
 template< typename T >

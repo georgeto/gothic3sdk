@@ -27,7 +27,7 @@ class bTDelegate
         virtual bCDelegateBase *  Clone();
 
     public:
-        typedef void ( GE_STDCALL CLASS::*bFDelegateFunction )( bCObjectRefBase *, ARG * );
+        typedef void ( GE_STDCALL CLASS::*bFDelegateFunction )( bCObjectRefBase * a_pInvoker, ARG * a_pEvent );
         bTDelegate( bFDelegateFunction a_pDelegateFunction, CLASS * a_pClassThisPointer );
 
     private:

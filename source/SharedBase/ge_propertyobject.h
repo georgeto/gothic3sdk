@@ -32,8 +32,8 @@ class bTPropertyObject :
         bCPropertyObjectTypeBase * m_pPropertyObjectType;
     public:
         bTPropertyObject( GEBool a_bRoot = GEFalse );
-    private:
-        bTPropertyObject< CLASS, BASECLASS > & operator = ( bTPropertyObject< CLASS, BASECLASS > const & );  // not defined
+    public:
+        bTPropertyObject< CLASS, BASECLASS > & operator = ( bTPropertyObject< CLASS, BASECLASS > const & );
 };
 
 #include "ge_propertyobject.inl"

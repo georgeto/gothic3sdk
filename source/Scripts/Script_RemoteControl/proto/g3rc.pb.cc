@@ -1137,6 +1137,7 @@ void HearbeatRequest::Swap(HearbeatRequest* other) {
 const int EntityRequest::kNameFieldNumber;
 const int EntityRequest::kGuidFieldNumber;
 const int EntityRequest::kFocusFieldNumber;
+const int EntityRequest::kEditorFieldNumber;
 const int EntityRequest::kMovetoFieldNumber;
 const int EntityRequest::kPutToGroundFieldNumber;
 #endif  // !_MSC_VER
@@ -1224,6 +1225,10 @@ void EntityRequest::clear_identifier() {
       // No need to clear
       break;
     }
+    case kEditor: {
+      // No need to clear
+      break;
+    }
     case IDENTIFIER_NOT_SET: {
       break;
     }
@@ -1233,7 +1238,7 @@ void EntityRequest::clear_identifier() {
 
 
 void EntityRequest::Clear() {
-  if (_has_bits_[0 / 32] & 24) {
+  if (_has_bits_[0 / 32] & 48) {
     if (has_moveto()) {
       if (moveto_ != NULL) moveto_->::g3rc::Position::Clear();
     }
@@ -1323,6 +1328,22 @@ bool EntityRequest::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(48)) goto parse_editor;
+        break;
+      }
+
+      // optional bool editor = 6;
+      case 6: {
+        if (tag == 48) {
+         parse_editor:
+          clear_identifier();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &identifier_.editor_)));
+          set_has_editor();
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -1380,6 +1401,11 @@ void EntityRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->put_to_ground(), output);
   }
 
+  // optional bool editor = 6;
+  if (has_editor()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(6, this->editor(), output);
+  }
+
   output->WriteRaw(unknown_fields().data(),
                    unknown_fields().size());
   // @@protoc_insertion_point(serialize_end:g3rc.EntityRequest)
@@ -1388,7 +1414,7 @@ void EntityRequest::SerializeWithCachedSizes(
 int EntityRequest::ByteSize() const {
   int total_size = 0;
 
-  if (_has_bits_[3 / 32] & (0xffu << (3 % 32))) {
+  if (_has_bits_[4 / 32] & (0xffu << (4 % 32))) {
     // optional .g3rc.Position moveto = 4;
     if (has_moveto()) {
       total_size += 1 +
@@ -1419,6 +1445,11 @@ int EntityRequest::ByteSize() const {
     }
     // optional bool focus = 3;
     case kFocus: {
+      total_size += 1 + 1;
+      break;
+    }
+    // optional bool editor = 6;
+    case kEditor: {
       total_size += 1 + 1;
       break;
     }
@@ -1454,11 +1485,15 @@ void EntityRequest::MergeFrom(const EntityRequest& from) {
       set_focus(from.focus());
       break;
     }
+    case kEditor: {
+      set_editor(from.editor());
+      break;
+    }
     case IDENTIFIER_NOT_SET: {
       break;
     }
   }
-  if (from._has_bits_[3 / 32] & (0xffu << (3 % 32))) {
+  if (from._has_bits_[4 / 32] & (0xffu << (4 % 32))) {
     if (from.has_moveto()) {
       mutable_moveto()->::g3rc::Position::MergeFrom(from.moveto());
     }

@@ -648,6 +648,8 @@ class eCGfxImageData;
 
 #include "Engine/ge_keyboard.h"
 #include "Engine/ge_wnd.h"
+#include "Engine/ge_clipboardclient.h"
+#include "Engine/ge_editctrl.h"
 #include "Engine/ge_desktop.h"
 #include "Engine/ge_dialog.h"
 #include "Engine/ge_objectinspectordlg.h"

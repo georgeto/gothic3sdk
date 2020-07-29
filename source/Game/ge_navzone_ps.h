@@ -1,9 +1,9 @@
 #ifndef GE_NAVZONE_PS_H_INCLUDED
 #define GE_NAVZONE_PS_H_INCLUDED
 
-class GE_DLLIMPORT gCNavZone_PS :
-    public eCEntityPropertySet
-{
+class gCCollisionCircle_PSObj;
+
+GE_IMPORT_PROPERTY_SET( gCNavZone_PS, eCEntityPropertySet )
     public:    virtual GEU16             GetVersion( void ) const;
     public: using bCObjectBase::Write;
     public:    virtual bEResult          Write( bCOStream & );
@@ -25,6 +25,51 @@ class GE_DLLIMPORT gCNavZone_PS :
 
     public:
         static bCPropertyObjectBase const * GE_STDCALL GetRootObject( void );
+        GE_IMPORT_DECLARE_PROPERTY( bTValArray<class bCVector>, Point, m_arrPoint )
+        GE_IMPORT_DECLARE_PROPERTY( GEFloat, Radius, m_fRadius )
+        GE_IMPORT_DECLARE_PROPERTY( bCVector, RadiusOffset, m_vecRadiusOffset )
+        GE_IMPORT_DECLARE_PROPERTY( GEBool, ZoneIsCCW, m_bZoneIsCCW )
+        GE_PADDING( 3 )
+        GE_IMPORT_DECLARE_PROPERTY( GEFloat, TopToleranz, m_fTopToleranz )
+        GE_IMPORT_DECLARE_PROPERTY( GEFloat, BottomToleranz, m_fBottomToleranz )
+        GE_IMPORT_DECLARE_PROPERTY( GEBool, LinkInnerArea, m_bLinkInnerArea )
+        GE_IMPORT_DECLARE_PROPERTY( GEBool, LinkInnerTopArea, m_bLinkInnerTopArea )
+        GE_IMPORT_DECLARE_PROPERTY( GEBool, LinkInnerBottomArea, m_bLinkInnerBottomArea )
+        GE_PADDING( 1 )
+
+    public:
+        bTValArray<GEFloat> m_TestStretch_PerPointFloat;
+        int __UNK_004C;
+        int __UNK_0050;
+        int __UNK_0054;
+        int __UNK_0058;
+        int __UNK_005C;
+        bCStretch m_TestStretch;
+        bCVector2 m_TestStretchStart2D;
+        bCVector2 m_TestStretchEnd2D;
+        bCVector2 m_TestStretchVector2D;
+        bCVector2 m_TestStretchOrthogonalOrSomething;
+        float m_fInitWith_1_0;
+        bCVector2 Intersect1_Vector;
+        int Intersect1_StartPoint;
+        int Intersect1_EndPoint;
+        float m_fInitWith_MINUS0_0000099999997;
+        bCVector2 Intersect2_Vector;
+        int Intersect2_StartPoint;
+        int Intersect2_EndPoint;
+        void *m_pIntersectsStretch_Navigation;
+        bTPtrArray<gCNegZone_PSObj *> m_arrNegZones;
+        bTPtrArray<gCCollisionCircle_PSObj *> m_arrNegCircles;
+        bTPtrArray<gCPrefPath_PSObj *> m_arrPrefPaths;
+        int __UNK_00E8;
+        int __UNK_00EC;
+        int __UNK_00F0;
+        float fMeanY;
+        float fMaxYOffset;
+        float fMinYOffset;
+        unsigned __int32 m_uNetIndex;
+        bCMatrix m_InverseWorldMatrix;
+        int __UNK_0144;
 
     public:
         gCNavZone_PS( gCNavZone_PS const & );
@@ -34,15 +79,6 @@ class GE_DLLIMPORT gCNavZone_PS :
         gCNavZone_PS const & operator = ( gCNavZone_PS const & );
 
     public:
-        GEFloat &                    AccessBottomToleranz( void );
-        GEBool &                     AccessLinkInnerArea( void );
-        GEBool &                     AccessLinkInnerBottomArea( void );
-        GEBool &                     AccessLinkInnerTopArea( void );
-        bTValArray<bCVector> &       AccessPoint( void );
-        GEFloat &                    AccessRadius( void );
-        bCVector &                   AccessRadiusOffset( void );
-        GEFloat &                    AccessTopToleranz( void );
-        GEBool &                     AccessZoneIsCCW( void );
         void                         AddCollisionCircleOffset( bTValArray<bCMotion> &, bCVector const &, bCVector const &, GEBool );
         bEResult                     BuildClusterLists( void );
         GEFloat                      CalcAbsHeightDiffFlagAndPrioFlag( bCVector const &, GEBool &, GEBool & );
@@ -55,19 +91,10 @@ class GE_DLLIMPORT gCNavZone_PS :
         void                         DynAttachCollisionCirclePSObj( gCCollisionCircle_PSObj * );
         void                         DynDeattachCollisionCirclePSObj( gCCollisionCircle_PSObj * );
         bCVector const &             Get3DEvade( GEBool );
-        GEFloat const &              GetBottomToleranz( void ) const;
         GEFloat                      GetCosts( bCVector const &, bCVector const & ) const;
         bCVector2 const &            GetEvade( GEBool );
-        GEBool const &               GetLinkInnerArea( void ) const;
-        GEBool const &               GetLinkInnerBottomArea( void ) const;
-        GEBool const &               GetLinkInnerTopArea( void ) const;
         GEU32                        GetNetIndex( void );
-        bTValArray<bCVector> const & GetPoint( void ) const;
-        GEFloat const &              GetRadius( void ) const;
-        bCVector const &             GetRadiusOffset( void ) const;
-        GEFloat const &              GetTopToleranz( void ) const;
         GEFloat                      GetZoneBottomHeight( void );
-        GEBool const &               GetZoneIsCCW( void ) const;
         GEFloat                      GetZoneTopHeight( void );
         GEBool                       IntersectsStretch( bCStretch const &, GEFloat &, gCNavigation_PS *, GEBool );
         GEBool                       IsZoneIllegal( void );
@@ -76,19 +103,12 @@ class GE_DLLIMPORT gCNavZone_PS :
         bEResult                     RegisterDCCPS( gCDynamicCollisionCircle_PS * );
         bEResult                     RegisterNegZonePSObject( gCNegZone_PSObj * );
         bEResult                     RegisterPrefPathPSObject( gCPrefPath_PSObj * );
-        void                         SetBottomToleranz( GEFloat const & );
         GEBool                       SetFirstIntersection( GEFloat & );
-        void                         SetLinkInnerArea( GEBool const & );
-        void                         SetLinkInnerBottomArea( GEBool const & );
-        void                         SetLinkInnerTopArea( GEBool const & );
         void                         SetNetIndex( GEU32 );
-        void                         SetPoint( bTValArray<bCVector> const & );
-        void                         SetRadius( GEFloat const & );
-        void                         SetRadiusOffset( bCVector const & );
-        void                         SetTopToleranz( GEFloat const & );
-        void                         SetZoneIsCCW( GEBool const & );
         GEBool                       Test3DPointInInternalNegZone( bCVector const & );
-        GEBool                       Test3DPointInZone( bCVector const &, GEBool );
+        // When the point lies on the segment between the last and the first point of the NavZone,
+        // then a_bIncludeLastSegment is returned. Used for DCCs, but why?!
+        GEBool                       Test3DPointInZone( bCVector const & a_Point, GEBool a_bIncludeLastSegment );
         GEBool                       TestPointAgainstCollCircles( bCVector const &, GEBool, GEBool *, GEBool );
         GEBool                       TestPointAgainstDCCs( bCVector const &, eCEntity const & );
         GEBool                       TestPointAgainstNegZones( bCVector const &, GEBool );
@@ -103,5 +123,7 @@ class GE_DLLIMPORT gCNavZone_PS :
         void     Invalidate( void );
 
 };
+
+GE_ASSERT_SIZEOF( gCNavZone_PS, 0x148 )
 
 #endif

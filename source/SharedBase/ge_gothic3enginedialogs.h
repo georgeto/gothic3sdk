@@ -36,8 +36,10 @@ class GE_DLLIMPORT bCGothic3EngineDialogs
                 GEBool ShowModalErrorDialog( void );
                 GEBool ShowModalFileNotUniqueDialog( void );
                 GEBool ShowModalMemoryDialog( void );
+
             protected:
                 void Invalidate( void );
+
             protected:
                  bCDialogHandle( void );
                 ~bCDialogHandle( void );

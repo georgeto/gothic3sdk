@@ -92,7 +92,8 @@ void mCRequestHandler::SetEntityResponse( g3rc::EntityResponse & a_Response, eCE
     pScale->set_y( Scaling.GetY() );
     pScale->set_z( Scaling.GetZ() );
 
-    bCEulerAngles Rotation( a_Entity.GetWorldMatrix().GetPureRotation() );
+    bCEulerAngles Rotation;
+    Rotation.SetEulerAngles( a_Entity.GetWorldMatrix().GetPureRotation() );
     EulerAngles * pRotation = a_Response.mutable_position()->mutable_rotation();
     pRotation->set_yaw( Rotation.GetYaw() );
     pRotation->set_pitch( Rotation.GetPitch() );

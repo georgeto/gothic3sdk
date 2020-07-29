@@ -5,9 +5,6 @@
 
 #include "Game/GameEnum.h"
 
-#include "Game/ge_navigationadmin.h"
-#include "Game/ge_navigationmap.h"
-
 class gCSector;
 class gCWorld;
 #include "Game/ge_layerbase.h"
@@ -60,11 +57,15 @@ class gCCharacterSensor_PS;
 #include "Game/ge_negzone_psobj.h"
 #include "Game/ge_navzone_ps.h"
 #include "Game/ge_navpath_ps.h"
+#include "Game/ge_negzone_ps.h"
 #include "Game/ge_party_ps.h"
 #include "Game/ge_lock_ps.h"
 #include "Game/ge_effect_ps.h"
 
 #include "Game/ge_entity.h"
+
+#include "Game/ge_navigationmap.h"
+#include "Game/ge_navigationadmin.h"
 
 #include "Game/ge_dummycollectorbase.h"
 #include "Game/ge_dummycollectorpset_base.h"
@@ -93,6 +94,7 @@ class gCCharacterSensor_PS;
 #include "Game/ge_guimanager.h"
 #include "Game/ge_sessioncheats.h"
 #include "Game/ge_sessioninfo.h"
+#include "Game/ge_sessioneditor.h"
 #include "Game/ge_session.h"
 
 #include "Game/ge_huddialog.h"

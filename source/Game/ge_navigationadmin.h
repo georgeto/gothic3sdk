@@ -1,20 +1,6 @@
 #ifndef GE_NAVIGATIONADMIN_H_INCLUDED
 #define GE_NAVIGATIONADMIN_H_INCLUDED
 
-class gCAnchor_PS;
-class gCCollisionCircle_PS;
-class gCDoor_PS;
-class gCInteraction_PS;
-class gCNavigation_PS;
-class gCNavZone_PS;
-class gCNavPath_PS;
-class gCNegZone_PS;
-class gCPrefPath_PS;
-class gCWaterZone_PS;
-class bCVector;
-class eCEntityProxy;
-class gCDynamicCollisionCircle_PS;
-
 class GE_DLLIMPORT gCNavigationAdmin :
     public eCEngineComponentBase
 {
@@ -103,6 +89,28 @@ class GE_DLLIMPORT gCNavigationAdmin :
         bEResult        RunDynamicNavigation( void );
         bEResult        UpdateNavigationEnabledFlags( void );
 
+    public:
+        bTPtrArray<gCWaterZone_PS *> m_arrRegisteredWaterZones;
+        bTPtrArray<gCDoor_PS *> m_arrRegisteredDoors;
+        bTPtrArray<gCAnchor_PS *> m_arrRegisteredAnchors;
+        bTPtrArray<gCNavigation_PS *> m_arrRegisteredNavigations;
+        bTPtrArray<gCNavigation_PS *> m_arrRegisteredNavigationsInROI;
+        GEBool m_bUpdateNavigationEnabledFlagsPending;
+        GEBool m_bPauseProcessing;
+        GEBool o_bResetNavigation;
+        GE_PADDING(1)
+        gCNavigationMap m_NavigationMap;
+        GEU32 m_uProfileLastTicksSecond;
+        GEU32 m_uProfileLastTicksFirst;
+        GEU8 field_170;
+        GE_PADDING(3)
+        GEFloat field_174;
+        GE_PADDING(4)
+        gCDynamicCollisionCircle_PS *gap_17C;
+        gCNavigation_PS *gap_180;
+        GEFloat m_fMaxFreePlayerGotoDistance;
 };
+
+GE_ASSERT_SIZEOF( gCNavigationAdmin, 0x188 )
 
 #endif

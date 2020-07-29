@@ -150,7 +150,7 @@ Entity GetTreasureSet(PSInventory const & a_Inventory, gETreasureDistribution a_
                 TreasureSet = a_Inventory.GetTreasureSet5();
                 break;
         }
-        if(TreasureSet.TreasureSet.GetProperty<PSTreasureSet::PropertyTreasureDistribution>() == a_enuTreasureDistribution)
+        if(TreasureSet.TreasureSet.TreasureDistribution == a_enuTreasureDistribution)
             return TreasureSet;
     }
     return None;
@@ -264,9 +264,66 @@ Entity GetRandomFoundRefinedFreepoint()
     return g_arrFoundFreepointsRefined->GetAt(Entity::GetRandomNumber(g_arrFoundFreepointsRefined->GetCount()));
 }
 
+void ClearNextActionsIfPlayer(Entity const & a_Entity)
+{
+    typedef void ( GE_STDCALL *mFClearNextActionsIfPlayer )( Entity );
+    static mFClearNextActionsIfPlayer s_fClearNextActionsIfPlayer = force_cast<mFClearNextActionsIfPlayer>(RVA_ScriptGame(0x7A00));
+
+    return s_fClearNextActionsIfPlayer(a_Entity);
+}
+
+void PopCurrentActionIfPlayer(Entity const & a_Entity)
+{
+    typedef void ( GE_STDCALL *mFPopCurrentActionIfPlayer )( Entity );
+    static mFPopCurrentActionIfPlayer s_fPopCurrentActionIfPlayer = force_cast<mFPopCurrentActionIfPlayer>(RVA_ScriptGame(0x79A0));
+
+    return s_fPopCurrentActionIfPlayer(a_Entity);
+}
+
+GEInt GetPlayerIntendedLeftHandWeaponIndex()
+{
+    return *reinterpret_cast<GEInt *>(RVA_ScriptGame(0x118AB4));
+}
+
+GEInt GetPlayerIntendedRightHandWeaponIndex()
+{
+    return *reinterpret_cast<GEInt *>(RVA_ScriptGame(0x118AB8));
+}
+
+void SetUseItemIndexIfPlayer(Entity const & a_Entity, GEInt a_iItemIndex)
+{
+    if(a_Entity.IsPlayer())
+        *reinterpret_cast<GEInt *>(RVA_ScriptGame(0x118ABC)) = a_iItemIndex;
+}
+
 bTObjArray<gSItemComboCategorization> & GetItemComboCategorization()
 {
     return *reinterpret_cast<bTObjArray<gSItemComboCategorization> *>(RVA_ScriptGame(0x118AC0));
+}
+
+gEItemComboCategory GetItemComboCategory(gEUseType a_enuUseTypeLeft, gEUseType a_enuUseTypeRight)
+{
+    bTObjArray<gSItemComboCategorization> const & ItemComboCategorization = GetItemComboCategorization();
+    GE_ARRAY_FOR_EACH(Categorization, ItemComboCategorization)
+    {
+        if(Categorization->m_enuUseTypeLeft == a_enuUseTypeLeft && Categorization->m_enuUseTypeRight == a_enuUseTypeRight)
+            return Categorization->m_enuCategory;
+    }
+    return gEItemComboCategory_Deny;
+}
+
+gEItemComboCategory GetItemComboCategory(Entity const & a_Holder, GEInt a_iLeftItem, GEInt a_iRightItem)
+{
+    return GetItemComboCategory(a_Holder.Inventory.GetUseType(a_iLeftItem), a_Holder.Inventory.GetUseType(a_iRightItem));
+}
+
+gEItemComboCategory EvaluateUseWeaponStack(Entity const & a_Player, GEInt a_iWeaponIndex)
+{
+    typedef gEItemComboCategory ( GE_STDCALL *mFEvaluateUseWeaponStack )( Entity );
+    static mCCaller CallEvaluateUseWeaponStack(mCCaller::GetCallerParams(RVA_ScriptGame(0x2550), mCRegisterBase::mERegisterType_Eax));
+
+    CallEvaluateUseWeaponStack.SetImmEax(a_iWeaponIndex);
+    return CallEvaluateUseWeaponStack.GetFunction<mFEvaluateUseWeaponStack>()(a_Player);
 }
 
 GEU32 GetItemQuality(bCString const & a_ItemName) {

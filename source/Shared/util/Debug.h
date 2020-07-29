@@ -17,5 +17,6 @@
 
 void assertionFailed(const char* exp, const char* file, int line);
 
+void __declspec(noreturn) CallFatalError( const char * a_strModule, const char * a_strDescription, const char * a_strFile = "", int a_iLine = 0 );
 
 #endif

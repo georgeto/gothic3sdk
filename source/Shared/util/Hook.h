@@ -114,6 +114,9 @@ class mCRegisterBase
         template< typename T > void   SetImmEdi( T a_Edi );
 
     protected:
+        asmjit::X86Gp const & ToX86Register( mERegisterType a_RegisterType );
+
+    protected:
         GEU32    m_u32Eax;
         GEU32    m_u32Ecx;
         GEU32    m_u32Edx;
@@ -175,8 +178,11 @@ class mCBaseHook :
     public:
         enum mEHookType
         {
+            // [Thread-safe, Recursion-safe]
             mEHookType_OnlyStack,
+            // [Not Thread-safe, Not Recursion-safe]
             mEHookType_ThisCall,
+            // [Not Thread-safe, Not Recursion-safe]
             mEHookType_Mixed
         };
 
@@ -220,7 +226,7 @@ class mCBaseHook :
         static const GEU32 CALL_SIZE = 5;
 
     protected:
-        GELPVoid DoRegisterMagic( mCHookParams const & a_HookParams );
+        void DoRegisterMagic( asmjit::X86CodeAsm & a_Assembler, mCHookParams const & a_HookParams );
 
     protected:
         GELPVoid m_pSelf;
@@ -238,42 +244,162 @@ class mCBaseHook :
 };
 
 #define ME_DECLARE_HOOK_BUILDER_BASE( CLASS ) \
-    template<typename T>                      \
+    template<typename T, typename P>          \
     class CLASS ## BuilderBase :              \
-        public CLASS ## Params
+        public P
 
-#define ME_DECLARE_HOOK_BUILDER( CLASS )                              \
-    class CLASS ## Builder :                                          \
-        public CLASS ## BuilderBase<CLASS ## Builder>                 \
-    {                                                                 \
-    };                                                                \
-                                                                      \
-    class CLASS ## InstanceBuilder :                                  \
-        public CLASS ## BuilderBase<CLASS ## InstanceBuilder>,        \
-        public mCHookInstanceBuilder<CLASS ## InstanceBuilder, CLASS> \
-    {                                                                 \
+#define ME_DECLARE_HOOK_BUILDER_DERIVE( CLASS, BASE ) \
+    template<typename T, typename P>                  \
+    class CLASS ## BuilderBase :                      \
+        public BASE ## BuilderBase<T, P>
+
+#define ME_DECLARE_HOOK_BUILDER( CLASS )                                        \
+    class CLASS ## Builder :                                                    \
+        public CLASS ## BuilderBase<CLASS ## Builder, CLASS ## Params>          \
+    {                                                                           \
+    };                                                                          \
+                                                                                \
+    class CLASS ## InstanceBuilder :                                            \
+        public CLASS ## BuilderBase<CLASS ## InstanceBuilder, CLASS ## Params>, \
+        public mCHookInstanceBuilder<CLASS ## InstanceBuilder, CLASS>           \
+    {                                                                           \
     };
 
 
-class mCFunctionHook :
+class mCAbstractRegArgHook :
     public mCBaseHook
 {
     public:
-        class mCFunctionHookParams :
+        class mCAbstractRegArgHookParams :
             public mCHookParams
+        {
+            public:
+                enum mEArgType
+                {
+                    mEArgType_RegDirect,
+                    mEArgType_RegIndirect,
+                    mEArgType_Immediate
+                };
+
+                struct mSRegRelativeArg
+                {
+                    mERegisterType m_Register;
+                    union {
+                        GEU32 m_u32Offset;
+                        GEU32 m_u32Immediate;
+                    };
+                    mEArgType m_enuArgType;
+                };
+
+            protected:
+                friend class mCAbstractRegArgHook;
+                bTObjArray<mSRegRelativeArg> m_arrStackArgs;
+        };
+
+        ME_DECLARE_HOOK_BUILDER_BASE( mCAbstractRegArgHook )
+        {
+            public:
+                // [Thread-safe, Recursion-safe]
+                // Registers are passed in left-to-right order
+                inline T & AddStackArg( GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None, GEBool a_bIndirect = GEFalse )
+                {
+                    mSRegRelativeArg Arg = { a_RegisterType, a_u32Offset, a_bIndirect ? mEArgType_RegIndirect : mEArgType_RegDirect };
+                    m_arrStackArgs.Add( Arg );
+                    return *static_cast<T *>(this);
+                };
+
+                // [Thread-safe, Recursion-safe]
+                inline T & AddStackArgEbp( GEU32 a_u32Offset )
+                {
+                    return AddStackArg( a_u32Offset, mERegisterType_Ebp );
+                };
+
+                // [Thread-safe, Recursion-safe]
+                inline T & AddStackArgReg( mERegisterType a_RegisterType )
+                {
+                    return AddStackArg( 0, a_RegisterType );
+                };
+
+                // [Thread-safe, Recursion-safe]
+                inline T & AddPtrStackArg( GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None )
+                {
+                    return AddStackArg( a_u32Offset, a_RegisterType, GETrue );
+                };
+
+                // [Thread-safe, Recursion-safe]
+                inline T & AddPtrStackArgEbp( GEU32 a_u32Offset )
+                {
+                    return AddStackArg( a_u32Offset, mERegisterType_Ebp, GETrue );
+                };
+
+                // [Thread-safe, Recursion-safe]
+                inline T & AddRegArg( mERegisterType a_RegisterType )
+                {
+                    return AddStackArg( 0, a_RegisterType );
+                };
+
+                // [Thread-safe, Recursion-safe]
+                inline T & AddPtrRegArg( mERegisterType a_RegisterType )
+                {
+                    return AddPtrStackArg( 0, a_RegisterType );
+                };
+
+                // [Thread-safe, Recursion-safe]
+                template<typename V>
+                inline T & AddImmArg( V a_ImmediateValue )
+                {
+                    GE_ASSERT_SIZEOF( a_ImmediateValue, sizeof( GEU32 ) );
+                    mSRegRelativeArg Arg = { mERegisterType_None, *reinterpret_cast<GEU32 *>( &a_ImmediateValue ), mEArgType_Immediate };
+                    m_arrStackArgs.Add( Arg );
+                    return *static_cast<T *>(this);
+                };
+
+                // [Thread-safe, Recursion-safe]
+                inline T & AddThisArg()
+                {
+                    return AddStackArg( 0, mERegisterType_Ecx );
+                };
+        };
+
+    protected:
+        void PushArguments( asmjit::X86CodeAsm & a_Assembler, mCAbstractRegArgHookParams const & a_Params );
+};
+
+
+
+class mCFunctionHook :
+    public mCAbstractRegArgHook
+{
+    public:
+        class mCFunctionHookParams :
+            public mCAbstractRegArgHookParams
         {
             protected:
                 friend class mCFunctionHook;
                 GEBool m_bTransparent = GEFalse;
+                GEBool m_bRestoreRegisterArgs = GEFalse;
         };
 
-        ME_DECLARE_HOOK_BUILDER_BASE( mCFunctionHook )
+        ME_DECLARE_HOOK_BUILDER_DERIVE( mCFunctionHook, mCAbstractRegArgHook )
         {
             public:
+                // [Not Thread-safe, Not Recursion-safe]
                 // A 'transparent' hook disables itself on entering.
                 // Therefore calling the hooked function from inside the hook is possible without using GetOriginalFunction.
                 // NOTE: 'transparent' hooks can only be used in combination with the hook types OnlyStack or ThisCall.
                 inline T & Transparent() { m_bTransparent = GETrue; return *static_cast<T *>(this); }
+
+                // [Thread-safe, Recursion-safe]
+                // Restore register arguments before calling the original function.
+                // Expects the arguments to be passed in the same order as received by the hook function.
+                // The arguments are moved from the stack to the according registers.
+                // Only direct register arguments without offset are allowed.
+                inline T & RestoreRegisterArgs() { m_bRestoreRegisterArgs = GETrue; return *static_cast<T *>(this); }
+
+                // [Thread-safe, Recursion-safe]
+                // Push this pointer on stack before entering hook function: AddThisArg()
+                // Pop this pointer from stack before entering original function: RestoreRegisterArgs()
+                inline T & ThisCall() { AddThisArg(); return RestoreRegisterArgs(); }
         };
 
         ME_DECLARE_HOOK_BUILDER( mCFunctionHook );
@@ -342,34 +468,15 @@ class mCVtableHook :
 };
 
 class mCCallHook :
-    public mCBaseHook
+    public mCAbstractRegArgHook
 {
     public:
         class mCCallHookParams :
-            public mCHookParams
+            public mCAbstractRegArgHookParams
         {
-            public:
-                enum mEArgType
-                {
-                    mEArgType_RegDirect,
-                    mEArgType_RegIndirect,
-                    mEArgType_Immediate
-                };
-
-                struct mSRegRelativeArg
-                {
-                    mERegisterType m_Register;
-                    union {
-                        GEU32 m_u32Offset;
-                        GEU32 m_u32Immediate;
-                    };
-                    mEArgType m_enuArgType;
-                };
-
             protected:
                 friend class mCCallHook;
                 GEU32 m_u32CallAdr;
-                bTObjArray<mSRegRelativeArg> m_arrStackArgs;
                 GEBool m_bInsertCall = GEFalse;
                 GEBool m_bExplicitSize = GEFalse;
                 GEUInt m_uCallSize = 0;
@@ -378,69 +485,21 @@ class mCCallHook :
                 GEBool m_bVariableReturnAddress = GEFalse;
                 GEBool m_bRestoreRegister = GEFalse;
                 GEBool m_bTestOnReturn = GEFalse;
+                GEU32 m_u32TrueReturnAdr = 0;
+                GEU32 m_u32FalseReturnAdr = 0;
         };
 
-        ME_DECLARE_HOOK_BUILDER_BASE( mCCallHook )
+        ME_DECLARE_HOOK_BUILDER_DERIVE( mCCallHook, mCAbstractRegArgHook )
         {
             public:
-                // Registers are passed in left-to-right order
-                inline T & AddStackArg( GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None, GEBool a_bIndirect = GEFalse )
-                {
-                    mSRegRelativeArg Arg = { a_RegisterType, a_u32Offset, a_bIndirect ? mEArgType_RegIndirect : mEArgType_RegDirect };
-                    m_arrStackArgs.Add( Arg );
-                    return *static_cast<T *>(this);
-                };
-
-                inline T & AddStackArgEbp( GEU32 a_u32Offset )
-                {
-                    return AddStackArg( a_u32Offset, mERegisterType_Ebp );
-                };
-
-                inline T & AddStackArgReg( mERegisterType a_RegisterType )
-                {
-                    return AddStackArg( 0, a_RegisterType );
-                };
-
-                inline T & AddPtrStackArg( GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None )
-                {
-                    return AddStackArg( a_u32Offset, a_RegisterType, GETrue );
-                };
-
-                inline T & AddPtrStackArgEbp( GEU32 a_u32Offset )
-                {
-                    return AddStackArg( a_u32Offset, mERegisterType_Ebp, GETrue );
-                };
-
-                inline T & AddRegArg( mERegisterType a_RegisterType )
-                {
-                    return AddStackArg( 0, a_RegisterType );
-                };
-
-                inline T & AddPtrRegArg( mERegisterType a_RegisterType )
-                {
-                    return AddPtrStackArg( 0, a_RegisterType );
-                };
-
-                template<typename T>
-                inline T & AddImmArg( T a_ImmediateValue )
-                {
-                    GE_ASSERT_SIZEOF( a_ImmediateValue, sizeof( GEU32 ) );
-                    mSRegRelativeArg Arg = { a_RegisterType, reinterpret_cast<GEU32>( a_ImmediateValue ), mEArgType_Immediate };
-                    m_arrStackArgs.Add( Arg );
-                    return *static_cast<T *>(this);
-                };
-
-                inline T & AddThisArg()
-                {
-                    return AddStackArg( 0, mERegisterType_Ecx );
-                };
-
+                // [Thread-safe, Recursion-safe]
                 inline T & InsertCall()
                 {
                     m_bInsertCall = GETrue;
                     return *static_cast<T *>(this);
                 };
 
+                // [Thread-safe, Recursion-safe]
                 inline T & ReplaceSize( GEUInt a_uReplaceSize )
                 {
                     m_bExplicitSize = GETrue;
@@ -450,6 +509,7 @@ class mCCallHook :
                     return *static_cast<T *>(this);
                 };
 
+                // [Thread-safe, Recursion-safe]
                 inline T & ExplicitSize( GEUInt a_uCallSize, GEUInt a_uRelocateSize )
                 {
                     m_bExplicitSize = GETrue;
@@ -458,24 +518,44 @@ class mCCallHook :
                     return *static_cast<T *>(this);
                 };
 
+                // [Not thread-safe, Not Recursion-safe]
                 inline T & VariableReturnAddress()
                 {
                     m_bVariableReturnAddress = GETrue;
                     return *static_cast<T *>(this);
                 };
 
+                // [Not thread-safe, Not Recursion-safe]
                 inline T & RestoreRegister()
                 {
                     m_bRestoreRegister = GETrue;
                     return *static_cast<T *>(this);
                 };
 
+                // [Thread-safe, Recursion-safe]
                 inline T & TestOnReturn()
                 {
                     m_bTestOnReturn = GETrue;
                     return *static_cast<T *>(this);
                 };
 
+                // [Thread-safe, Recursion-safe]
+                inline T & OnTrueReturnTo( GEU32 a_u32ReturnAdr )
+                {
+                    TestOnReturn();
+                    m_u32TrueReturnAdr = a_u32ReturnAdr;
+                    return *static_cast<T *>(this);
+                }
+
+                // [Thread-safe, Recursion-safe]
+                inline T & OnFalseReturnTo( GEU32 a_u32ReturnAdr )
+                {
+                    TestOnReturn();
+                    m_u32FalseReturnAdr = a_u32ReturnAdr;
+                    return *static_cast<T *>(this);
+                }
+
+                // [Thread-safe, Recursion-safe]
                 template< typename O >
                 inline T & OriginalFunction( O a_pOriginalFunc )
                 {

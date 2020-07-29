@@ -11,6 +11,7 @@
 
 #define GE_UNREFERENCED_PARAMETER(P) (P)
 #define GE_NORETURN __declspec(noreturn)
+#define GE_FORCE_INLINE __forceinline
 
 #define GE_CCALL __cdecl
 #define GE_STDCALL __stdcall
@@ -19,6 +20,7 @@
 #define GE_DLLIMPORT __declspec( dllimport )
 #define GE_DLLIMPORT_EXTC extern "C" GE_DLLIMPORT
 #define GE_DLLIMPORT_DATA extern "C++" GE_DLLIMPORT
+#define GE_NO_DLLIMPORT template<typename NO_DLLIMPORT = void>
 #define GE_THREAD_LOCAL __declspec( thread )
 
 namespace Genome

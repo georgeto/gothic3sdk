@@ -4,7 +4,6 @@
 class eCCanvas;
 class eCTitleBarCtrl;
 class eCNotifyEventArg;
-class eCClickEventArg;
 class eCScrollBarCtrl;
 class eCGUIManager;
 class eCCaret;
@@ -19,6 +18,18 @@ class eCColorScheme {
 enum eEWinTextMode;
 enum eEWinAlignMode;
 enum eEWinAniMode;
+
+class eCWnd;
+class eCClickEventArg :
+    public bCEvent
+{
+  bCPoint m_ClickPosition;
+  GEBool  m_bMouseButtonState;
+  GEBool  m_bMouseButtonLastState;
+  GEInt   m_iSomeIndex;
+  eCWnd * m_pWindow;
+};
+GE_ASSERT_SIZEOF( eCClickEventArg, 0x2C )
 
 class GE_DLLIMPORT eCWnd :
     public eCInputReceiver
@@ -314,6 +325,10 @@ class GE_DLLIMPORT eCWnd :
         GEBool NotifyChildren( GEU32, GEU32, GEU32 );
         GEInt  NotifyParent( GEU32, GEU32, GEU32 );
 
+    private:
+        GE_PADDING( 0xE0 )
 };
 
+
+GE_ASSERT_SIZEOF( eCWnd, 0xF0 )
 #endif

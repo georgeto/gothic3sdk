@@ -274,3 +274,9 @@ bTPropertyObject<CLASS, BASECLASS>::bTPropertyObject( GEBool a_bRoot )
     m_pObject = 0;
     CreateInternal(a_bRoot);
 }
+
+template< typename CLASS, typename BASECLASS >
+bTPropertyObject< CLASS, BASECLASS > & bTPropertyObject<CLASS, BASECLASS>::operator=( bTPropertyObject< CLASS, BASECLASS > const & a_Source )
+{
+    CopyFrom(a_Source);
+}

@@ -29,7 +29,7 @@ namespace asmjit {
             {
                 GetAsmjitLogger().logf("AsmJit error: %s\n", message);
                 fflush(GetAsmjitLogger().getStream());
-                abort();
+                CallFatalError("AsmJit error!", message);
             }
         };
     }
@@ -37,6 +37,18 @@ namespace asmjit {
     X86CodeAsm::X86CodeAsm(uint64_t baseAddress)
     {
         init(baseAddress);
+    }
+
+    asmjit::Error X86CodeAsm::Append(X86CodeAsm & a_CodeAsm)
+    {
+        if(a_CodeAsm.code.hasBaseAddress())
+            return kErrorInvalidArgument;
+
+        void * buffer = malloc(a_CodeAsm.GetCode().getCodeSize());
+        size_t relocSize = a_CodeAsm.code.relocate(buffer);
+        asmjit::Error result = ParseUntilSize(*this, buffer, relocSize, relocSize);
+        free(buffer);
+        return result;
     }
 
     void X86CodeAsm::init(uint64_t baseAddress)
@@ -56,6 +68,11 @@ namespace asmjit {
     asmjit::CodeHolder const & X86CodeAsm::GetCode() const
     {
         return code;
+    }
+
+    bool X86CodeAsm::IsEmpty() const
+    {
+        return code.getCodeSize() == 0;
     }
 
     void X86CodeAsm::reset()
@@ -125,13 +142,6 @@ asmjit::FileLogger & GetAsmjitLogger()
     return AsmjitFileLogger;
 }
 
-void Parse(asmjit::X86CodeAsm &a)
-{
-    asmtk::AsmParser p(&a);
-    p.parse("cmp eax, eax");
-    p.parse("xor ecx, edx");
-}
-
 bool WriteAssemblerData(asmjit::X86CodeAsm &a, size_t assertSize, bool resetAssembler, bool fillWithNops)
 {
     asmjit::CodeHolder & code = a.GetCode();
@@ -149,7 +159,7 @@ bool WriteAssemblerData(asmjit::X86CodeAsm &a, size_t assertSize, bool resetAsse
     if(assertSize != 0 && code.getCodeSize() != assertSize)
         return false;
 
-    void* writeAddress = reinterpret_cast<void *>(code.getBaseAddress());
+    void* writeAddress = reinterpret_cast<void *>(static_cast<uint32_t>(code.getBaseAddress()));
     if(!WriteMemory(writeAddress, a.getBufferData(), code.getCodeSize()))
         return false;
 
@@ -177,15 +187,20 @@ bool ReadAssemblerData(asmjit::X86CodeAsm &dest, void* srcAddress, size_t size)
 
 asmjit::Error ParseUntilSize(asmjit::X86CodeAsm & dest, void * srcAddress, size_t minSize, size_t maxSize, size_t * outDecodedSize)
 {
+    return ParseUntilSize(dest, reinterpret_cast<uint32_t>(srcAddress), srcAddress, minSize, maxSize, outDecodedSize);
+}
+
+asmjit::Error ParseUntilSize(asmjit::X86CodeAsm & dest, size_t baseAddress, void * dataBuffer, size_t minSize, size_t maxSize, size_t * outDecodedSize)
+{
     asmtk::AsmParser parser(&dest);
 
-    _OffsetType offset = reinterpret_cast<_OffsetType>(srcAddress);
+    _OffsetType offset = baseAddress;
     size_t decodedSize = 0;
     while(decodedSize < minSize)
     {
         unsigned int decodedInstructionsCount = 0;
         _DecodedInst decodedInstructions[15];
-        _DecodeResult res = distorm_decode(offset, reinterpret_cast<const unsigned char*>(offset), (minSize - decodedSize) + 14, Decode32Bits, decodedInstructions, 15, &decodedInstructionsCount);
+        _DecodeResult res = distorm_decode(offset, reinterpret_cast<const unsigned char*>(dataBuffer) + (offset - baseAddress), (minSize - decodedSize) + 14, Decode32Bits, decodedInstructions, 15, &decodedInstructionsCount);
         if(res != DECRES_SUCCESS && res != DECRES_MEMORYERR)
             return dest.setLastError(asmjit::kErrorInvalidInstruction);
 
@@ -219,7 +234,7 @@ bool DecodeInstruction(void * srcAddress, _DInst & decodedInstruction, size_t si
     _CodeInfo ci;
     ci.code = reinterpret_cast<const uint8_t *>(srcAddress);
     ci.codeLen = size;
-    ci.codeOffset = reinterpret_cast<_OffsetType>(srcAddress);
+    ci.codeOffset = reinterpret_cast<uint32_t>(srcAddress);
     ci.dt = Decode32Bits;
     ci.features = DF_NONE;
     _DecodeResult res = distorm_decompose(&ci, &decodedInstruction, 1, &decodedInstructionsCount);

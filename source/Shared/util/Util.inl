@@ -1,4 +1,16 @@
 template< typename T >
+T Min(T a_Value1, T a_Value2)
+{
+    return a_Value1 < a_Value2 ? a_Value1 : a_Value2;
+}
+
+template< typename T >
+T Max(T a_Value1, T a_Value2)
+{
+    return a_Value1 > a_Value2 ? a_Value1 : a_Value2;
+}
+
+template< typename T >
 bCString EnumToString( bTPropertyTypeOnly<bTPropertyContainer<T>> const & a_PropertyType, T a_enuValue )
 {
     if(a_PropertyType.HasEnumValues())

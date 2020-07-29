@@ -90,10 +90,10 @@ void InitHooks()
 {
     CreateDirectory("Data\\StaticLightdata", NULL);
     if(!HookComputeStaticLightData.IsValid())
-        HookComputeStaticLightData.Prepare(GetProcAddress("Engine.dll", "?ComputeStaticLightData@eCStaticLightPreprocessor@@QAE_NPAVeCEntity@@_N@Z"), &ComputeStaticLightData, mCBaseHook::mEHookType_ThisCall).Hook();
+        HookComputeStaticLightData.Prepare(PROC_Engine("?ComputeStaticLightData@eCStaticLightPreprocessor@@QAE_NPAVeCEntity@@_N@Z"), &ComputeStaticLightData, mCBaseHook::mEHookType_ThisCall).Hook();
 
     if(!HookComputeStaticLighting.IsValid())
-        HookComputeStaticLighting.Hook(GetProcAddress("Engine.dll", "?ComputeStaticLighting@eCStaticLightPreprocessor@@QAE_NPAVeCEntity@@_N111@Z"), &ComputeStaticLighting, mCBaseHook::mEHookType_ThisCall);
+        HookComputeStaticLighting.Hook(PROC_Engine("?ComputeStaticLighting@eCStaticLightPreprocessor@@QAE_NPAVeCEntity@@_N111@Z"), &ComputeStaticLighting, mCBaseHook::mEHookType_ThisCall);
 
     static mCCallHook HookUnmountDir;
     if(!HookUnmountDir.IsValid())

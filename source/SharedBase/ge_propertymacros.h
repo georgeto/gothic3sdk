@@ -100,9 +100,25 @@
             return this-> ## MEMBERNAME;                            \
         }
 
+#define GE_DEFINE_INLINE_PROPERTY_ACCESS( TYPE, PROPERTY_NAME, MEMBER_NAME ) \
+    public:                                                                  \
+        GE_NO_DLLIMPORT                                                      \
+        inline TYPE & Access ## PROPERTY_NAME( void )                        \
+        {                                                                    \
+            return this-> ## MEMBER_NAME;                                    \
+        }                                                                    \
+    public:                                                                  \
+        GE_NO_DLLIMPORT                                                      \
+        inline TYPE const & Get ## PROPERTY_NAME( void ) const               \
+        {                                                                    \
+            return this-> ## MEMBER_NAME;                                    \
+        }                                                                    \
+    GE_DECLARE_PROPERTY_SETTER( TYPE, PROPERTY_NAME )
+
 // NOTE: GE_DEFINE_PROPERTY ends with protected scope.
 #define GE_DEFINE_PROPERTY( OBJECTCLASS, TYPE, MEMBERNAME, PROPERTYNAME ) \
     GE_DEFINE_PROPERTY_ACCESS( TYPE, PROPERTYNAME, MEMBERNAME )           \
+    GE_DECLARE_PROPERTY_WRAPPER( TYPE, PROPERTYNAME )                     \
     GE_DECLARE_PROPERTY_MEMBER( TYPE, MEMBERNAME )                        \
     GE_DECLARE_PROPERTY_TYPE( OBJECTCLASS, TYPE, MEMBERNAME )
 
@@ -156,6 +172,23 @@
     }
 
 //
+// Property wrapper
+//
+#ifndef __INTELLISENSE__
+#define GE_DECLARE_PROPERTY_WRAPPER( TYPE, PROPERTY_NAME )  \
+public:                                                         \
+    GE_NO_DLLIMPORT                                             \
+    inline void _Put ## PROPERTY_NAME( TYPE const & a_Value )   \
+    {                                                           \
+        Access ## PROPERTY_NAME() = a_Value;                    \
+    }                                                           \
+__declspec( property( get = Get ## PROPERTY_NAME, put = _Put ## PROPERTY_NAME ) ) TYPE PROPERTY_NAME;
+#else
+#define GE_DECLARE_PROPERTY_WRAPPER( TYPE, PROPERTY_NAME ) \
+__declspec( property( get = Get ## PROPERTY_NAME, put = _Put ## PROPERTY_NAME ) ) TYPE PROPERTY_NAME;
+#endif
+
+//
 // Import and declare
 //
 #define GE_DECLARE_PROPERTY_SET(CLASS, BASECLASS, MODIFIER) \
@@ -167,12 +200,18 @@
 #define GE_IMPORT_PROPERTY_SET(CLASS, BASECLASS) \
     GE_DECLARE_PROPERTY_SET(CLASS, BASECLASS, GE_DLLIMPORT)
 
-#define GE_IMPORT_DECLARE_PROPERTY( TYPE, PROPERTY_NAME, MEMBER_NAME ) \
-    GE_DECLARE_PROPERTY_TYPE( THIS_CLASS, TYPE, MEMBER_NAME  ) \
-    GE_DECLARE_PROPERTY( TYPE, MEMBER_NAME, PROPERTY_NAME )
+#define GE_IMPORT_DECLARE_PROPERTY( TYPE, PROPERTY_NAME, MEMBER_NAME )   \
+    GE_DECLARE_PROPERTY_TYPE( THIS_CLASS, TYPE, MEMBER_NAME  )           \
+    GE_DEFINE_INLINE_PROPERTY_ACCESS( TYPE, PROPERTY_NAME, MEMBER_NAME ) \
+    GE_DECLARE_PROPERTY_WRAPPER( TYPE, PROPERTY_NAME )                   \
+    GE_DECLARE_PROPERTY_MEMBER( TYPE, MEMBER_NAME )
 
 #define GE_IMPORT_DECLARE_ENUMPROP( TYPE, PROPERTY_NAME, MEMBER_NAME ) \
     GE_IMPORT_DECLARE_PROPERTY( bTPropertyContainer< TYPE >, PROPERTY_NAME, MEMBER_NAME )
+
+#define GE_IMPORT_DECLARE_OBJECTPROP( CLASS, BASECLASS, PROPERTY_NAME, MEMBER_NAME ) \
+    typedef bTPropertyObject<CLASS, BASECLASS> bTPropertyObject ## _ ## CLASS ## _ ## BASECLASS; \
+    GE_IMPORT_DECLARE_PROPERTY( bTPropertyObject ## _ ## CLASS ## _ ## BASECLASS, PROPERTY_NAME, MEMBER_NAME  )
 
 //
 // Helpers
