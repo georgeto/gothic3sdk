@@ -28,6 +28,8 @@ class mCYamlParser
         template <typename T>
         bTObjArray<bTAutoPOSmartPtr<T>> * LoadYamlSequenceAuto( bCString const & a_strFile, bTObjArray<bCString> const * a_arrClassPrefixes = 0 );
 
+        bEResult LoadYamlScalar(bCPropertyTypeBase const * a_pPropertyType, bCString const & a_InputValue, GELPVoid a_pData);
+
     private:
         static GEInt YamlFileReadHandler( GELPVoid data, GELPByte buffer, size_t size, size_t *size_read );
 
@@ -116,6 +118,8 @@ class mCYamlParser
                 m_arrClassPrefixes.Add("bC");
             }
         };
+
+        bEResult ReadScalarValue(bCPropertyTypeBase const * a_pPropertyType, bCString a_ClassName, bCString const & a_InputValue, GELPVoid a_pData);
 
         bEResult ReadNode(mSReadContext & a_Context, yaml_node_t const * a_pNode);
         bEResult ReadScalarNode(mSReadContext & a_Context, yaml_node_t const * a_pNode);

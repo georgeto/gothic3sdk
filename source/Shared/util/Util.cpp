@@ -345,6 +345,21 @@ GEBool EndsWith(bCString const & a_strValue, GEChar a_chPattern)
     return a_strValue.GetLength() > 0 && a_strValue.GetAt(a_strValue.GetLength() - 1) == a_chPattern;
 }
 
+GEBool ContainsOnly(bCString const & a_strValue, GELPCChar a_strChars)
+{
+    return strspn(a_strValue, a_strChars) == static_cast<size_t>(a_strValue.GetLength());
+}
+
+GEBool IsInteger(bCString const & a_strValue)
+{
+    return  !a_strValue.IsEmpty() && ContainsOnly(a_strValue, "-0123456789");
+}
+
+GEBool IsUnsignedInteger(bCString const & a_strValue)
+{
+    return !a_strValue.IsEmpty() && ContainsOnly(a_strValue, "0123456789");
+}
+
 GEInt IndexOf(const GELPCChar a_arrData[], GEInt a_iDataCount, bCString a_strValue, GEBool a_bIgnoreCase)
 {
     for(GEInt i = 0; i < a_iDataCount; i++)
@@ -553,7 +568,7 @@ void UnregisterModule(eCEngineComponentBase const * a_pModule)
     }
 }
 
-bTObjArray<bCString> GetEnumStringValues( bCPropertyTypeBase const & a_PropertyType )
+bTObjArray<bCString> GetEnumStringValues( bCPropertyTypeBase const & a_PropertyType, GEBool a_bPrefix )
 {
     bTObjArray<bCString> arrStringValues;
     if(a_PropertyType.HasEnumValues())
@@ -561,7 +576,12 @@ bTObjArray<bCString> GetEnumStringValues( bCPropertyTypeBase const & a_PropertyT
         for(GEInt i = 0; i < a_PropertyType.GetEnumValueCount(); i++)
         {
             bCEnumWrapper const * pEnumValue = a_PropertyType.GetEnumValue(i);
-            arrStringValues.Add(pEnumValue->GetValueString());
+            bCString strEnumValue = pEnumValue->GetValueString();
+            if(!a_bPrefix)
+            {
+                strEnumValue = strEnumValue.Mid(strEnumValue.Find('_') + 1);
+            }
+            arrStringValues.Add(strEnumValue);
         }
     }
 

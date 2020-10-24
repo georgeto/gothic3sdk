@@ -1,9 +1,7 @@
 #ifndef GE_INTERACTION_PS_H_INCLUDED
 #define GE_INTERACTION_PS_H_INCLUDED
 
-class GE_DLLIMPORT gCInteraction_PS :
-    public eCEntityPropertySet
-{
+GE_IMPORT_PROPERTY_SET( gCInteraction_PS, eCEntityPropertySet )
     public:    virtual GEU16                                      GetVersion( void ) const;
     public: using bCObjectBase::Write;
     public:    virtual bEResult                                   Write( bCOStream & );
@@ -30,6 +28,21 @@ class GE_DLLIMPORT gCInteraction_PS :
 
     public:
         static bCPropertyObjectBase const * GE_STDCALL GetRootObject( void );
+        GE_IMPORT_DECLARE_ENUMPROP( gEFocusPriority, FocusPriority, m_enuFocusPri )
+        GE_IMPORT_DECLARE_PROPERTY( eCEntityProxy, Owner, m_Owner ) // Read only
+        GE_IMPORT_DECLARE_PROPERTY( eCEntityProxy, User, m_User ) // Read only
+        GE_IMPORT_DECLARE_ENUMPROP( gEUseType, UseType, m_enuUseType )
+        GE_IMPORT_DECLARE_PROPERTY( bCString, ScriptUseFunc, m_strScriptUseFunc )
+        GE_IMPORT_DECLARE_PROPERTY( eCEntityProxy, AnchorPoint, m_AnchorPoint ) // Read only
+        GE_IMPORT_DECLARE_ENUMPROP( gEFocusNameType, FocusNameType, m_enuFocusNameType )
+        GE_IMPORT_DECLARE_PROPERTY( bCString, FocusNameBone, m_strFocusNameBone )
+        GE_IMPORT_DECLARE_PROPERTY( bCVector, FocusViewOffset, m_vecFocusViewOffset )
+        GE_IMPORT_DECLARE_PROPERTY( bCVector, FocusWorldOffset, m_vecFocusWorldOffset )
+        GE_IMPORT_DECLARE_PROPERTY( bool, UsedByPlayer, m_bUsedByPlayer ) // Read only
+        GE_PADDING( 3 )
+        GE_IMPORT_DECLARE_PROPERTY( bCString, EnterROIScript, m_strEnterROIScript )
+        GE_IMPORT_DECLARE_PROPERTY( bCString, ExitROIScript, m_strExitROIScript )
+        GE_IMPORT_DECLARE_PROPERTY( eCTemplateEntityProxy, Spell, m_entSpell )
 
     public:
         gCInteraction_PS( gCInteraction_PS const & );
@@ -39,56 +52,23 @@ class GE_DLLIMPORT gCInteraction_PS :
         gCInteraction_PS const & operator = ( gCInteraction_PS const & );
 
     public:
-        eCEntityProxy &                              AccessAnchorPoint( void );
-        bCString &                                   AccessEnterROIScript( void );
-        bCString &                                   AccessExitROIScript( void );
-        bCString &                                   AccessFocusNameBone( void );
-        bTPropertyContainer<gEFocusNameType> &       AccessFocusNameType( void );
-        bTPropertyContainer<gEFocusPriority> &       AccessFocusPriority( void );
-        bCVector &                                   AccessFocusViewOffset( void );
-        bCVector &                                   AccessFocusWorldOffset( void );
-        eCEntityProxy &                              AccessOwner( void );
-        eCTemplateEntityProxy &                      AccessSpell( void );
         bCString &                                   AccessUseFunc( void );
-        bTPropertyContainer<gEUseType> &             AccessUseType( void );
-        GEBool &                                     AccessUsedByPlayer( void );
-        eCEntityProxy &                              AccessUser( void );
         eCPropertySetProxy &                         GetAccessToZoneProxy( void );
-        eCEntityProxy const &                        GetAnchorPoint( void ) const;
-        bCString const &                             GetEnterROIScript( void ) const;
-        bCString const &                             GetExitROIScript( void ) const;
-        bCString const &                             GetFocusNameBone( void ) const;
-        bTPropertyContainer<gEFocusNameType> const & GetFocusNameType( void ) const;
-        bTPropertyContainer<gEFocusPriority> const & GetFocusPriority( void ) const;
-        bCVector const &                             GetFocusViewOffset( void ) const;
-        bCVector const &                             GetFocusWorldOffset( void ) const;
-        eCEntityProxy const &                        GetOwner( void ) const;
-        eCTemplateEntityProxy const &                GetSpell( void ) const;
         bCString const &                             GetUseFunc( void ) const;
-        bTPropertyContainer<gEUseType> const &       GetUseType( void ) const;
-        GEBool const &                               GetUsedByPlayer( void ) const;
-        eCEntityProxy const &                        GetUser( void ) const;
         eCEntity const *                             GetZoneEntity( void );
         eCPropertySetProxy const &                   GetZoneProxy( void ) const;
         GEBool                                       IsZoneProxyValid( void ) const;
-        void                                         SetAnchorPoint( eCEntityProxy const & );
-        void                                         SetEnterROIScript( bCString const & );
-        void                                         SetExitROIScript( bCString const & );
-        void                                         SetFocusNameBone( bCString const & );
-        void                                         SetFocusNameType( bTPropertyContainer<gEFocusNameType> const & );
-        void                                         SetFocusPriority( bTPropertyContainer<gEFocusPriority> const & );
-        void                                         SetFocusViewOffset( bCVector const & );
-        void                                         SetFocusWorldOffset( bCVector const & );
-        void                                         SetOwner( eCEntityProxy const & );
-        void                                         SetSpell( eCTemplateEntityProxy const & );
         void                                         SetUseFunc( bCString const & );
-        void                                         SetUseType( bTPropertyContainer<gEUseType> const & );
-        void                                         SetUsedByPlayer( GEBool const & );
-        void                                         SetUser( eCEntityProxy const & );
 
     protected:
         void Invalidate( void );
 
+    private:
+        eCPropertySetProxy m_NavZone;
+        GEBool             m_bZoneProxyValid;
+        GE_PADDING( 3 )
 };
+
+GE_ASSERT_SIZEOF( gCInteraction_PS, 0xE0 );
 
 #endif

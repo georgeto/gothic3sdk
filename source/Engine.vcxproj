@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -106,12 +106,17 @@
     <ClInclude Include="Engine\ge_font.h" />
     <ClInclude Include="Engine\ge_fontadmin.h" />
     <ClInclude Include="Engine\ge_geometryspatialcontext.h" />
+    <ClInclude Include="Engine\ge_gfxadmin.h" />
     <ClInclude Include="Engine\ge_gfxfont.h" />
     <ClInclude Include="Engine\ge_gfxindexdata.h" />
+    <ClInclude Include="Engine\ge_gfxmixeradmin.h" />
+    <ClInclude Include="Engine\ge_gfxshared.h" />
     <ClInclude Include="Engine\ge_gfxvertexdata.h" />
     <ClInclude Include="Engine\ge_guiadmin.h" />
     <ClInclude Include="Engine\ge_guimanager.h" />
     <ClInclude Include="Engine\ge_guimodule.h" />
+    <ClInclude Include="Engine\ge_guirenderer.h" />
+    <ClInclude Include="Engine\ge_guisubadmin.h" />
     <ClInclude Include="Engine\ge_illuminated_ps.h" />
     <ClInclude Include="Engine\ge_inputdispatcher.h" />
     <ClInclude Include="Engine\ge_inputreceiver.h" />

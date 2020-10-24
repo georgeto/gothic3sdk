@@ -45,6 +45,7 @@ class gCEntity;
 #include "Game/ge_npc_ps.h"
 #include "Game/ge_recipe_ps.h"
 #include "Game/ge_interaction_ps.h"
+#include "Game/ge_dialog_ps.h"
 #include "Game/ge_enclave_ps.h"
 #include "Game/ge_enclaveadmin.h"
 #include "Game/ge_movementbase_ps.h"
@@ -92,6 +93,7 @@ class gCCharacterSensor_PS;
 #include "Game/ge_svmmanager.h"
 
 #include "Game/ge_guimanager.h"
+#include "Game/ge_guientityrenderer.h"
 #include "Game/ge_sessioncheats.h"
 #include "Game/ge_sessioninfo.h"
 #include "Game/ge_sessioneditor.h"

@@ -53,20 +53,26 @@ GEBool                 StartsWith( bCString const & a_strValue, GELPCChar a_strP
 GEBool                 StartsWith( bCString const & a_strValue, GEChar a_chPattern );
 GEBool                 EndsWith( bCString const & a_strValue, GELPCChar a_strPattern );
 GEBool                 EndsWith( bCString const & a_strValue, GEChar a_chPattern );
+GEBool                 ContainsOnly( bCString const & a_strValue, GELPCChar a_strChars );
+GEBool                 IsInteger(bCString const & a_strValue);
+GEBool                 IsUnsignedInteger(bCString const & a_strValue);
 
 bCString               ToString( gEPoliticalAlignment a_PoliticalAlignment );
 bCString               ToString( gEQuestStatus a_QuestStatus );
 
 template< typename T >
-bCString               EnumToString( bTPropertyTypeOnly<bTPropertyContainer<T>> const & a_PropertyType, T a_enuValue );
+bCString               GetEnumPrefix();
 
 template< typename T >
-GEBool                 StringToEnum( T & a_oEnuValue, bTPropertyTypeOnly<bTPropertyContainer<T>> const & a_PropertyType, bCString a_strValue );
+bCString               EnumToString( bTPropertyTypeOnly<bTPropertyContainer<T>> const & a_PropertyType, T a_enuValue, GEBool a_bPrefix = GETrue );
 
 template< typename T >
-T                      StringToEnum( bTPropertyTypeOnly<bTPropertyContainer<T>> const & a_PropertyType, bCString a_strValue, T a_enuDefaultValue );
+GEBool                 StringToEnum( T & a_oEnuValue, bTPropertyTypeOnly<bTPropertyContainer<T>> const & a_PropertyType, bCString a_strValue, GEBool a_bPrefix = GETrue );
 
-bTObjArray<bCString>   GetEnumStringValues( bCPropertyTypeBase const & a_PropertyType );
+template< typename T >
+T                      StringToEnum( bTPropertyTypeOnly<bTPropertyContainer<T>> const & a_PropertyType, bCString a_strValue, T a_enuDefaultValue, GEBool a_bPrefix = GETrue );
+
+bTObjArray<bCString>   GetEnumStringValues( bCPropertyTypeBase const & a_PropertyType, GEBool a_bPrefix = GETrue );
 
 gCLayerBase *          GetLayer( bCString const & a_strName );
 eCGeometrySpatialContext * GetGeometrySpatialContext( bCString const & a_strName );

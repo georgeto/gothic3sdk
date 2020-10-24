@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="dummycollector">
@@ -164,6 +164,8 @@
     <ClInclude Include="Game\ge_effect_ps.h" />
     <ClInclude Include="Game\ge_negzone_ps.h" />
     <ClInclude Include="Game\ge_sessioneditor.h" />
+    <ClInclude Include="Game\ge_dialog_ps.h" />
+    <ClInclude Include="Game\ge_guientityrenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game\ge_scriptadmin.cpp">

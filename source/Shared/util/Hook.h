@@ -362,7 +362,7 @@ class mCAbstractRegArgHook :
         };
 
     protected:
-        void PushArguments( asmjit::X86CodeAsm & a_Assembler, mCAbstractRegArgHookParams const & a_Params );
+        void PushArguments( asmjit::X86CodeAsm & a_Assembler, mCAbstractRegArgHookParams const & a_Params, GEU32 a_u32AdditionalOffset = 0 );
 };
 
 
@@ -487,6 +487,7 @@ class mCCallHook :
                 GEBool m_bTestOnReturn = GEFalse;
                 GEU32 m_u32TrueReturnAdr = 0;
                 GEU32 m_u32FalseReturnAdr = 0;
+                bTValArray<mERegisterType> m_arrSavedRegisters;
         };
 
         ME_DECLARE_HOOK_BUILDER_DERIVE( mCCallHook, mCAbstractRegArgHook )
@@ -554,6 +555,15 @@ class mCCallHook :
                     m_u32FalseReturnAdr = a_u32ReturnAdr;
                     return *static_cast<T *>(this);
                 }
+
+                // [Thread-safe, Recursion-safe]
+                // Stores the register on the stack, before pushing any of the stack args.
+                // On return the register is restored from the stack.
+                inline T & SaveReg( mERegisterType a_RegisterType )
+                {
+                    m_arrSavedRegisters.Add( a_RegisterType );
+                    return *static_cast<T *>(this);
+                };
 
                 // [Thread-safe, Recursion-safe]
                 template< typename O >

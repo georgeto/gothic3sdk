@@ -264,6 +264,15 @@ Entity GetRandomFoundRefinedFreepoint()
     return g_arrFoundFreepointsRefined->GetAt(Entity::GetRandomNumber(g_arrFoundFreepointsRefined->GetCount()));
 }
 
+void FreeDestinationPointsOfEnclaveMembers(Entity const & a_Enclave)
+{
+    typedef void ( GE_STDCALL *mFFreeDestinationPointsOfEnclaveMembers )( Entity );
+    static mFFreeDestinationPointsOfEnclaveMembers s_fFreeDestinationPointsOfEnclaveMembers =
+        force_cast<mFFreeDestinationPointsOfEnclaveMembers>(RVA_ScriptGame(0xB0B10));
+
+    s_fFreeDestinationPointsOfEnclaveMembers(a_Enclave);
+}
+
 void ClearNextActionsIfPlayer(Entity const & a_Entity)
 {
     typedef void ( GE_STDCALL *mFClearNextActionsIfPlayer )( Entity );

@@ -173,11 +173,53 @@ GELPVoid mCYamlParser::LoadYaml(bCString const & a_strFile, bCPropertyObjectType
     return LoadYaml(a_strFile, a_Type.GetClassName(), a_arrClassPrefixes);
 }
 
+bEResult mCYamlParser::LoadYamlScalar(bCPropertyTypeBase const * a_pPropertyType, bCString const & a_InputValue, GELPVoid a_pData)
+{
+    return ReadScalarValue(a_pPropertyType, a_pPropertyType->GetPropertyClassName(), a_InputValue, a_pData);
+}
+
 int mCYamlParser::YamlFileReadHandler( void *data, unsigned char *buffer, size_t size, size_t *size_read )
 {
     eCVirtualFile * pFile = static_cast<eCVirtualFile *>(data);
     *size_read = pFile->Read(buffer, size);
     return 1;
+}
+
+bEResult mCYamlParser::ReadScalarValue(bCPropertyTypeBase const * a_pPropertyType, bCString a_ClassName, bCString const & a_InputValue, GELPVoid a_pData)
+{
+    if(!a_pPropertyType || a_pPropertyType->GetPropertyType() == bEPropertyType_Normal)
+    {
+        if(s_arrValueConverters.IsValidKey(a_ClassName))
+        {
+            mCYamlValueConverterBase * pConverter = s_arrValueConverters.GetAt(a_ClassName);
+            bEResult Result = pConverter->Read(a_InputValue, a_pData);
+            return Result;
+        }
+        else
+            return LogError("Type %s is not supported.\n", a_ClassName);
+    }
+    else if (a_pPropertyType->GetPropertyType() == bEPropertyType_PropertyContainer)
+    {
+        bCString EnumName = StripScope(UnMangle(GetTemplateArg(a_ClassName)));
+        if(a_pPropertyType->HasEnumValues())
+        {
+            for(GEInt i = 0; i < a_pPropertyType->GetEnumValueCount(); i++)
+            {
+                bCEnumWrapper const * pEnumValue = a_pPropertyType->GetEnumValue(i);
+                bCString EnumValue = StripScope(pEnumValue->GetValueString());
+
+                if(EnumValue.CompareNoCaseFast(a_InputValue) || EnumValue.CompareNoCaseFast( EnumName + "_" + a_InputValue ))
+                {
+                    static_cast<bTPropertyContainer<GEU32> *>(a_pData)->AccessValue() = pEnumValue->GetValue();
+                    return bEResult_Ok;
+                }
+            }
+        }
+
+        return LogError("Invalid value %s for enum %s.\n", a_InputValue, EnumName);
+    }
+    else
+        return LogError("Expected scalar type, but got %s.\n", a_ClassName);
 }
 
 #define YAML_PARSER_ASSERT(EXP) \
@@ -202,43 +244,7 @@ bEResult mCYamlParser::ReadNode(mSReadContext & a_Context, yaml_node_t const * a
 bEResult mCYamlParser::ReadScalarNode(mSReadContext & a_Context, yaml_node_t const * a_pNode)
 {
     YAML_PARSER_ASSERT(a_Context.GetData() != 0);
-
-    bCPropertyTypeBase * pPropertyType = a_Context.GetPropertyType();
-    bCString const & ClassName = a_Context.GetClassName();
-    if(!pPropertyType || pPropertyType->GetPropertyType() == bEPropertyType_Normal)
-    {
-        if(s_arrValueConverters.IsValidKey(ClassName))
-        {
-            mCYamlValueConverterBase * pConverter = s_arrValueConverters.GetAt(ClassName);
-            bEResult Result = pConverter->Read(GetScalarValue(a_pNode), a_Context.GetData());
-            return Result;
-        }
-        else
-            return LogError("Type %s is not supported.\n", ClassName);
-    }
-    else if (pPropertyType->GetPropertyType() == bEPropertyType_PropertyContainer)
-    {
-        bCString InputValue = GetScalarValue(a_pNode);
-        bCString EnumName = StripScope(UnMangle(GetTemplateArg(ClassName)));
-        if(pPropertyType->HasEnumValues())
-        {
-            for(GEInt i = 0; i < pPropertyType->GetEnumValueCount(); i++)
-            {
-                bCEnumWrapper const * pEnumValue = pPropertyType->GetEnumValue(i);
-                bCString EnumValue = StripScope(pEnumValue->GetValueString());
-
-                if(EnumValue.CompareNoCaseFast(InputValue) || EnumValue.CompareNoCaseFast( EnumName + "_" + InputValue ))
-                {
-                    static_cast<bTPropertyContainer<GEU32> *>(a_Context.GetData())->AccessValue() = pEnumValue->GetValue();
-                    return bEResult_Ok;
-                }
-            }
-        }
-
-        return LogError("Invalid value %s for enum %s.\n", InputValue, EnumName);
-    }
-    else
-        return LogError("Expected scalar type, but got %s.\n", ClassName);
+    return ReadScalarValue(a_Context.GetPropertyType(), a_Context.GetClassNameA(), GetScalarValue(a_pNode), a_Context.GetData());
 }
 
 bEResult mCYamlParser::ReadSequenceNode(mSReadContext & a_Context, yaml_node_t const * a_pNode)

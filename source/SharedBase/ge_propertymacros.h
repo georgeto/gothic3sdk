@@ -159,16 +159,16 @@
     __GE_DEFINE_PROPERTY_TYPE( OBJECTCLASS, bTPropertyContainer< ENUM >, MEMBERNAME, PROPERTYNAME, bEPropertyType_PropertyContainer )
 
 
-#define GE_DEFINE_ENUM_VALUE( OBJECTCLASS, MEMBERNAME, ENUM, VALUE )                                                                       \
+#define GE_DEFINE_ENUM_VALUE( OBJECTCLASS, MEMBERNAME, VALUE )                                                                       \
     GE_STATIC_BLOCK                                                                                                                        \
     {                                                                                                                                      \
-        OBJECTCLASS::ms_PropertyMember_ ## MEMBERNAME.AddEnumValue( GE_NEW( bTEnumWrapper<bTPropertyContainer<ENUM> >)( #VALUE, VALUE ) ); \
+        OBJECTCLASS::ms_PropertyMember_ ## MEMBERNAME.AddEnumValue( GE_NEW( bTEnumWrapper<bTPropertyContainer<decltype(VALUE)> >)( #VALUE, VALUE ) ); \
     }
 
-#define GE_DEFINE_DEFAULT_ENUM_VALUE( OBJECTCLASS, MEMBERNAME, ENUM, VALUE )                                                                      \
+#define GE_DEFINE_DEFAULT_ENUM_VALUE( OBJECTCLASS, MEMBERNAME, VALUE )                                                                      \
     GE_STATIC_BLOCK                                                                                                                               \
     {                                                                                                                                             \
-        OBJECTCLASS::ms_PropertyMember_ ## MEMBERNAME.AddDefaultEnumValue( GE_NEW( bTEnumWrapper<bTPropertyContainer<ENUM> >)( #VALUE, VALUE ) ); \
+        OBJECTCLASS::ms_PropertyMember_ ## MEMBERNAME.AddDefaultEnumValue( GE_NEW( bTEnumWrapper<bTPropertyContainer<decltype(VALUE)> >)( #VALUE, VALUE ) ); \
     }
 
 //

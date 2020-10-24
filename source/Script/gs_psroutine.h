@@ -27,10 +27,12 @@ public:
     GEFloat  GetStateTime( void ) const;
     GEFloat  GetTaskTime( void ) const;
     GEBool   IsValid( void ) const;
+    // Callback local to the current state (per RunTimeStack entry)
     void     SetLocalCallback( bCString );
     void     SetState( bCString );
     void     SetStateTime( GEFloat );
     void     SetTask( bCString );
+    // Task callback, is reset when SetTask() is called
     void     SetTaskCallback( bCString );
     void     SetTaskTime( GEFloat );
     void     SetTimeScale( GEFloat );

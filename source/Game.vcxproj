@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -50,6 +50,7 @@
     <ClInclude Include="Game\ge_charactermovement_ps.h" />
     <ClInclude Include="Game\ge_charactersensor_ps.h" />
     <ClInclude Include="Game\ge_clock_ps.h" />
+    <ClInclude Include="Game\ge_dialog_ps.h" />
     <ClInclude Include="Game\ge_dummycollectoradmin.h" />
     <ClInclude Include="Game\ge_dummycollectoranchor.h" />
     <ClInclude Include="Game\ge_dummycollectorbase.h" />
@@ -77,6 +78,7 @@
     <ClInclude Include="Game\ge_entitydummyvisual_ps.h" />
     <ClInclude Include="Game\ge_focus_ps.h" />
     <ClInclude Include="Game\ge_geometrylayer.h" />
+    <ClInclude Include="Game\ge_guientityrenderer.h" />
     <ClInclude Include="Game\ge_guimanager.h" />
     <ClInclude Include="Game\ge_huddialog.h" />
     <ClInclude Include="Game\ge_hudmenu.h" />

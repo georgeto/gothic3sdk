@@ -186,12 +186,12 @@ void mCBaseHook::DoRegisterMagic(asmjit::X86CodeAsm & a_Assembler, mCHookParams 
 }
 
 
-void mCAbstractRegArgHook::PushArguments(asmjit::X86CodeAsm & a_Assembler, mCAbstractRegArgHookParams const & a_Params)
+void mCAbstractRegArgHook::PushArguments(asmjit::X86CodeAsm & a_Assembler, mCAbstractRegArgHookParams const & a_Params, GEU32 a_u32AdditionalOffset)
 {
     using namespace asmjit;
     using namespace asmjit::x86;
 
-    GEU32 u32AdditionalOffset = 0;
+    GEU32 u32AdditionalOffset = a_u32AdditionalOffset;
     GE_ARRAY_FOR_EACH_REV(Arg, a_Params.m_arrStackArgs)
     {
         if(Arg->m_enuArgType == mCAbstractRegArgHookParams::mEArgType_RegDirect)
@@ -479,9 +479,15 @@ GEBool mCCallHook::HookInternal(mCCallHookParams const & a_HookParams)
 
     // Prolog
     X86CodeAsm AsmProlog;
+    // Push saved registers before stack args
+    GE_ARRAY_FOR_EACH(SavedRegister, a_HookParams.m_arrSavedRegisters)
+    {
+        AsmProlog.push(ToX86Register(*SavedRegister));
+    }
+
     if(!a_HookParams.m_arrStackArgs.IsEmpty())
     {
-        PushArguments(AsmProlog, a_HookParams);
+        PushArguments(AsmProlog, a_HookParams, a_HookParams.m_arrSavedRegisters.GetCount() * 4);
     }
 
     // Epilog
@@ -509,6 +515,12 @@ GEBool mCCallHook::HookInternal(mCCallHookParams const & a_HookParams)
     if(a_HookParams.m_bTestOnReturn)
     {
         AsmEpilog.test(al, al);
+    }
+
+    // Restore saved registers
+    GE_ARRAY_FOR_EACH_REV(SavedRegister, a_HookParams.m_arrSavedRegisters)
+    {
+        AsmEpilog.pop(ToX86Register(*SavedRegister));
     }
 
     if(a_HookParams.m_u32TrueReturnAdr != 0)

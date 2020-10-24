@@ -184,6 +184,7 @@ Entity               FindInteractObjectWithUseType( Entity const & a_Entity, gEU
 void                 RefineFoundFreepoints( gEUseType a_enuUseType );
 Entity               GetFirstFoundRefinedFreepoint();
 Entity               GetRandomFoundRefinedFreepoint();
+void                 FreeDestinationPointsOfEnclaveMembers(Entity const & a_Enclave);
 
 void                 ClearNextActionsIfPlayer( Entity const & a_Entity );
 void                 PopCurrentActionIfPlayer( Entity const & a_Entity );
