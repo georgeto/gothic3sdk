@@ -14,12 +14,16 @@ gSScriptInit & GetScriptInit()
 
 GEInt g_iLearnPointsOnLevelUp = 10;
 GEInt g_iHealthPointsOnLevelUp = 0;
+GEInt g_iStaminaPointsOnLevelUp = 0;
+GEInt g_iManaPointsOnLevelUp = 0;
 
 void LoadSettings() {
     eCConfigFile config = eCConfigFile();
     if(config.ReadFile(bCString("learnpoints.ini"))) {
         g_iLearnPointsOnLevelUp = config.GetInt(bCString("Game"), bCString("Game.LearnPointsOnLevelUp"), g_iLearnPointsOnLevelUp);
-		g_iHealthPointsOnLevelUp = config.GetInt(bCString("Game"), bCString("Game.HealthPointsOnLevelUp"), g_iHealthPointsOnLevelUp);
+        g_iHealthPointsOnLevelUp = config.GetInt(bCString("Game"), bCString("Game.HealthPointsOnLevelUp"), g_iHealthPointsOnLevelUp);
+        g_iStaminaPointsOnLevelUp = config.GetInt(bCString("Game"), bCString("Game.StaminaPointsOnLevelUp"), g_iStaminaPointsOnLevelUp);
+        g_iManaPointsOnLevelUp = config.GetInt(bCString("Game"), bCString("Game.ManaPointsOnLevelUp"), g_iManaPointsOnLevelUp);
     }
 }
 
@@ -27,10 +31,16 @@ GEI32 GE_STDCALL GetIncrementedLearnPoints()
 {
     PSPlayerMemory * pPlayerMemory = mCCallHook::GetLastSelf<PSPlayerMemory *>();
 
-	if(g_iHealthPointsOnLevelUp != 0)
-		pPlayerMemory->AddHitPointsMax(g_iHealthPointsOnLevelUp);
+    if(g_iHealthPointsOnLevelUp != 0)
+        pPlayerMemory->AddHitPointsMax(g_iHealthPointsOnLevelUp);
 
-	return pPlayerMemory->LPAttribs + g_iLearnPointsOnLevelUp;
+    if(g_iStaminaPointsOnLevelUp != 0)
+        pPlayerMemory->AddStaminaPointsMax(g_iStaminaPointsOnLevelUp);
+
+    if(g_iManaPointsOnLevelUp != 0)
+        pPlayerMemory->AddManaPointsMax(g_iManaPointsOnLevelUp);
+
+    return pPlayerMemory->LPAttribs + g_iLearnPointsOnLevelUp;
 }
 
 extern "C" __declspec( dllexport )
