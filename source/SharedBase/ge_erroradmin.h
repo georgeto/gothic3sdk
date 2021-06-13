@@ -17,7 +17,9 @@ enum bEErrorType
     bEErrorType_ForceDWORD = GE_FORCE_DWORD
 };
 
-typedef EXCEPTION_POINTERS bSException_Pointers;
+struct bSException_Pointers : public EXCEPTION_POINTERS
+{
+};
 
 class GE_DLLIMPORT bCErrorAdmin
 {

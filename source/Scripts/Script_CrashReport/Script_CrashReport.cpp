@@ -7,6 +7,16 @@
 
 namespace
 {
+    LONG WINAPI GenomeUnhandledExceptionFilter(EXCEPTION_POINTERS *ExceptionInfo)
+    {
+        return bCErrorAdmin::GetInstance().CallExceptionError(static_cast<bSException_Pointers *>(ExceptionInfo));
+    }
+
+    LPTOP_LEVEL_EXCEPTION_FILTER WINAPI NopSetUnhandledExceptionFilter(LPTOP_LEVEL_EXCEPTION_FILTER)
+    {
+        return NULL;
+    }
+
     class bCErrorAdmin_Helper : public bCErrorAdmin
     {
         public:
@@ -128,6 +138,12 @@ namespace
 
 void ApplyHooks()
 {
+    // Show error dialog also if no frame-based exception is active
+    SetUnhandledExceptionFilter(GenomeUnhandledExceptionFilter);
+    // Prevent other modules that are loaded later to overwrite our exception handler
+    static mCFunctionHook Hook_SetUnhandledExceptionFilter;
+    Hook_SetUnhandledExceptionFilter.Hook(GetProcAddress("kernel32.dll", "SetUnhandledExceptionFilter"), &NopSetUnhandledExceptionFilter);
+
     // Print modules and stack dump
 	static mCFunctionHook Hook_bCErrorAdmin_PrintStackFrame;
 	Hook_bCErrorAdmin_PrintStackFrame.Hook(PROC_SharedBase("?PrintStackFrame@bCErrorAdmin@@IAEXPAUbSException_Pointers@@@Z"), &bCErrorAdmin_PrintStackFrame);
