@@ -18,7 +18,7 @@ class GE_DLLIMPORT eCPVSCellItem
     public:
         static void GE_STDCALL          GetCellIndex( bCPoint &, bCVector const &, GEU32 );
         static void GE_STDCALL          GetCellIndex( bCPoint &, eCEntity const &, GEU32 );
-        static bCCriticalSectionWin32 & GE_STDCALLGetCriticalSection( void );
+        static bCCriticalSectionWin32 & GE_STDCALL GetCriticalSection( void );
         static bCPoint GE_STDCALL       GetEntity2DCoord( bCVector const & );
         static GEI32 GE_STDCALL         GetWorldMapRadius( void );
 

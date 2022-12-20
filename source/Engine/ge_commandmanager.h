@@ -52,7 +52,7 @@ class GE_DLLIMPORT eCCommandManager
         void                      Write( bCOStream & ) const;
 
     protected:
-        static bCString & GE_STDCALLGetScopeDelimiter( void );
+        static bCString & GE_STDCALL GetScopeDelimiter( void );
 
     protected:
         GEBool ExecuteRecursive( bCString const &, bCString &, eCConsoleDlg &, bCVariant & );

@@ -258,7 +258,7 @@ class GE_DLLIMPORT eCWnd :
         eCWnd *                        WindowFromPoint( bCPoint const & ) const;
 
     protected:
-        static bCString & GE_STDCALLCleanLine( bCString & );
+        static bCString & GE_STDCALL CleanLine( bCString & );
 
     protected:
         eCCanvas * &                AccessCanvas( void );
