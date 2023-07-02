@@ -4,8 +4,6 @@ Script_ModMe is a collection of modifications to Gothic 3's engine intended for 
 # Installation
 Copy the `Ini` and `scripts` folders into the root directory of your Gothic 3 installation.
 
-If you don't want to overwrite the original Gothic3.exe, you can put the new one under a different name (e.g. Gothic3Launcher.exe) in the root directory instead. Then you have to make sure that you start the game with this new exe, when you want to make use of Script_ModMe.
-
 !!! caution "Attention"
 	The Community Patch v1.75.14 is required!
 
