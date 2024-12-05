@@ -83,7 +83,7 @@ namespace
 // Recalculate the ambient occlusion data for all the LoDs in a eCResourceAnimationActor_PS.
 ME_MODULE(FixResourceAnimationActor)
 {
-    static const GELPCChar ROOT_PATH = "Data/_compiledAnimation/FixMe/";
+    static const bCString ROOT_PATH = "Data/_compiledAnimation/FixMe";
 
     bTObjArray<bCString> arrFiles;
     eCVirtualFileSystem::GetInstance().FindFiles(ROOT_PATH, arrFiles);
@@ -102,7 +102,7 @@ ME_MODULE(FixResourceAnimationActor)
             continue;
 
         Logger.LogFormat("Calculating ambient occlusion for %s...", *FileName);
-        bCString TargetName = ROOT_PATH + *FileName;
+        bCString TargetName = ROOT_PATH + "/" + *FileName;
         TargetName.Replace(".xact", "_FIXED.xact");
         bCString Result = CalculateAmbientOcclusion(*FileName, TargetName);
         Logger.LogFormat("\n  %s\n\n", Result);

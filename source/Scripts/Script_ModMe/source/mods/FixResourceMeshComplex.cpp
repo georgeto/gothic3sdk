@@ -55,7 +55,7 @@ namespace
 // Recalculate the spatial hierachy and the lightmap UV groups for eCResourceMeshComplex_PS.
 ME_MODULE(FixResourceMeshComplex)
 {
-    static const GELPCChar ROOT_PATH = "Data/_compiledMesh/FixMe/";
+    static const bCString ROOT_PATH = "Data/_compiledMesh/FixMe";
 
     bTObjArray<bCString> arrFiles;
     eCVirtualFileSystem::GetInstance().FindFiles(ROOT_PATH, arrFiles);
@@ -69,7 +69,7 @@ ME_MODULE(FixResourceMeshComplex)
         if(!EndsWith(*FileName, ".xcmsh") || EndsWith(*FileName, "_FIXED.xcmsh"))
             continue;
 
-        bCString TargetName = ROOT_PATH + *FileName;
+        bCString TargetName = ROOT_PATH + "/" + *FileName;
         TargetName.Replace(".xcmsh", "_FIXED.xcmsh");
         FixResourceMeshComplex(*FileName, TargetName, Logger);
     }
