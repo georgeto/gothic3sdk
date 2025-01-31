@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="util">
+      <UniqueIdentifier>{a473925b-9924-47ad-b92f-dc6fbaf970cb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Shared\util\AsmjitUtil.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Shared\util\Debug.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Shared\util\Hook.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Shared\util\Logging.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Shared\util\Memory.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Shared\util\Util.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="Script_AniName_Adp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Shared\util\AsmjitUtil.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Shared\util\Debug.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Shared\util\Hook.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Shared\util\Logging.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Shared\util\Memory.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Shared\util\Util.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="Script_AniName_Adp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Shared\util\Logging.inl">
+      <Filter>util</Filter>
+    </None>
+  </ItemGroup>
+</Project>
