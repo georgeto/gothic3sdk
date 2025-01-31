@@ -11,3 +11,6 @@
 /bin/**/*.pdb
 /bin/**/*.ilk
 /bin/**/*.dll
+
+.vs/
+*.user
