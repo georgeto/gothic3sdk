@@ -4,13 +4,15 @@
 #include "util/Hook.h"
 #include "util/Util.h"
 
-static mCFunctionHook Hook_UndeadAddon_GetAniName;
 namespace
 {
+    static mCFunctionHook Hook_UndeadAddon_GetAniName;
     void GE_STDCALL UndeadAddon_GetAniName(bCString& p_RetString, eCEntity* p_Entity, gEAction p_Action, bCString p_Str1, bCString& p_Str2, GEBool p_Bool)
     {
         Hook_UndeadAddon_GetAniName.GetOriginalFunction(&UndeadAddon_GetAniName)(p_RetString, p_Entity, p_Action, p_Str1, p_Str2, p_Bool);
-        gCNPC_PS* ptr_NPC = static_cast<gCNPC_PS*>(p_Entity->GetPropertySet(eEPropertySetType_NPC));
+        gCNPC_PS const* ptr_NPC = p_Entity->IsValid() ? GetPropertySet<gCNPC_PS>(p_Entity, eEPropertySetType_NPC) : nullptr;
+        if (!ptr_NPC)
+            return;
         switch (ptr_NPC->GetSpecies())
         {
         case gESpecies_Skeleton:
@@ -67,8 +69,6 @@ gSScriptInit & GetScriptInit()
 extern "C" __declspec( dllexport )
 gSScriptInit const * GE_STDCALL ScriptInit( void )
 {
-    GetScriptAdmin().LoadScriptDLL("Script_Animation.dll");
-
     ApplyHooks();
 
     return &GetScriptInit();
