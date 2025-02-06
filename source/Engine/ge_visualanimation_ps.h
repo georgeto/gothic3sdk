@@ -124,7 +124,7 @@ GE_IMPORT_PROPERTY_SET( eCVisualAnimation_PS, eCEntityPropertySet )
                 void                 Write( bCOStream & );
         };
 
-        class eSMotionDesc
+        struct eSMotionDesc
         {
             public:
                 enum eEMotionOwner;
