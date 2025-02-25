@@ -14,7 +14,8 @@ class gCSessionKeys;
 
 enum gESession_StartMode
 {
-    // TODO: Enumerator values
+    gESession_StartMode_NewGame = 0,
+    gESession_StartMode_LoadGame = 1,
 };
 
 class GE_DLLIMPORT gCSession : public eCEngineComponentBase
