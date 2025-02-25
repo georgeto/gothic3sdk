@@ -3,7 +3,6 @@
 
 class gCSessionKeys;
 class gCScreenOutputCtrl;
-enum gESession_StartMode;
 
 class GE_DLLIMPORT gCSession :
     public eCEngineComponentBase

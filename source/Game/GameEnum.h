@@ -932,6 +932,14 @@ enum gESession_State {
     gESession_State_Editor        = 11
 };
 
+// gCSession.Start
+
+enum gESession_StartMode
+{
+    gESession_StartMode_NewGame  = 0,
+    gESession_StartMode_LoadGame = 1
+};
+
 // gCRecipe_PS.Craft
 // gCSkill_PS.Category
 
