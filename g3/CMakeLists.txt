@@ -1,0 +1,15 @@
+include(${G3SDK_CMAKE_DIR}/TargetOptions.cmake)
+include(${G3SDK_CMAKE_DIR}/TargetSources.cmake)
+
+add_subdirectory(Engine)
+add_subdirectory(FileSystem)
+add_subdirectory(Game)
+add_subdirectory(GFC)
+add_subdirectory(GUI)
+add_subdirectory(Importer)
+add_subdirectory(SharedBase)
+add_subdirectory(Script)
+
+add_library(g3 INTERFACE)
+add_library(g3sdk::g3 ALIAS g3)
+target_link_libraries(g3 INTERFACE Engine FileSystem Game GFC GUI Importer SharedBase Script)

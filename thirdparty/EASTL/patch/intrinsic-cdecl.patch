@@ -1,0 +1,21 @@
+diff --git a/include/EASTL/internal/thread_support.h b/include/EASTL/internal/thread_support.h
+index 80386d2..2279c34 100644
+--- a/include/EASTL/internal/thread_support.h
++++ b/include/EASTL/internal/thread_support.h
+@@ -54,13 +54,13 @@ EA_DISABLE_VC_WARNING(4625 4626 4275);
+ 		extern "C" long  __stdcall _InterlockedCompareExchange(long volatile* Dest, long Exchange, long Comp);
+ 		#pragma intrinsic (_InterlockedCompareExchange)
+ 	#else
+-		extern "C" long  _InterlockedIncrement(long volatile* Addend);
++		extern "C" long   __cdecl _InterlockedIncrement(long volatile* Addend);
+ 		#pragma intrinsic (_InterlockedIncrement)
+ 
+-		extern "C" long _InterlockedDecrement(long volatile* Addend);
++		extern "C" long  __cdecl _InterlockedDecrement(long volatile* Addend);
+ 		#pragma intrinsic (_InterlockedDecrement)
+ 
+-		extern "C" long _InterlockedCompareExchange(long volatile* Dest, long Exchange, long Comp);
++		extern "C" long  __cdecl _InterlockedCompareExchange(long volatile* Dest, long Exchange, long Comp);
+ 		#pragma intrinsic (_InterlockedCompareExchange)
+ 	#endif
+ #endif

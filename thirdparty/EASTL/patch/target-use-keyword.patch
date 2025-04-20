@@ -1,0 +1,11 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e8700dc..1de6703 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -50,5 +50,5 @@ if (NOT TARGET EABase)
+     add_subdirectory(test/packages/EABase)
+ endif()
+ 
+-target_link_libraries(EASTL EABase)
++target_link_libraries(EASTL PUBLIC EABase)
+ 

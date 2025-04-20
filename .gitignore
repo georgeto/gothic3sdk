@@ -3,13 +3,15 @@
 *.user
 *.sdf
 *.opensdf
+*.vs/
 
+.cache
 /build
+/build-*
+/cmake-build-*
 
-/bin/**/*.exp
-/bin/**/*.lib
-/bin/**/*.pdb
-/bin/**/*.ilk
-/bin/**/*.dll
+compile_commands.json
 
-.vs
+# Sublime Text
+*.sublime-project
+*.sublime-workspace

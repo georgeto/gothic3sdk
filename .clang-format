@@ -1,0 +1,38 @@
+---
+BasedOnStyle: Microsoft
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossComments: true
+AlignOperands: AlignAfterOperator
+AllowShortCaseLabelsOnASingleLine: true
+BreakAfterReturnType: Automatic
+BreakBeforeBinaryOperators: NonAssignment
+BreakTemplateDeclarations: Yes
+BraceWrapping:
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+ForEachMacros: [ foreach, Q_FOREACH, BOOST_FOREACH, GE_ARRAY_FOR_EACH, GE_ARRAY_FOR_EACH_REV, GE_MAP_FOR_EACH, GE_MAP_FOR_EACH_KEY, GE_MAP_FOR_EACH_VAL, GE_MAP_NODES_FOR_HASH ]
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Local headers
+  - Regex: '^".*"'
+    Priority: 1
+  # Headers from gothic3sdk
+  - Regex: '^<g3sdk'
+    Priority: 2
+  # External headers in <>
+  - Regex: '^<[-_[:alnum:]]+/[-_/.[:alnum:]]+>'
+    Priority: 3
+  # Standard C++ headers in <>
+  - Regex: '^<[-_[:alnum:]]+>'
+    Priority: 4
+  # Standard C headers in <>
+  - Regex: '^<[-_[:alnum:]]+\.h>'
+    Priority: 5
+InsertNewlineAtEOF: true
+KeepEmptyLines:
+  AtEndOfFile: false
+  AtStartOfBlock: false
+  AtStartOfFile: false
+LineEnding: LF

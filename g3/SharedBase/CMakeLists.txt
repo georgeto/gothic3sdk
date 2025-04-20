@@ -1,0 +1,184 @@
+add_library(SharedBase STATIC)
+add_library(g3sdk::g3::SharedBase ALIAS SharedBase)
+
+target_gothic_lib_options(SharedBase)
+
+target_link_libraries(SharedBase PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/SharedBase.lib)
+
+target_include_directories(SharedBase
+  PUBLIC include
+  PUBLIC include/g3sdk)
+
+target_tree_sources(SharedBase
+  BASE include/g3sdk
+  PRIVATE
+    SharedBase.h
+
+  BASE include/g3sdk/SharedBase
+  PRIVATE
+    SharedBaseEnum.h
+    animation/ge_interpolatorbase.h
+    animation/ge_motionkeyframerdata.h
+    color/ge_bytealphacolor.h
+    color/ge_bytecolor.h
+    color/ge_colorbase.h
+    color/ge_floatalphacolor.h
+    color/ge_floatcolor.h
+    color/ge_floatcolorhsv.h
+    container/array/ge_arraybase.h
+    container/array/ge_arraybase.inl
+    container/array/ge_autoptrarray.h
+    container/array/ge_autoptrarray.inl
+    container/array/ge_objarray.h
+    container/array/ge_objarray.inl
+    container/array/ge_objarraysort.h
+    container/array/ge_objarraysort.inl
+    container/array/ge_ptrarray.h
+    container/array/ge_ptrarray.inl
+    container/array/ge_ptrarraysort.h
+    container/array/ge_ptrarraysort.inl
+    container/array/ge_smallarray.h
+    container/array/ge_smallarray.inl
+    container/array/ge_valarray.h
+    container/array/ge_valarray.inl
+    container/ge_bitfield.h
+    container/ge_trackbitfield.h
+    container/map/ge_mapbase.h
+    container/map/ge_objmap.h
+    container/map/ge_ptrmap.h
+    container/map/ge_stringmap.h
+    container/map/ge_valmap.h
+    container/map/ge_valmap.inl
+    container/set/ge_set.h
+    container/set/ge_set.inl
+    container/stack/ge_objstack.h
+    container/stack/ge_objstack.inl
+    io/ge_commandline.h
+    io/ge_file.h
+    io/ge_filesystem.h
+    io/streams/ge_iostream.h
+    io/streams/ge_istream.h
+    io/streams/ge_memorystream.h
+    io/streams/ge_nullstream.h
+    io/streams/ge_ostream.h
+    io/streams/ge_postream.h
+    io/streams/ge_streamutil.h
+    kernel/error/ge_error.h
+    kernel/error/ge_erroradmin.h
+    kernel/error/ge_gothic3enginedialogs.h
+    kernel/event/ge_event.h
+    kernel/event/ge_eventwin32.h
+    kernel/layout/ge_classlayout.h
+    kernel/layout/ge_setlayout.h
+    kernel/memory/ge_memheap.h
+    kernel/memory/ge_memoryadmin.h
+    kernel/memory/ge_validatememory.h
+    kernel/message/ge_message.h
+    kernel/message/ge_messageadmin.h
+    kernel/object/ge_classname.h
+    kernel/object/ge_classname.inl
+    kernel/object/ge_classnamebase.h
+    kernel/object/ge_objectbase.h
+    kernel/object/ge_objectrefbase.h
+    kernel/object/ge_obsoleteclass.h
+    kernel/system/ge_clock.h
+    kernel/system/ge_datetime.h
+    kernel/system/ge_fpuadmin.h
+    kernel/system/ge_timer.h
+    kernel/thread/ge_criticalsectionwin32.h
+    kernel/thread/ge_multireadexclusivewritewin32.h
+    kernel/thread/ge_spieadmin.h
+    kernel/thread/ge_spyadmin.h
+    kernel/thread/ge_threadobjectrefbase.h
+    kernel/thread/ge_threadwin32.h
+    kernel/thread/ge_threadwin32ex.h
+    math/2d/ge_matrix2.h
+    math/2d/ge_point.h
+    math/2d/ge_rect.h
+    math/2d/ge_vector2.h
+    math/2d/ge_zoneraster.h
+    math/3d/ge_axisangle.h
+    math/3d/ge_eigenvector.h
+    math/3d/ge_eulerangles.h
+    math/3d/ge_matrix.h
+    math/3d/ge_matrix3.h
+    math/3d/ge_motion.h
+    math/3d/ge_octtree.h
+    math/3d/ge_point3.h
+    math/3d/ge_quaternion.h
+    math/3d/ge_sphericalrotation.h
+    math/3d/ge_vector.h
+    math/3d/ge_vector4.h
+    math/3d/geometry/ge_box.h
+    math/3d/geometry/ge_capsule.h
+    math/3d/geometry/ge_frustum.h
+    math/3d/geometry/ge_infcylinder.h
+    math/3d/geometry/ge_infdoublecylinder.h
+    math/3d/geometry/ge_line.h
+    math/3d/geometry/ge_orientedbox.h
+    math/3d/geometry/ge_plane.h
+    math/3d/geometry/ge_ray.h
+    math/3d/geometry/ge_sphere.h
+    math/3d/geometry/ge_stretch.h
+    math/3d/geometry/ge_triangle.h
+    math/3d/geometry/ge_unitedray.h
+    math/3d/geometry/ge_volume.h
+    math/ge_flexiblevertexformat.h
+    math/ge_flexiblevertexptr.h
+    math/ge_md5.h
+    math/ge_random.h
+    math/noise/ge_ebertnoise.h
+    math/noise/ge_noise.h
+    math/noise/ge_peacheynoise.h
+    math/noise/ge_perlinnoise.h
+    math/range/ge_range1.h
+    math/range/ge_range2.h
+    math/range/ge_range3.h
+    math/range/ge_range4.h
+    propertysystem/ge_propertymacros.h
+    propertysystem/acessors/ge_accessorcreator.h
+    propertysystem/acessors/ge_accessorenum.h
+    propertysystem/acessors/ge_accessorproperty.h
+    propertysystem/acessors/ge_accessorpropertyobject.h
+    propertysystem/base/ge_auto_po_smartptr.h
+    propertysystem/base/ge_auto_po_smartptr.inl
+    propertysystem/base/ge_po_puresmartptr.h
+    propertysystem/base/ge_po_puresmartptr.inl
+    propertysystem/base/ge_po_smartptr.h
+    propertysystem/base/ge_propertyid.h
+    propertysystem/enum/ge_enumwrapper.h
+    propertysystem/enum/ge_enumwrapper.inl
+    propertysystem/enum/ge_propertycontainer.h
+    propertysystem/enum/ge_propertycontainer.inl
+    propertysystem/factories/ge_propertyobjectfactory.h
+    propertysystem/factories/ge_propertyobjectsingleton.h
+    propertysystem/objects/ge_propertyobject.h
+    propertysystem/objects/ge_propertyobject.inl
+    propertysystem/objects/ge_propertyobjectbase.h
+    propertysystem/objects/ge_propertyobjecttype.h
+    propertysystem/objects/ge_propertyobjecttype.inl
+    propertysystem/objects/ge_propertyobjecttypebase.h
+    propertysystem/persistence/ge_propertylayout.h
+    propertysystem/types/ge_propertytype.h
+    propertysystem/types/ge_propertytype.inl
+    propertysystem/types/ge_propertytypebase.h
+    propertysystem/types/ge_propertytypeonly.h
+    propertysystem/types/ge_propertytypeonly.inl
+    types/ge_def.h
+    types/ge_delegatebase.h
+    types/ge_delegatebase.inl
+    types/ge_globals.h
+    types/ge_guid.h
+    types/ge_string.h
+    types/ge_stringconverter.h
+    types/ge_types.h
+    types/ge_unicodestring.h
+    types/ge_unknown.h
+    types/ge_variant.h
+    types/ge_windows.h
+
+  BASE src
+  PRIVATE
+    propertysystem/enum/ge_enumwrapper.cpp
+    io/streams/ge_streamutil.cpp
+)
