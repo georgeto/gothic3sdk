@@ -221,7 +221,8 @@ class GE_DLLIMPORT bCMatrix3
     };
 
   private:
-    union {
+    union
+    {
         GEFloat m_fElements[bEElement_Count];
         GEFloat m_fRowColumn[bERow_Count][bEColumn_Count];
     };

@@ -9,10 +9,21 @@ BreakAfterReturnType: Automatic
 BreakBeforeBinaryOperators: NonAssignment
 BreakTemplateDeclarations: Yes
 BraceWrapping:
+  AfterUnion: true
+  AfterCaseLabel: true
   SplitEmptyFunction: false
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
-ForEachMacros: [ foreach, Q_FOREACH, BOOST_FOREACH, GE_ARRAY_FOR_EACH, GE_ARRAY_FOR_EACH_REV, GE_MAP_FOR_EACH, GE_MAP_FOR_EACH_KEY, GE_MAP_FOR_EACH_VAL, GE_MAP_NODES_FOR_HASH ]
+ForEachMacros:
+  - foreach
+  - Q_FOREACH
+  - BOOST_FOREACH
+  - GE_ARRAY_FOR_EACH
+  - GE_ARRAY_FOR_EACH_REV
+  - GE_MAP_FOR_EACH
+  - GE_MAP_FOR_EACH_KEY
+  - GE_MAP_FOR_EACH_VAL
+  - GE_MAP_NODES_FOR_HASH
 IncludeBlocks: Regroup
 IncludeCategories:
   # Local headers
@@ -30,6 +41,8 @@ IncludeCategories:
   # Standard C headers in <>
   - Regex: '^<[-_[:alnum:]]+\.h>'
     Priority: 5
+IndentCaseBlocks: false
+IndentCaseLabels: true
 InsertNewlineAtEOF: true
 KeepEmptyLines:
   AtEndOfFile: false

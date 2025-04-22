@@ -161,17 +161,20 @@ class eCInpShared
         };
 
       public:
-        union ModifierOrX {
+        union ModifierOrX
+        {
             eEModifier m_Modifier;
             GEInt m_iXDelta;
         };
 
-        union CharOrIndex {
+        union CharOrIndex
+        {
             GEChar m_cCharacter;
             GEU8 m_u8ButtonIndex;
         };
 
-        union Offset {
+        union Offset
+        {
             eEKeyboardStateOffset m_KeyboardStateOffset;
             eEMouseOffset m_MouseOffset;
         };

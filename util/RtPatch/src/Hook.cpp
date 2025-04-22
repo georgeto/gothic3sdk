@@ -93,15 +93,15 @@ asmjit::x86::Gp const &mCRegisterBase::ToX86Register(mERegisterType a_RegisterTy
 
     switch (a_RegisterType)
     {
-    case mERegisterType_None: return esp;
-    case mERegisterType_Eax:  return eax;
-    case mERegisterType_Ecx:  return ecx;
-    case mERegisterType_Edx:  return edx;
-    case mERegisterType_Ebx:  return ebx;
-    case mERegisterType_Ebp:  return ebp;
-    case mERegisterType_Esi:  return esi;
-    case mERegisterType_Edi:  return edi;
-    default:                  return esp;
+        case mERegisterType_None: return esp;
+        case mERegisterType_Eax:  return eax;
+        case mERegisterType_Ecx:  return ecx;
+        case mERegisterType_Edx:  return edx;
+        case mERegisterType_Ebx:  return ebx;
+        case mERegisterType_Ebp:  return ebp;
+        case mERegisterType_Esi:  return esi;
+        case mERegisterType_Edi:  return edi;
+        default:                  return esp;
     }
 }
 
@@ -117,77 +117,79 @@ void mCBaseHook::DoRegisterMagic(asmjit::x86::CodeAsm &a_Assembler, mCHookParams
 
     switch (a_HookParams.m_HookType)
     {
-    case mEHookType_OnlyStack: break;
+        case mEHookType_OnlyStack: break;
 
-    case mEHookType_ThisCall: {
-        // save ecx
-        a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_pSelf)), ecx);
-        a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_pLastSelf)), ecx);
-
-        if (m_pCode != 0)
+        case mEHookType_ThisCall:
         {
-            // restore ecx
-            x86::CodeAsm AsmRestoreEcx;
-            AsmRestoreEcx.mov(ecx, dword_ptr_abs(reinterpret_cast<GEU64>(&m_pSelf)));
-            AsmRestoreEcx.jmp(imm(reinterpret_cast<GEI64>(m_pCode)));
-            m_pCode = JitRuntimeAdd(AsmRestoreEcx);
+            // save ecx
+            a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_pSelf)), ecx);
+            a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_pLastSelf)), ecx);
+
+            if (m_pCode != 0)
+            {
+                // restore ecx
+                x86::CodeAsm AsmRestoreEcx;
+                AsmRestoreEcx.mov(ecx, dword_ptr_abs(reinterpret_cast<GEU64>(&m_pSelf)));
+                AsmRestoreEcx.jmp(imm(reinterpret_cast<GEI64>(m_pCode)));
+                m_pCode = JitRuntimeAdd(AsmRestoreEcx);
+            }
+
+            break;
         }
 
-        break;
-    }
-
-    case mEHookType_Mixed: {
-        // save registers
-        if (a_HookParams.m_RegisterType & mERegisterType_Eax)
-            a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Eax)), eax);
-        if (a_HookParams.m_RegisterType & mERegisterType_Ecx)
-            a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ecx)), ecx);
-        if (a_HookParams.m_RegisterType & mERegisterType_Edx)
-            a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Edx)), edx);
-        if (a_HookParams.m_RegisterType & mERegisterType_Ebx)
-            a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ebx)), ebx);
-        if (a_HookParams.m_RegisterType & mERegisterType_Ebp)
-            a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ebp)), ebp);
-        if (a_HookParams.m_RegisterType & mERegisterType_Esi)
-            a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Esi)), esi);
-        if (a_HookParams.m_RegisterType & mERegisterType_Edi)
-            a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Edi)), edi);
-
-        if (m_pCode != 0)
+        case mEHookType_Mixed:
         {
-            // restore hook function registers, after call to original function
-            x86::CodeAsm AsmOnReturn;
-            AsmOnReturn.mov(ebx, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EbxRestore)));
-            AsmOnReturn.mov(ebp, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EbpRestore)));
-            AsmOnReturn.mov(esi, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EsiRestore)));
-            AsmOnReturn.mov(edi, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EdiRestore)));
-            AsmOnReturn.jmp(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ret)));
-            GELPVoid pRestoreHook = JitRuntimeAdd(AsmOnReturn);
+            // save registers
+            if (a_HookParams.m_RegisterType & mERegisterType_Eax)
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Eax)), eax);
+            if (a_HookParams.m_RegisterType & mERegisterType_Ecx)
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ecx)), ecx);
+            if (a_HookParams.m_RegisterType & mERegisterType_Edx)
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Edx)), edx);
+            if (a_HookParams.m_RegisterType & mERegisterType_Ebx)
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ebx)), ebx);
+            if (a_HookParams.m_RegisterType & mERegisterType_Ebp)
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ebp)), ebp);
+            if (a_HookParams.m_RegisterType & mERegisterType_Esi)
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Esi)), esi);
+            if (a_HookParams.m_RegisterType & mERegisterType_Edi)
+                a_Assembler.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Edi)), edi);
 
-            // overwrite return address, before calling original function
-            x86::CodeAsm AsmPrepareCall;
-            AsmPrepareCall.mov(eax, ptr(esp));
-            AsmPrepareCall.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ret)), eax);
-            AsmPrepareCall.mov(eax, imm(reinterpret_cast<GEI64>(pRestoreHook)));
-            AsmPrepareCall.mov(ptr(esp), eax);
-            // restore original function registers
-            AsmPrepareCall.mov(eax, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Eax)));
-            AsmPrepareCall.mov(ecx, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ecx)));
-            AsmPrepareCall.mov(edx, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Edx)));
-            AsmPrepareCall.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EbxRestore)), ebx);
-            AsmPrepareCall.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EbpRestore)), ebp);
-            AsmPrepareCall.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EsiRestore)), esi);
-            AsmPrepareCall.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EdiRestore)), edi);
-            AsmPrepareCall.mov(ebx, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ebx)));
-            AsmPrepareCall.mov(ebp, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ebp)));
-            AsmPrepareCall.mov(esi, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Esi)));
-            AsmPrepareCall.mov(edi, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Edi)));
-            AsmPrepareCall.jmp(imm(reinterpret_cast<GEI64>(m_pCode)));
-            m_pCode = JitRuntimeAdd(AsmPrepareCall);
+            if (m_pCode != 0)
+            {
+                // restore hook function registers, after call to original function
+                x86::CodeAsm AsmOnReturn;
+                AsmOnReturn.mov(ebx, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EbxRestore)));
+                AsmOnReturn.mov(ebp, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EbpRestore)));
+                AsmOnReturn.mov(esi, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EsiRestore)));
+                AsmOnReturn.mov(edi, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EdiRestore)));
+                AsmOnReturn.jmp(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ret)));
+                GELPVoid pRestoreHook = JitRuntimeAdd(AsmOnReturn);
+
+                // overwrite return address, before calling original function
+                x86::CodeAsm AsmPrepareCall;
+                AsmPrepareCall.mov(eax, ptr(esp));
+                AsmPrepareCall.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ret)), eax);
+                AsmPrepareCall.mov(eax, imm(reinterpret_cast<GEI64>(pRestoreHook)));
+                AsmPrepareCall.mov(ptr(esp), eax);
+                // restore original function registers
+                AsmPrepareCall.mov(eax, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Eax)));
+                AsmPrepareCall.mov(ecx, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ecx)));
+                AsmPrepareCall.mov(edx, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Edx)));
+                AsmPrepareCall.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EbxRestore)), ebx);
+                AsmPrepareCall.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EbpRestore)), ebp);
+                AsmPrepareCall.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EsiRestore)), esi);
+                AsmPrepareCall.mov(dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32EdiRestore)), edi);
+                AsmPrepareCall.mov(ebx, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ebx)));
+                AsmPrepareCall.mov(ebp, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Ebp)));
+                AsmPrepareCall.mov(esi, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Esi)));
+                AsmPrepareCall.mov(edi, dword_ptr_abs(reinterpret_cast<GEU64>(&m_u32Edi)));
+                AsmPrepareCall.jmp(imm(reinterpret_cast<GEI64>(m_pCode)));
+                m_pCode = JitRuntimeAdd(AsmPrepareCall);
+            }
+
+            break;
         }
-
-        break;
-    }
     }
 }
 

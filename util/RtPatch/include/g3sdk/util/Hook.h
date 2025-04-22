@@ -286,7 +286,8 @@ class mCAbstractRegArgHook : public mCBaseHook
         struct mSRegRelativeArg
         {
             mERegisterType m_Register;
-            union {
+            union
+            {
                 GEU32 m_u32Offset;
                 GEU32 m_u32Immediate;
             };

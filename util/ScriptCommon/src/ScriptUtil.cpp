@@ -153,11 +153,11 @@ Entity GetTreasureSet(PSInventory const &a_Inventory, gETreasureDistribution a_e
         Entity TreasureSet;
         switch (i)
         {
-        case 1: TreasureSet = a_Inventory.GetTreasureSet1(); break;
-        case 2: TreasureSet = a_Inventory.GetTreasureSet2(); break;
-        case 3: TreasureSet = a_Inventory.GetTreasureSet3(); break;
-        case 4: TreasureSet = a_Inventory.GetTreasureSet4(); break;
-        case 5: TreasureSet = a_Inventory.GetTreasureSet5(); break;
+            case 1: TreasureSet = a_Inventory.GetTreasureSet1(); break;
+            case 2: TreasureSet = a_Inventory.GetTreasureSet2(); break;
+            case 3: TreasureSet = a_Inventory.GetTreasureSet3(); break;
+            case 4: TreasureSet = a_Inventory.GetTreasureSet4(); break;
+            case 5: TreasureSet = a_Inventory.GetTreasureSet5(); break;
         }
         if (TreasureSet.TreasureSet.TreasureDistribution == a_enuTreasureDistribution)
             return TreasureSet;
@@ -202,10 +202,10 @@ Entity GetCurrentRoutinePoint(Entity &a_Entity)
     GEInt iRoutineTime = GetScriptAdmin().CallScriptFromScript("GetRoutineTime", &a_Entity, &None, 0);
     switch (iRoutineTime)
     {
-    case 0:  return a_Entity.Navigation.GetSleepingPoint();
-    case 1:  return a_Entity.Navigation.GetWorkingPoint();
-    case 2:  return a_Entity.Navigation.GetRelaxingPoint();
-    default: return None;
+        case 0:  return a_Entity.Navigation.GetSleepingPoint();
+        case 1:  return a_Entity.Navigation.GetWorkingPoint();
+        case 2:  return a_Entity.Navigation.GetRelaxingPoint();
+        default: return None;
     }
 }
 

@@ -476,22 +476,22 @@ bCString ToString(gEPoliticalAlignment a_PoliticalAlignment)
 {
     switch (a_PoliticalAlignment)
     {
-    case gEPoliticalAlignment_None:     return "None";
-    case gEPoliticalAlignment_Orc:      return "Orc";
-    case gEPoliticalAlignment_Nrd:      return "Nrd";
-    case gEPoliticalAlignment_Reb:      return "Reb";
-    case gEPoliticalAlignment_Mid:      return "Mid";
-    case gEPoliticalAlignment_Ass:      return "Ass";
-    case gEPoliticalAlignment_Nom:      return "Nom";
-    case gEPoliticalAlignment_Out:      return "Out";
-    case gEPoliticalAlignment_Slave:    return "Slave";
-    case gEPoliticalAlignment_Pirate:   return "Pir";
-    case gEPoliticalAlignment_Citizen:  return "Citizen";
-    case gEPoliticalAlignment_Mid_Torn: return "Mid_Torn";
-    case gEPoliticalAlignment_Partisan: return "Partisan";
-    case gEPoliticalAlignment_Bakaresh: return "Bakaresh";
-    case gEPoliticalAlignment_Gonzalez: return "Gonzalez";
-    default:                            return "<Unknown>";
+        case gEPoliticalAlignment_None:     return "None";
+        case gEPoliticalAlignment_Orc:      return "Orc";
+        case gEPoliticalAlignment_Nrd:      return "Nrd";
+        case gEPoliticalAlignment_Reb:      return "Reb";
+        case gEPoliticalAlignment_Mid:      return "Mid";
+        case gEPoliticalAlignment_Ass:      return "Ass";
+        case gEPoliticalAlignment_Nom:      return "Nom";
+        case gEPoliticalAlignment_Out:      return "Out";
+        case gEPoliticalAlignment_Slave:    return "Slave";
+        case gEPoliticalAlignment_Pirate:   return "Pir";
+        case gEPoliticalAlignment_Citizen:  return "Citizen";
+        case gEPoliticalAlignment_Mid_Torn: return "Mid_Torn";
+        case gEPoliticalAlignment_Partisan: return "Partisan";
+        case gEPoliticalAlignment_Bakaresh: return "Bakaresh";
+        case gEPoliticalAlignment_Gonzalez: return "Gonzalez";
+        default:                            return "<Unknown>";
     }
 }
 
@@ -499,15 +499,15 @@ bCString ToString(gEQuestStatus a_QuestStatus)
 {
     switch (a_QuestStatus)
     {
-    case gEQuestStatus_Open:      return "Open";
-    case gEQuestStatus_Running:   return "Running";
-    case gEQuestStatus_Success:   return "Success";
-    case gEQuestStatus_Failed:    return "Failed";
-    case gEQuestStatus_Obsolete:  return "Obsolete";
-    case gEQuestStatus_Cancelled: return "Cancelled";
-    case gEQuestStatus_Lost:      return "Lost";
-    case gEQuestStatus_Won:       return "Won";
-    default:                      return "<Unknown>";
+        case gEQuestStatus_Open:      return "Open";
+        case gEQuestStatus_Running:   return "Running";
+        case gEQuestStatus_Success:   return "Success";
+        case gEQuestStatus_Failed:    return "Failed";
+        case gEQuestStatus_Obsolete:  return "Obsolete";
+        case gEQuestStatus_Cancelled: return "Cancelled";
+        case gEQuestStatus_Lost:      return "Lost";
+        case gEQuestStatus_Won:       return "Won";
+        default:                      return "<Unknown>";
     }
 }
 

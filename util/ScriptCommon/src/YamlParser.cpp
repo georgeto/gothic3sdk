@@ -231,10 +231,10 @@ bEResult mCYamlParser::ReadNode(mSReadContext &a_Context, yaml_node_t const *a_p
 {
     switch (a_pNode->type)
     {
-    case YAML_SCALAR_NODE:   return ReadScalarNode(a_Context, a_pNode);
-    case YAML_SEQUENCE_NODE: return ReadSequenceNode(a_Context, a_pNode);
-    case YAML_MAPPING_NODE:  return ReadMappingNode(a_Context, a_pNode);
-    default:                 return LogError("Unexpected node type!\n");
+        case YAML_SCALAR_NODE:   return ReadScalarNode(a_Context, a_pNode);
+        case YAML_SEQUENCE_NODE: return ReadSequenceNode(a_Context, a_pNode);
+        case YAML_MAPPING_NODE:  return ReadMappingNode(a_Context, a_pNode);
+        default:                 return LogError("Unexpected node type!\n");
     }
 }
 
@@ -444,13 +444,13 @@ void mCYamlParser::PrintBacktrace(mSReadContext const &a_Context)
     {
         switch (State.m_pNode->type)
         {
-        case YAML_SCALAR_NODE: m_Logger.LogFormat("in scalar value '%s'", GetScalarValue(State.m_pNode)); break;
-        case YAML_SEQUENCE_NODE:
-            // TODO: Count?
-            m_Logger.LogFormat("in sequence");
-            break;
-        case YAML_MAPPING_NODE: m_Logger.LogFormat("in mapping"); break;
-        default:                m_Logger.LogFormat("in ???"); break;
+            case YAML_SCALAR_NODE: m_Logger.LogFormat("in scalar value '%s'", GetScalarValue(State.m_pNode)); break;
+            case YAML_SEQUENCE_NODE:
+                // TODO: Count?
+                m_Logger.LogFormat("in sequence");
+                break;
+            case YAML_MAPPING_NODE: m_Logger.LogFormat("in mapping"); break;
+            default:                m_Logger.LogFormat("in ???"); break;
         }
         m_Logger.LogFormat(" (index=%d, line=%d, column=%d)\n", State.m_pNode->start_mark.index,
                            State.m_pNode->start_mark.line + 1, State.m_pNode->start_mark.column + 1);
