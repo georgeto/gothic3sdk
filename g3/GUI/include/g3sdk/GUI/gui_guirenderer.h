@@ -23,7 +23,7 @@ struct SFFGUIBitmap
     GE_UNIMPL_STRUCT(SFFGUIBitmap)
 };
 
-class GE_DLLIMPORT IFFGUIRenderer
+class IFFGUIRenderer
 {
     // clang-format off
     public: virtual GEU32 CreateFontA(GELPCChar, GEInt, GEInt, GEBool, GEBool, GEBool);

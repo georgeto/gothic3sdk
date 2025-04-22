@@ -85,6 +85,7 @@ function(target_gothic_common_options TARGET)
 
     # DisableSpecificWarnings
     "/wd4251" # class 'TEMPLATE' needs to have dll-interface to be used by clients of class '...'
+    "/wd4275" # non dll-interface class '...' used as base for dll-interface class '...'
 
     "/D _CRT_SECURE_NO_WARNINGS"
 

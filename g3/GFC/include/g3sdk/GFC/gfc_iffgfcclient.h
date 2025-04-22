@@ -2,7 +2,7 @@
 
 #include <SharedBase.h>
 
-class GE_DLLIMPORT IFFGFCClient
+class IFFGFCClient
 {
     // clang-format off
     public: virtual GEBool DoModalFrame();

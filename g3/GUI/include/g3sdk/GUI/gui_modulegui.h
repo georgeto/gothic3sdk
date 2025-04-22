@@ -45,7 +45,7 @@ class IFFGUIDeviceContext
     GE_UNIMPL_STRUCT(IFFGUIDeviceContext)
 };
 
-class GE_DLLIMPORT IFFModuleGUI : public virtual IFFUnknown
+class IFFModuleGUI : public virtual IFFUnknown
 {
     // clang-format off
     public: virtual void SetRenderer(IFFGUIRenderer *) = 0;

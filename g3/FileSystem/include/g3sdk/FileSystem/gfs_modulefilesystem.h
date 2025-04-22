@@ -181,7 +181,7 @@ struct SFFFileFind
 
 struct SFFMountInfo;
 
-class GE_DLLIMPORT IFFModuleFileSystem : public virtual IFFUnknown
+class IFFModuleFileSystem : public virtual IFFUnknown
 {
     // clang-format off
     public: virtual GEInt GetVolumeCount() const = 0;
@@ -190,11 +190,14 @@ class GE_DLLIMPORT IFFModuleFileSystem : public virtual IFFUnknown
     public: virtual GEBool GetMountInformation(bCString const &, SFFMountInfo &) const = 0;
     public: virtual GEBool GetCurrentDirectoryA(bCString &) const = 0;
     public: virtual GEBool SetCurrentDirectoryA(bCString const &) = 0;
+    // Creates virtual directory in file system. Fails if directory already exists.
     public: virtual GEBool CreateDirectoryA(bCString const &) = 0;
     public: virtual GEBool RemoveDirectoryA(bCString const &) = 0;
+    // Mount physical directory on virtual directory created with CreateDirectoryA.
     public: virtual GEBool MountDirectory(bCString const &, bCString const &) = 0;
     public: virtual GEBool UnmountDirectory(bCString const &) = 0;
     public: virtual IFFPackFile * CreatePackFile() = 0;
+    // Mount pak file on virtual directory created with CreateDirectoryA.
     public: virtual GEBool MountPackFile(bCString const &, bCString const &) = 0;
     public: virtual GEBool UnmountPackFiles(bCString const &) = 0;
     public: virtual GEU32 GetFileAttributesA(bCString const &) const = 0;
