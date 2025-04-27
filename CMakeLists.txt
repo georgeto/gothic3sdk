@@ -7,6 +7,7 @@ project(
   LANGUAGES CXX)
 
 option(G3SDK_BINDING_ONLY "Use the binding only version of the library (no util and thirdparty)." OFF)
+option(G3SDK_USE_STDCALL "Use the same calling convention as Gothic 3 by default. Avoids unpleasant surprises, as otherwise one has to be extremly careful to provide proper calling convetions when hooking into Gothic 3. However, under certain circumstances, such as using external (pre-compiled) libraries, it may be advantageous to not default to stdcall." ON)
 
 # Check for supported architecture.
 if (MSVC_CXX_ARCHITECTURE_ID)

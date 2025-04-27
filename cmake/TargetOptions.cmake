@@ -59,7 +59,7 @@ function(target_gothic_common_options TARGET)
 
   set(COMMON_COMPILE_OPTIONS
     # CallingConvention = StdCall
-    "/Gz"
+    "$<IF:$<BOOL:${G3SDK_USE_STDCALL}>,/Gz,/Gd>"
     # DebugInformationFormat = ProgramDatabase
     "/Zi"
     # EnableEnhancedInstructionSet = StreamingSIMDExtensions2
