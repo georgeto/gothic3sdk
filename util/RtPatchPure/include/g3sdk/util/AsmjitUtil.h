@@ -3,7 +3,7 @@
 #pragma warning(push, 0)
 #include "asmjit/asmjit.h"
 
-#include <distorm/distorm.h>
+#include <distorm.h>
 #pragma warning(pop)
 
 ASMJIT_BEGIN_SUB_NAMESPACE(x86)

@@ -1,0 +1,14 @@
+diff --git i/src/distorm.c w/src/distorm.c
+index 2e80e8a..f8ac237 100755
+--- i/src/distorm.c
++++ w/src/distorm.c
+@@ -232,7 +232,8 @@ static void distorm_format_signed_disp(_WString* str, const _DInst* di, uint64_t
+ 			break;
+ 			case O_IMM:
+ 				/* If the instruction is 'push', show explicit size (except byte imm). */
+-				if ((di->opcode == I_PUSH) && (di->ops[i].size != 8)) distorm_format_size(str, di, i);
++				// gothic3sdk: We don't want that as asmtk can not handle it!
++				// if ((di->opcode == I_PUSH) && (di->ops[i].size != 8)) distorm_format_size(str, di, i);
+ 				/* Special fix for negative sign extended immediates. */
+ 				if ((di->flags & FLAG_IMM_SIGNED) && (di->ops[i].size == 8)) {
+ 					if (di->imm.sbyte < 0) {

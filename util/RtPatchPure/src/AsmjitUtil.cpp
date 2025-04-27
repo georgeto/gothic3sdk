@@ -11,11 +11,6 @@
 #pragma warning(disable : 4458)
 #include <asmtk/asmtk.h>
 #pragma warning(pop)
-#ifdef NDEBUG
-#pragma comment(lib, "distorm.lib")
-#else
-#pragma comment(lib, "distorm_d.lib")
-#endif
 
 ASMJIT_BEGIN_SUB_NAMESPACE(x86)
 
