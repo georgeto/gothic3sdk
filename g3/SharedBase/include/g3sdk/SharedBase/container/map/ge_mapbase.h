@@ -3,7 +3,7 @@
 #include <SharedBase/container/array/ge_ptrarray.h>
 
 template <typename T>
-inline GEU32 g_GetHashValue(T const &_e)
+inline GEU32 GE_STDCALL g_GetHashValue(T const &_e)
 {
     // Use C-style cast to support pointers as well as type conversions
     return ((GEU32)_e) >> 4;

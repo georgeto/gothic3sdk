@@ -60,7 +60,7 @@ bCIStream &operator>>(bCIStream &, eCEntityProxy &);
 bCOStream &operator<<(bCOStream &, eCEntityProxy &);
 
 template <>
-inline GEU32 g_GetHashValue<eCEntityProxy>(eCEntityProxy const &_e)
+inline GEU32 GE_STDCALL g_GetHashValue<eCEntityProxy>(eCEntityProxy const &_e)
 {
     return g_GetHashValue(_e.GetEntityID());
 }

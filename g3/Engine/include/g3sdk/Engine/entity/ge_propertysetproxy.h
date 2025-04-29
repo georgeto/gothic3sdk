@@ -56,7 +56,7 @@ class GE_DLLIMPORT eCPropertySetProxy : public eCEntityProxy
 GE_ASSERT_SIZEOF(eCPropertySetProxy, 0x24)
 
 template <>
-inline GEU32 g_GetHashValue<eCPropertySetProxy>(eCPropertySetProxy const &_e)
+inline GEU32 GE_STDCALL g_GetHashValue<eCPropertySetProxy>(eCPropertySetProxy const &_e)
 {
     return g_GetHashValue(_e.GetEntityID());
 }

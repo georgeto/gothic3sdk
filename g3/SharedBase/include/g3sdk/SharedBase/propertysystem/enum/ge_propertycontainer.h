@@ -47,7 +47,7 @@ class bTPropertyContainer : public bCObjectBase
 GE_ASSERT_SIZEOF(bTPropertyContainer<GEU32>, 0x08)
 
 template <typename T>
-static inline GEU32 g_GetHashValue(bTPropertyContainer<T> const &_e)
+inline GEU32 GE_STDCALL g_GetHashValue(bTPropertyContainer<T> const &_e)
 {
     return _e.m_Value;
 }
