@@ -286,6 +286,8 @@ class bTArrayBase
     T &AccessAt(GEInt _i);
     bCConstIterator Begin() const;
     bCIterator Begin();
+    bCConstIterator begin() const { return Begin(); };
+    bCIterator begin() { return Begin(); };
     GEBool Contains(T const &_e) const;
     T const *GetArray() const;
     T const &GetAt(GEInt _i) const;
@@ -294,6 +296,8 @@ class bTArrayBase
     GEInt GetCount() const;
     bCConstIterator End() const;
     bCIterator End();
+    bCConstIterator end() const { return End(); };
+    bCIterator end() { return End(); };
     GEInt IndexOf(T const &_e) const;
     GEBool IsEmpty() const;
 
