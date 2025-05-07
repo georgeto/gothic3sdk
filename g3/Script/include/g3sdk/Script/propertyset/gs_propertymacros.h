@@ -8,7 +8,7 @@ class Entity;
 // Entity PropertySet (PS*)
 //
 
-class GE_DLLIMPORT EntityPropertySet
+class EntityPropertySet
 {
   public:
     template <typename PSP>
@@ -21,8 +21,8 @@ class GE_DLLIMPORT EntityPropertySet
 
   public:
     EntityPropertySet() = delete;
-    EntityPropertySet(EntityPropertySet const &) = delete;
-    EntityPropertySet &operator=(EntityPropertySet const &) = delete;
+    EntityPropertySet(EntityPropertySet const &other) = default;
+    EntityPropertySet &operator=(EntityPropertySet const &other) = default;
 };
 
 #define GS_PROPERTY_SET(T, C)                                                                                          \
@@ -57,7 +57,7 @@ class GE_DLLIMPORT EntityPropertySet
     GEBool CopyFrom(T const &);                                                                                        \
                                                                                                                        \
   public:                                                                                                              \
-    T(T const &) = delete;                                                                                             \
+    T(T const &) = default;                                                                                            \
     T() = delete;
 
 //
