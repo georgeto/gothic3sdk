@@ -5,10 +5,12 @@
 class GE_DLLIMPORT Effect
 {
   public:
+    Effect(Effect const &) = default;
+
+  public:
     Effect &operator=(Effect const &);
 
   private:
-    Effect(Effect const &);
     explicit Effect(gCEffect * = nullptr);
 
   private:
