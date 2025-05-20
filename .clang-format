@@ -49,3 +49,6 @@ KeepEmptyLines:
   AtStartOfBlock: false
   AtStartOfFile: false
 LineEnding: LF
+Macros:
+  - ME_DECLARE_HOOK_BUILDER_BASE(CLASS)=class CLASS
+  - ME_DECLARE_HOOK_BUILDER_DERIVE(CLASS, BASE)=class CLASS

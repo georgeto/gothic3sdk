@@ -394,32 +394,34 @@ class mCAbstractFunctionHook : public mCAbstractRegArgHook
         GEU32 m_ReplaceThisValue = 0;
     };
 
-    ME_DECLARE_HOOK_BUILDER_DERIVE(mCAbstractFunctionHook, mCAbstractRegArgHook){
-        public :
-            // [Thread-safe, Recursion-safe]
-            // Push this pointer on stack before entering hook function: AddThisArg()
-            // Pop this pointer from stack before entering original function: RestoreRegisterArgs()
-            inline T & ThisCall(){return AddThisArg().Restore();
-}
+    ME_DECLARE_HOOK_BUILDER_DERIVE(mCAbstractFunctionHook, mCAbstractRegArgHook)
+    {
+      public:
+        // [Thread-safe, Recursion-safe]
+        // Push this pointer on stack before entering hook function: AddThisArg()
+        // Pop this pointer from stack before entering original function: RestoreRegisterArgs()
+        inline T &ThisCall()
+        {
+            return AddThisArg().Restore();
+        }
 
-template <typename V>
-inline T &ReplaceThis(V a_ReplaceThisValue)
-{
-    GE_ASSERT_SIZEOF(V, sizeof(GEU32));
-    m_bReplaceThis = GETrue;
-    m_ReplaceThisValue = reinterpret_cast<GEU32>(a_ReplaceThisValue);
-    return *static_cast<T *>(this);
-}
-}
-;
+        template <typename V>
+        inline T &ReplaceThis(V a_ReplaceThisValue)
+        {
+            GE_ASSERT_SIZEOF(V, sizeof(GEU32));
+            m_bReplaceThis = GETrue;
+            m_ReplaceThisValue = reinterpret_cast<GEU32>(a_ReplaceThisValue);
+            return *static_cast<T *>(this);
+        }
+    };
 
-ME_DECLARE_HOOK_BUILDER(mCAbstractFunctionHook);
+    ME_DECLARE_HOOK_BUILDER(mCAbstractFunctionHook);
 
-protected:
-void PushArgumentsBeforeEntry(asmjit::x86::CodeAsm &a_Assembler, mCAbstractFunctionHookParams const &a_HookParams);
-GEBool RestoreArgumentsBeforeCall(asmjit::x86::CodeAsm &a_Assembler, mCAbstractFunctionHookParams const &a_HookParams);
-}
-;
+  protected:
+    void PushArgumentsBeforeEntry(asmjit::x86::CodeAsm &a_Assembler, mCAbstractFunctionHookParams const &a_HookParams);
+    GEBool RestoreArgumentsBeforeCall(asmjit::x86::CodeAsm &a_Assembler,
+                                      mCAbstractFunctionHookParams const &a_HookParams);
+};
 
 class mCFunctionHook : public mCAbstractFunctionHook
 {
@@ -431,48 +433,49 @@ class mCFunctionHook : public mCAbstractFunctionHook
         GEBool m_bTransparent = GEFalse;
     };
 
-    ME_DECLARE_HOOK_BUILDER_DERIVE(mCFunctionHook, mCAbstractFunctionHook){
-        public :
-            // [Not Thread-safe, Not Recursion-safe]
-            // A 'transparent' hook disables itself on entering.
-            // Therefore calling the hooked function from inside the hook is possible without using GetOriginalFunction.
-            // NOTE: 'transparent' hooks can only be used in combination with the hook types OnlyStack or ThisCall.
-            inline T & Transparent(){m_bTransparent = GETrue;
-    return *static_cast<T *>(this);
-}
-}
-;
+    ME_DECLARE_HOOK_BUILDER_DERIVE(mCFunctionHook, mCAbstractFunctionHook)
+    {
+      public:
+        // [Not Thread-safe, Not Recursion-safe]
+        // A 'transparent' hook disables itself on entering.
+        // Therefore calling the hooked function from inside the hook is possible without using GetOriginalFunction.
+        // NOTE: 'transparent' hooks can only be used in combination with the hook types OnlyStack or ThisCall.
+        inline T &Transparent()
+        {
+            m_bTransparent = GETrue;
+            return *static_cast<T *>(this);
+        }
+    };
 
-ME_DECLARE_HOOK_BUILDER(mCFunctionHook);
+    ME_DECLARE_HOOK_BUILDER(mCFunctionHook);
 
-public:
-mCFunctionHook();
+  public:
+    mCFunctionHook();
 
-public:
-template <typename O, typename N>
-static mCFunctionHookBuilder PrepareParams(O a_pOriginalFunc, N a_pNewFunc,
-                                           mEHookType a_HookType = mEHookType_OnlyStack,
-                                           mERegisterType a_RegisterType = mERegisterType_None);
+  public:
+    template <typename O, typename N>
+    static mCFunctionHookBuilder PrepareParams(O a_pOriginalFunc, N a_pNewFunc,
+                                               mEHookType a_HookType = mEHookType_OnlyStack,
+                                               mERegisterType a_RegisterType = mERegisterType_None);
 
-template <typename O, typename N>
-mCFunctionHookInstanceBuilder Prepare(O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType = mEHookType_OnlyStack,
-                                      mERegisterType a_RegisterType = mERegisterType_None);
+    template <typename O, typename N>
+    mCFunctionHookInstanceBuilder Prepare(O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType = mEHookType_OnlyStack,
+                                          mERegisterType a_RegisterType = mERegisterType_None);
 
-template <typename O, typename N>
-inline GEBool Hook(O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType = mEHookType_OnlyStack,
-                   mERegisterType a_RegisterType = mERegisterType_None);
+    template <typename O, typename N>
+    inline GEBool Hook(O a_pOriginalFunc, N a_pNewFunc, mEHookType a_HookType = mEHookType_OnlyStack,
+                       mERegisterType a_RegisterType = mERegisterType_None);
 
-GEBool Hook(mCFunctionHookParams const &a_HookParams);
+    GEBool Hook(mCFunctionHookParams const &a_HookParams);
 
-protected:
-GEBool HookInternal(mCFunctionHookParams const &a_HookParams, asmjit::x86::CodeAsm &a_pAssembler,
-                    GEUInt a_u32RelocateSize);
+  protected:
+    GEBool HookInternal(mCFunctionHookParams const &a_HookParams, asmjit::x86::CodeAsm &a_pAssembler,
+                        GEUInt a_u32RelocateSize);
 
-private:
-GEBool m_bInside;
-GEU32 m_u32HookRet;
-}
-;
+  private:
+    GEBool m_bInside;
+    GEU32 m_u32HookRet;
+};
 
 class mCVtableHook : public mCAbstractFunctionHook
 {
@@ -483,7 +486,8 @@ class mCVtableHook : public mCAbstractFunctionHook
         friend class mCVtableHook;
     };
 
-    ME_DECLARE_HOOK_BUILDER_DERIVE(mCVtableHook, mCAbstractFunctionHook) {};
+    ME_DECLARE_HOOK_BUILDER_DERIVE(mCVtableHook, mCAbstractFunctionHook)
+    {};
 
     ME_DECLARE_HOOK_BUILDER(mCVtableHook);
 
@@ -613,7 +617,7 @@ class mCCallHook : public mCAbstractRegArgHook
         // [Thread-safe, Recursion-safe]
         // Remove added args from stack before returning, required for cdecl calling convention,
         // because here the caller is responsible for clearing the stack,
-        // but of course the caller does not know about the arguments with added.
+        // but of course the caller does not know about the arguments we added.
         inline T &CleanArgsFromStack()
         {
             m_bCleanArgsFromStack = GETrue;
