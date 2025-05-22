@@ -196,6 +196,12 @@ GEBool inline __CondIncrementCounterEquals(GEU32 *a_u32Counter, GEU32 a_u32CurVa
     args->m_TargetEntity = TARGET;                                                                                     \
     RUN_SCRIPT_FUNCTION();
 
+#define RUN_AI_SELECT_WEAPON(SELF, TARGET)                                                                             \
+    PUSH_STATE_AND_ARGS(_AI_SelectWeapon);                                                                             \
+    args->m_SelfEntity = SELF;                                                                                         \
+    args->m_TargetEntity = TARGET;                                                                                     \
+    RUN_SCRIPT_FUNCTION();
+
 #define CALL_SPU_FUNCTION(NAME, ...)                                                                                   \
     (a_pSPU->sAI##NAME##Instr(                                                                                         \
         GE_NEW(gCScriptProcessingUnit::sAI##NAME##Instr##_Args)(SelfEntity.GetInstance(), ##__VA_ARGS__), a_pSPU,      \
