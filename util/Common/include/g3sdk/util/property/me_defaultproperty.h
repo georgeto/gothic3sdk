@@ -15,6 +15,7 @@
 
 #define ME_DEFINE_DEFAULT_PROPERTY(TYPE, MEMBERNAME, PROPERTYNAME)                                                     \
     GE_DEFINE_PROPERTY_ACCESS(TYPE, PROPERTYNAME, MEMBERNAME)                                                          \
+    GE_DECLARE_PROPERTY_WRAPPER(TYPE, PROPERTYNAME)                                                                    \
     GE_DECLARE_PROPERTY_MEMBER(TYPE, MEMBERNAME)                                                                       \
     ME_DECLARE_DEFAULT_PROPERTY_TYPE(THIS_CLASS, TYPE, MEMBERNAME)
 
@@ -36,9 +37,18 @@
 template <typename ENUM>
 inline bTPropertyContainer<ENUM> *__WrapEnumPointer(ENUM *a_pDefaultValue);
 
+template <typename OBJECLASS, typename ENUM>
+void __CopyEnumValues(bTPropertyType<OBJECLASS, ENUM> &Destination, bTPropertyTypeOnly<ENUM> const &Source);
+
 #define ME_DEFINE_DEFAULT_ENUMPROP_TYPE(OBJECTCLASS, PROPERTYNAME, DEFAULTVALUE)                                       \
     __ME_DEFINE_DEFAULT_PROPERTY_TYPE(OBJECTCLASS, m_enu##PROPERTYNAME, PROPERTYNAME,                                  \
                                       bEPropertyType_PropertyContainer, __WrapEnumPointer(DEFAULTVALUE))
+
+#define ME_COPY_ENUM_VALUES(OBJECTCLASS, PROPERTYNAME, SOURCE_PROPERTY_TYPE)                                           \
+    GE_STATIC_BLOCK                                                                                                    \
+    {                                                                                                                  \
+        __CopyEnumValues(OBJECTCLASS::ms_PropertyMember_##m_enu##PROPERTYNAME, SOURCE_PROPERTY_TYPE);                  \
+    }
 
 //
 // String Property

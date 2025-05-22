@@ -11,6 +11,19 @@ inline bTPropertyContainer<ENUM> *__WrapEnumPointer(ENUM *a_pDefaultValue)
     return pWrapped;
 }
 
+template <typename OBJECLASS, typename ENUM>
+void __CopyEnumValues(bTPropertyType<OBJECLASS, ENUM> &Destination, bTPropertyTypeOnly<ENUM> const &Source)
+{
+    if (!Source.HasEnumValues())
+        return;
+
+    for (GEInt i = 0; i < Source.GetEnumValueCount(); i++)
+    {
+        bCEnumWrapper const *pEnumValue = Source.GetEnumValue(i);
+        Destination.AddEnumValue(GE_NEW(bTEnumWrapper<ENUM>)(pEnumValue->GetValueString(), pEnumValue->GetValue()));
+    }
+}
+
 template <typename OBJECTCLASS, typename CLASS>
 GEBool mTDefaultPropertyType<OBJECTCLASS, CLASS>::HasDefaultValue() const
 {
