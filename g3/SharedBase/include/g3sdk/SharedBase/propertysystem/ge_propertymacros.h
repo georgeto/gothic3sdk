@@ -32,7 +32,7 @@
     {}                                                                                                                 \
     CLASS::CLASS(CLASS const &)                                                                                        \
     {}                                                                                                                 \
-    CLASS &CLASS::operator=(CLASS const &a_Other)                                                                      \
+    CLASS const &CLASS::operator=(CLASS const &a_Other)                                                                \
     {                                                                                                                  \
         if (this->GetPropertyObject() && a_Other.GetPropertyObject())                                                  \
             *this->GetPropertyObject() = *a_Other.GetPropertyObject();                                                 \
@@ -205,14 +205,6 @@
 //
 // Import and declare
 //
-#define GE_DECLARE_PROPERTY_SET(CLASS, BASECLASS, MODIFIER)                                                            \
-    class MODIFIER CLASS : public BASECLASS                                                                            \
-    {
-
-#define GE_PROPERTY_SET_TYPE(CLASS, BASECLASS)                                                                         \
-    using THIS_CLASS = CLASS;                                                                                          \
-    using BASE_CLASS = BASECLASS;
-
 #define GE_PROPERTY_SET(CLASS, BASECLASS)                                                                              \
     using THIS_CLASS = CLASS;                                                                                          \
     using BASE_CLASS = BASECLASS;                                                                                      \

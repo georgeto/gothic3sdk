@@ -3,7 +3,8 @@
 #include <g3sdk/SharedBase.h>
 
 #define ME_PROPERTY_SET(CLASS, BASECLASS)                                                                              \
-    GE_DECLARE_PROPERTY_SET(CLASS, BASECLASS, )                                                                        \
+    using THIS_CLASS = CLASS;                                                                                          \
+    using BASE_CLASS = BASECLASS;                                                                                      \
     GE_DECLARE_PROPERTY_OBJECT(CLASS, BASECLASS)
 
 //
