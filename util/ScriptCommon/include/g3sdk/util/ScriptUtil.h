@@ -201,6 +201,7 @@ Entity GetCurrentRoutinePoint(Entity &a_Entity);
 PSInfoManager &GetCurrentInfoManager();
 PSInfoScriptCommand &GetCurrentInfoScriptCommand();
 gEPhase GetPhaseFromGesture(Entity const &a_Speaker, bCString const &a_strGesture);
+bCString GetSmalltalkText(Entity a_Speaker);
 
 bTObjArray<Entity> &FindInteractObjects(Entity const &a_Entity);
 Entity FindInteractObjectWithUseType(Entity const &a_Entity, gEUseType a_enuUseType);
@@ -267,3 +268,5 @@ typename T::INSTANCE_CLASS const *ToInstance(T const &a_pPropertySet)
 GEU32 GetItemQuality(bCString const &a_ItemName);
 
 gEWeaponCategory GetHeldWeaponCategory(Entity const &a_Entity);
+
+GEBool NotifyMissingItems(Entity const &a_Owner, Entity const &a_Target, bCString const &a_ItemName, GEInt a_Amount);

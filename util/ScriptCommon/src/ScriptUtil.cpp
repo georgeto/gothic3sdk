@@ -228,6 +228,17 @@ gEPhase GetPhaseFromGesture(Entity const &a_Speaker, bCString const &a_strGestur
     return s_fGetPhaseFromGesture(a_Speaker, a_strGesture);
 }
 
+bCString GetSmalltalkText(Entity a_Speaker)
+{
+    typedef void(GE_STDCALL * mFGetSmalltalkText)(Entity);
+    static mCCaller Call_GetSmalltalkText(mCCaller::GetCallerParams(RVA_ScriptGame(0xB6A0), mERegisterType_Ebx));
+
+    bCString Text;
+    Call_GetSmalltalkText.SetEbx(&Text);
+    Call_GetSmalltalkText.GetFunction<mFGetSmalltalkText>()(a_Speaker);
+    return Text;
+}
+
 static bTObjArray<Entity> *g_arrFoundFreepointsByUseType =
     reinterpret_cast<bTObjArray<Entity> *>(RVA_ScriptGame(0x118ACC));
 bTObjArray<Entity> &FindInteractObjects(Entity const &a_Entity)
@@ -364,4 +375,20 @@ gEWeaponCategory GetHeldWeaponCategory(Entity const &a_Entity)
         force_cast<mFGetHeldWeaponCategory>(RVA_ScriptGame(0x3240));
 
     return s_fGetHeldWeaponCategory(a_Entity);
+}
+
+GEBool NotifyMissingItems(Entity const &a_Owner, Entity const &a_Target, bCString const &a_ItemName, GEInt a_Amount)
+{
+    if (a_ItemName.IsEmpty())
+        // Empty string means no item required.
+        return GETrue;
+
+    if (a_Owner.Inventory.HasItems(Template(a_ItemName), a_Amount))
+        return GETrue;
+
+    bCUnicodeString Message = eCLocString("HUD_MissingItem_Interact");
+    Message += eCLocString("FO_" + a_ItemName);
+    gui2.PrintGameMessage(Message, gEGameMessageType_Failure);
+    StartSaySVM(a_Owner, a_Target, "MissingItem", 0);
+    return GEFalse;
 }
