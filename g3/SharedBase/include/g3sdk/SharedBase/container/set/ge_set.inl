@@ -44,7 +44,7 @@ template <typename T>
 bCOStream &bTSet<T>::operator>>(bCOStream &_os) const
 {
     _os << static_cast<GEU8>(1) << GetCount();
-    GE_MAP_FOR_EACH (_e, _ignore, m_Map)
+    GE_MAP_FOR_EACH_KEY (_e, m_Map)
         _e >> _os;
     return _os;
 }
