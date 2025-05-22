@@ -22,5 +22,6 @@ class GE_DLLIMPORT CFFGFCView : public CFFGFCWnd
     CFFGFCView &operator=(CFFGFCView const &);
 
   public:
+    using CFFGFCWnd::Create;
     GEBool Create(bCUnicodeString const &, GEU32, bCRect const &, CFFGFCWnd *, GEU32);
 };

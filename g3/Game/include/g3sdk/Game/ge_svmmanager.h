@@ -25,7 +25,7 @@ class GE_DLLIMPORT gCSVMManager
     static bCString GE_STDCALL FormatSampleName(gCNPC_PS const *, bCString const &, GEBool);
     static gCSVMManager &GE_STDCALL GetInstance();
     static eCLocTable::SEntry GE_STDCALL GetLocEntry(bCString const &, bCString const &);
-    static eCLocString GE_STDCALL GetLocString(bCString const &, bCString const &);
+    static eCLocString GE_STDCALL GetLocString(bCString const &a_strVoice, bCString const &a_strSVM);
     static bCString GE_STDCALL GetStringID(bCString const &a_strVoice, bCString const &a_strSVM);
     static GEBool GE_STDCALL SetLocEntry(bCString const &, bCString const &, eCLocTable::SEntry const &);
 

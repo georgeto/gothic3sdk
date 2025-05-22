@@ -13,7 +13,7 @@ void bTAutoPOSmartPtr<CLASS>::Create()
 {
     Destroy();
     bCAccessorCreator Creator(bTClassName<CLASS>::GetUnmangled());
-    SetPropertyObject(static_cast<bTPOPureSmartPtr<CLASS> *>(&*Creator));
+    SetPropertyObject(static_cast<bTPOPureSmartPtr<CLASS> *>(static_cast<bCPropertyObjectBase *>(Creator)));
 }
 
 template <typename CLASS>
