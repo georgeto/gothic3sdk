@@ -29,7 +29,7 @@ class bTPropertyContainer : public bCObjectBase
 
   public:
     bTPropertyContainer();
-    explicit bTPropertyContainer(T const &);
+    bTPropertyContainer(T const &);
     bTPropertyContainer(bTPropertyContainer<T> const &);
 
   public:
