@@ -13,15 +13,15 @@ class mCYamlParser
 
   public:
     GELPVoid LoadYaml(bCString const &a_strFile, bCString const &a_strTargetType,
-                      bTObjArray<bCString> const *a_arrClassPrefixes = 0);
+                      bTObjArray<bCString> const *a_arrClassPrefixes = nullptr);
     GELPVoid LoadYaml(bCString const &a_strFile, bCPropertyObjectTypeBase const &a_Type,
-                      bTObjArray<bCString> const *a_arrClassPrefixes = 0);
+                      bTObjArray<bCString> const *a_arrClassPrefixes = nullptr);
 
     template <typename T>
-    T *LoadYaml(bCString const &a_strFile, bTObjArray<bCString> const *a_arrClassPrefixes = 0);
+    T *LoadYaml(bCString const &a_strFile, bTObjArray<bCString> const *a_arrClassPrefixes = nullptr);
 
     template <typename T>
-    bTPtrArray<T *> *LoadYamlSequence(bCString const &a_strFile, bTObjArray<bCString> const *a_arrClassPrefixes = 0);
+    bTPtrArray<T *> *LoadYamlSequence(bCString const &a_strFile, bTObjArray<bCString> const *a_arrClassPrefixes = nullptr);
 
     template <typename T>
     GEBool LoadYamlSequence(bCString const &a_strFile, bTPtrArray<T *> &a_oArray,
@@ -29,7 +29,7 @@ class mCYamlParser
 
     template <typename T>
     bTObjArray<bTAutoPOSmartPtr<T>> *LoadYamlSequenceAuto(bCString const &a_strFile,
-                                                          bTObjArray<bCString> const *a_arrClassPrefixes = 0);
+                                                          bTObjArray<bCString> const *a_arrClassPrefixes = nullptr);
 
     bEResult LoadYamlScalar(bCPropertyTypeBase const *a_pPropertyType, bCString const &a_InputValue, GELPVoid a_pData);
 
@@ -38,7 +38,7 @@ class mCYamlParser
 
     struct mSReadState
     {
-        mSReadState() : m_pNode(0), m_pData(0), m_pPropertyType(0)
+        mSReadState() : m_pNode(nullptr), m_pData(nullptr), m_pPropertyType(nullptr)
         {}
 
         mSReadState(yaml_node_t *a_pNode, GELPVoid a_pData, bCPropertyTypeBase *a_pPropertyType)
@@ -46,7 +46,7 @@ class mCYamlParser
         {}
 
         mSReadState(yaml_node_t *a_pNode, GELPVoid a_pData, bCString a_strClassName)
-            : m_pNode(a_pNode), m_pData(a_pData), m_pPropertyType(0), m_strClassName(a_strClassName)
+            : m_pNode(a_pNode), m_pData(a_pData), m_pPropertyType(nullptr), m_strClassName(a_strClassName)
         {}
 
         // Current node
