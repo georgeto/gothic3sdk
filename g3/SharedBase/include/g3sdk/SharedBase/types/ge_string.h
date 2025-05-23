@@ -16,7 +16,7 @@ class GE_DLLIMPORT bCString
     };
 
   public:
-    static bCString GE_CCALL GetFormattedString(GELPCChar, ...);
+    static bCString GE_CCALL GetFormattedString(GELPCChar, ...) GE_PRINTF_FORMAT(1, 2);
 
   public:
     bCString(bCString const &);
@@ -74,7 +74,7 @@ class GE_DLLIMPORT bCString
     GEInt FindNoiseChar(GEInt, GEBool) const;
     GEInt FindNumericalChar(GEInt, GEBool) const;
     GEInt FindOneOf(GELPCChar, GEInt) const;
-    GEBool GE_CCALL Format(GELPCChar, ...);
+    GEBool GE_CCALL Format(GELPCChar, ...) GE_PRINTF_FORMAT(2, 3);
     void FreeExtra();
     GEInt GetAllocLength() const;
     GEChar GetAt(GEInt a_iOffset, GEBool __UNUSED__ = GEFalse) const;

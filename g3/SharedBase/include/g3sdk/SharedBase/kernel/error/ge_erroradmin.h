@@ -49,7 +49,7 @@ class GE_DLLIMPORT bCErrorAdmin
     GEBool IsLocked() const;
     void LockSystem();
     GEBool RegisterCallback(GEBool(GE_STDCALL *)(bEErrorType, GEU32), bEErrorPositionHandling, GEU32);
-    void GE_CCALL TraceF(GELPChar, ...);
+    void GE_CCALL TraceF(GELPChar, ...) GE_PRINTF_FORMAT(2, 3);
     void UnlockSystem();
     GEBool UnregisterCallback(GEBool(GE_STDCALL *)(bEErrorType, GEU32));
 
@@ -83,7 +83,7 @@ GEInt GE_STDCALL GetRegisterStringVB(_EXCEPTION_POINTERS *, GELPChar, GEUInt);
 GEInt GE_STDCALL AddCrashHandlerLimitModule(HINSTANCE);
 GEInt GE_STDCALL AddDiagAssertModule(HINSTANCE);
 GEInt GE_STDCALL DiagAssert(GEU32, GELPCChar, GELPCChar, GEU32);
-void GE_CCALL DiagOutput(GELPCChar, ...);
+void GE_CCALL DiagOutput(GELPCChar, ...) GE_PRINTF_FORMAT(1, 2);
 GELPCChar GE_STDCALL GetFaultReason(_EXCEPTION_POINTERS *);
 GEInt GE_STDCALL GetFaultReasonVB(_EXCEPTION_POINTERS *, GELPChar, GEUInt);
 GEUInt GE_STDCALL GetLimitModuleCount();

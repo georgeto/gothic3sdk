@@ -22,6 +22,12 @@
 #define GE_NO_DLLIMPORT template <typename NO_DLLIMPORT = void>
 #define GE_THREAD_LOCAL __declspec(thread)
 
+#ifdef __clang__
+#define GE_PRINTF_FORMAT(format_index, dots_index) __attribute__((__format__(__printf__, format_index, dots_index)))
+#else
+#define GE_PRINTF_FORMAT(format_index, dots_index)
+#endif
+
 namespace Genome
 {
 template <bool match>

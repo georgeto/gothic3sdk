@@ -16,7 +16,7 @@ class mCLoggerBase
 
   public:
     virtual void LogString(GELPCChar a_strMessage) = 0;
-    virtual void LogFormat(GELPCChar a_strFormat, ...) = 0;
+    virtual void LogFormat(GELPCChar a_strFormat, ...) GE_PRINTF_FORMAT(2, 3) = 0;
     virtual void PushIndent();
     virtual void PopIndent();
     void SetEnabled(GEBool a_bEnabled);
@@ -44,13 +44,13 @@ class mCFileLogger : public mCFileLoggerBase
 
   public:
     mCFileLogger(GELPCChar a_strFile);
-    virtual ~mCFileLogger();
+    ~mCFileLogger() override;
 
   public:
-    virtual void LogString(GELPCChar a_strMessage);
-    virtual void LogFormat(GELPCChar a_strFormat, ...);
-    virtual void LogFormatPrefix(GELPCChar a_strPrefix, GELPCChar a_strFormat, ...);
-    virtual FILE *GetFile();
+    void LogString(GELPCChar a_strMessage) override;
+    void LogFormat(GELPCChar a_strFormat, ...) override GE_PRINTF_FORMAT(2, 3);
+    void LogFormatPrefix(GELPCChar a_strPrefix, GELPCChar a_strFormat, ...) GE_PRINTF_FORMAT(3, 4);
+    FILE *GetFile() override;
 
   private:
     FILE *m_pFile;
@@ -60,11 +60,11 @@ class mCStdLogger : public mCFileLoggerBase
 {
   public:
     mCStdLogger(GELPCChar a_strName);
-    virtual ~mCStdLogger();
+    ~mCStdLogger() override;
 
-    virtual void LogString(GELPCChar a_strMessage);
-    virtual void LogFormat(GELPCChar a_strFormat, ...);
-    virtual FILE *GetFile();
+    void LogString(GELPCChar a_strMessage) override;
+    void LogFormat(GELPCChar a_strFormat, ...) override GE_PRINTF_FORMAT(2, 3);
+    FILE *GetFile() override;
 };
 
 template <typename T>
