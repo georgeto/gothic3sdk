@@ -35,7 +35,7 @@ bCPropertyObjectTypeBase *bTPropertyObjectType<CLASS, BASECLASS>::DoClone() cons
 {
     GE_IMPROPER_USAGE(
         "It is not allowed to make a clone of propertytype.\nDo not call it from derived class or change access !");
-    return 0;
+    return nullptr;
 }
 
 template <typename CLASS, typename BASECLASS>

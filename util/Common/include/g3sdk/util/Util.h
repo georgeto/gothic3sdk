@@ -200,13 +200,13 @@ GEBool HasItems(gCInventory_PS const &a_Inventory, T a_Item, gEStackType a_Stack
 template <typename T>
 T *GetPropertySet(eCEntity *a_pEntity, eEPropertySetType a_Type)
 {
-    return a_pEntity ? dynamic_cast<T *>(a_pEntity->GetPropertySet(a_Type)) : 0;
+    return a_pEntity ? dynamic_cast<T *>(a_pEntity->GetPropertySet(a_Type)) : nullptr;
 }
 
 template <typename T>
 T const *GetPropertySet(eCEntity const *a_pEntity, eEPropertySetType a_Type)
 {
-    return a_pEntity ? dynamic_cast<T const *>(a_pEntity->GetPropertySet(a_Type)) : 0;
+    return a_pEntity ? dynamic_cast<T const *>(a_pEntity->GetPropertySet(a_Type)) : nullptr;
 }
 
 template <typename T>

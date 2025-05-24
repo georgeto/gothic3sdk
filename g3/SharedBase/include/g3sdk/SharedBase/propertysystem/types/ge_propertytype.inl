@@ -39,13 +39,13 @@ GELPVoid bTPropertyType<OBJECTCLASS, CLASS>::PropertyInvalidate(bCPropertyObject
 {
     if (a_pPropertyObject)
         return PropertyAccessor(a_pPropertyObject);
-    return 0;
+    return nullptr;
 }
 
 template <typename OBJECTCLASS, typename CLASS>
 GEBool bTPropertyType<OBJECTCLASS, CLASS>::HasEnumValues() const
 {
-    return this->m_pArrEnumWrappers != 0;
+    return this->m_pArrEnumWrappers != nullptr;
 }
 
 template <typename OBJECTCLASS, typename CLASS>
@@ -60,7 +60,7 @@ bCEnumWrapper const *bTPropertyType<OBJECTCLASS, CLASS>::GetEnumValue(GEInt a_iI
     if (HasEnumValues() && a_iIndex < this->m_pArrEnumWrappers->GetCount())
         return this->m_pArrEnumWrappers->GetAt(a_iIndex);
 
-    return 0;
+    return nullptr;
 }
 
 template <typename OBJECTCLASS, typename CLASS>
@@ -74,13 +74,13 @@ template <typename OBJECTCLASS, typename CLASS>
 GELPCVoid bTPropertyType<OBJECTCLASS, CLASS>::PropertyGet(bCPropertyObjectBase const *a_pPropertyObject)
 {
     return a_pPropertyObject ? this->m_u32MemberOffset + reinterpret_cast<GELPCByte>(a_pPropertyObject->GetObject())
-                             : 0;
+                             : nullptr;
 }
 
 template <typename OBJECTCLASS, typename CLASS>
 GELPVoid bTPropertyType<OBJECTCLASS, CLASS>::PropertyAccess(bCPropertyObjectBase *a_pPropertyObject)
 {
-    return a_pPropertyObject ? this->m_u32MemberOffset + reinterpret_cast<GELPByte>(a_pPropertyObject->GetObject()) : 0;
+    return a_pPropertyObject ? this->m_u32MemberOffset + reinterpret_cast<GELPByte>(a_pPropertyObject->GetObject()) : nullptr;
 }
 
 template <typename OBJECTCLASS, typename CLASS>
@@ -179,7 +179,7 @@ bCPropertyTypeBase *bTPropertyType<OBJECTCLASS, CLASS>::DoClone() const
     GE_MESSAGEF_WARN(
         "The method %s detected an improper usage! \nHint:%s ", __FUNCDNAME__,
         "It is not allowed to make a clone of propertytype.\nDo not call it from derived class or change access !");
-    return 0;
+    return nullptr;
 }
 
 template <typename OBJECTCLASS, typename CLASS>
@@ -251,7 +251,7 @@ bTPropertyType<OBJECTCLASS, CLASS>::bTPropertyType(bCPropertyObjectTypeBase &a_p
                                                    bCString const &a_strPropertyCategory,
                                                    bEPropertyType a_enuPropertyType, GEBool a_bReadOnly)
     : bTPropertyTypeOnly<CLASS>(a_strPropertyName, a_strPropertyCategory, a_enuPropertyType, a_bReadOnly),
-      m_pPropertyObjectType(&a_pPropertyObjectType), m_u32MemberOffset(a_u32MemberOffset), m_pArrEnumWrappers(0)
+      m_pPropertyObjectType(&a_pPropertyObjectType), m_u32MemberOffset(a_u32MemberOffset), m_pArrEnumWrappers(nullptr)
 {
     Create();
 }
@@ -261,7 +261,7 @@ bTPropertyType<OBJECTCLASS, CLASS>::bTPropertyType(bCPropertyObjectTypeBase &a_p
                                                    GEU32 a_u32MemberOffset, bCString const &a_strPropertyName,
                                                    bEPropertyType a_enuPropertyType)
     : bTPropertyTypeOnly<CLASS>(a_strPropertyName, a_enuPropertyType), m_pPropertyObjectType(&a_pPropertyObjectType),
-      m_u32MemberOffset(a_u32MemberOffset), m_pArrEnumWrappers(0)
+      m_u32MemberOffset(a_u32MemberOffset), m_pArrEnumWrappers(nullptr)
 {
     Create();
 }

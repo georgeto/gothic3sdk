@@ -131,7 +131,7 @@ GEU16 bTPropertyObject<CLASS, BASECLASS>::ReadData(bCIStream &a_IStream, GEU16 a
         bCString strPropertyClassName;
         if (u16PropertyObjectVersion >= 0x1E)
             strPropertyClassName << a_IStream;
-        bCPropertyTypeBase *pPropertyType = 0;
+        bCPropertyTypeBase *pPropertyType = nullptr;
         if (bFastMode)
         {
             pPropertyType = AccessorProperty.GetPropertyTypeObject();
@@ -157,7 +157,7 @@ GEU16 bTPropertyObject<CLASS, BASECLASS>::ReadData(bCIStream &a_IStream, GEU16 a
                 static bTPropertyType<CLASS, bCObsoleteClass> DummyProperty(
                     bTPropertyObjectType<CLASS, BASECLASS>::GetInstance(), 0, "", bEPropertyType_PropertyContainer);
                 DummyProperty.PropertyDeprecate(a_IStream, *this, strPropertyName, strPropertyClassName,
-                                                pPropertyType != 0);
+                                                pPropertyType != nullptr);
             }
             Mutex.Release();
         }
@@ -271,7 +271,7 @@ bTPropertyObject<CLASS, BASECLASS>::bTPropertyObject(GEBool a_bRoot)
     if (!a_bRoot)
         m_u32Bitfield &= 0xFFFFFFFB;
     m_pPropertyObjectType = &bTPropertyObjectType<CLASS, BASECLASS>::GetInstance();
-    m_pObject = 0;
+    m_pObject = nullptr;
     CreateInternal(a_bRoot);
 }
 

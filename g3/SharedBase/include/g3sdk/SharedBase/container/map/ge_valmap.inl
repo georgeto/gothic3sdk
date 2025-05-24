@@ -8,7 +8,7 @@ typename bTValMap<K, T>::bSNode *bTValMap<K, T>::AccessNode(K const &_k, GEU32 &
         for (bSNode *_p = this->m_arrNodes[static_cast<GEInt>(_h)]; _p; _p = _p->m_pNext)
             if (_k == _p->m_Key)
                 return _p;
-    return 0;
+    return nullptr;
 }
 
 template <typename K, typename T>
@@ -19,7 +19,7 @@ typename bTValMap<K, T>::bSNode const *bTValMap<K, T>::GetNode(K const &_k, GEU3
         for (bSNode *_p = this->m_arrNodes[static_cast<GEInt>(_h)]; _p; _p = _p->m_pNext)
             if (_k == _p->m_Key)
                 return _p;
-    return 0;
+    return nullptr;
 }
 
 template <typename K, typename T>

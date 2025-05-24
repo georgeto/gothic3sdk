@@ -31,7 +31,7 @@ class CodeAsm : public Assembler
     asmjit::CodeHolder code;
 };
 
-asmjit::Error HandleError(Error error, const char *message = 0);
+asmjit::Error HandleError(Error error, const char *message = nullptr);
 
 ASMJIT_END_SUB_NAMESPACE
 
@@ -46,9 +46,9 @@ bool WriteAssemblerData(asmjit::x86::CodeAsm &a, size_t assertSize = 0, bool res
                         bool fillWithNops = false);
 bool ReadAssemblerData(asmjit::x86::CodeAsm &dest, void *srcAddress, size_t size);
 asmjit::Error ParseUntilSize(asmjit::x86::CodeAsm &dest, void *srcAddress, size_t minSize, size_t maxSize = 0,
-                             size_t *outDecodedSize = 0);
+                             size_t *outDecodedSize = nullptr);
 asmjit::Error ParseUntilSize(asmjit::x86::CodeAsm &dest, size_t baseAddress, void *dataBuffer, size_t minSize,
-                             size_t maxSize = 0, size_t *outDecodedSize = 0);
+                             size_t maxSize = 0, size_t *outDecodedSize = nullptr);
 bool DecodeInstruction(void *srcAddress, _DecodedInst &decodedInstruction, size_t size = 15);
 bool DecomposeInstruction(void *srcAddress, _DInst &decomposedInstruction, size_t size = 15);
 bool WriteNops(unsigned long srcAdress, size_t size);

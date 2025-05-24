@@ -17,7 +17,7 @@ void bTSmallArray<T>::Move(T *_d, T const *_s, GEU16 _n)
 template <typename T>
 void bTSmallArray<T>::Init()
 {
-    this->m_pArray = 0;
+    this->m_pArray = nullptr;
     this->m_u16Count = 0;
     this->m_u16Capacity = 0;
 }

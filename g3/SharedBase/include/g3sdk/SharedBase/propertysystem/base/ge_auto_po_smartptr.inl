@@ -22,7 +22,7 @@ void bTAutoPOSmartPtr<CLASS>::Destroy()
     if (m_pPropertyObject)
     {
         m_pPropertyObject->ReleaseReference();
-        m_pPropertyObject = 0;
+        m_pPropertyObject = nullptr;
     }
 }
 
@@ -111,7 +111,7 @@ template <typename CLASS>
 bCOStream &bTAutoPOSmartPtr<CLASS>::operator>>(bCOStream &a_OStream)
 {
     static_cast<GEU16>(1) >> a_OStream;
-    static_cast<GEBool>(m_pPropertyObject != 0) >> a_OStream;
+    static_cast<GEBool>(m_pPropertyObject != nullptr) >> a_OStream;
     if (m_pPropertyObject)
         m_pPropertyObject->Write(a_OStream);
     return a_OStream;

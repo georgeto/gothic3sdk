@@ -33,7 +33,7 @@ void bTArrayBase<T>::New(T *_e, GEInt _n)
 template <typename T>
 void bTArrayBase<T>::Init()
 {
-    this->m_pArray = 0;
+    this->m_pArray = nullptr;
     this->m_u32Count = 0;
     this->m_u32Capacity = 0;
 }

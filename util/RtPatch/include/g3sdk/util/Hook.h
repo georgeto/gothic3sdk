@@ -1051,7 +1051,7 @@ mCCallHook::mCCallHookBuilder mCCallHook::PrepareParams(GEU32 a_u32CallAdr, N a_
     GE_ASSERT_SIZEOF(N, sizeof(GELPVoid))
     mCCallHook::mCCallHookBuilder Params;
     Params.m_u32CallAdr = a_u32CallAdr;
-    Params.m_pOriginalFunc = 0;
+    Params.m_pOriginalFunc = nullptr;
     Params.m_pNewFunc = *reinterpret_cast<GELPVoid *>(&a_pNewFunc);
     Params.m_HookType = a_HookType;
     Params.m_RegisterType = a_RegisterType;

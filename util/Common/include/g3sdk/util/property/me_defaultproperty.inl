@@ -1,8 +1,8 @@
 template <typename ENUM>
 inline bTPropertyContainer<ENUM> *__WrapEnumPointer(ENUM *a_pDefaultValue)
 {
-    bTPropertyContainer<ENUM> *pWrapped = 0;
-    if (a_pDefaultValue != 0)
+    bTPropertyContainer<ENUM> *pWrapped = nullptr;
+    if (a_pDefaultValue != nullptr)
     {
         pWrapped = GE_NEW(bTPropertyContainer<ENUM>)(*a_pDefaultValue);
         GE_DELETE(a_pDefaultValue);
@@ -27,7 +27,7 @@ void __CopyEnumValues(bTPropertyType<OBJECLASS, ENUM> &Destination, bTPropertyTy
 template <typename OBJECTCLASS, typename CLASS>
 GEBool mTDefaultPropertyType<OBJECTCLASS, CLASS>::HasDefaultValue() const
 {
-    return m_pDefaultValue != 0;
+    return m_pDefaultValue != nullptr;
 }
 
 template <typename OBJECTCLASS, typename CLASS>

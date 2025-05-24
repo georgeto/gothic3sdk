@@ -116,8 +116,8 @@ class mCThreadPool
   private:
     bTPtrArray<bCThreadWin32 *> m_arrThreads;
     bCThreadWin32::bEThreadPriority m_Priority = bCThreadWin32::bEThreadPriority_NORMAL;
-    HANDLE m_hAbortEvent = NULL;
-    HANDLE m_hSemaphoreWorkItem = NULL;
+    HANDLE m_hAbortEvent = nullptr;
+    HANDLE m_hSemaphoreWorkItem = nullptr;
     mTPtrRingBuffer<mCThreadPoolWorkerItem *> m_arrWorkQueue;
     bCCriticalSectionWin32 m_WorkQueueMutex;
 };

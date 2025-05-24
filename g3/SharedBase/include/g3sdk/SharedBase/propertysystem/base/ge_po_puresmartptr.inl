@@ -22,10 +22,10 @@ void bTPOPureSmartPtr<CLASS>::Destroy()
         m_pObject->Destroy();
     if (m_pObject)
     {
-        m_pObject->SetPropertyObject(0);
+        m_pObject->SetPropertyObject(nullptr);
         m_pObject->ReleaseVirtualReference();
     }
-    m_pObject = 0;
+    m_pObject = nullptr;
 }
 
 template <typename CLASS>
@@ -35,7 +35,7 @@ void bTPOPureSmartPtr<CLASS>::Create()
     if (IsRoot())
         bCPropertyObjectSingleton::GetInstance().EnableRegistration(this, GEFalse);
 
-    CLASS *pObjRefBase = 0;
+    CLASS *pObjRefBase = nullptr;
     if (!IsRoot())
         pObjRefBase = GE_NEW(CLASS);
 
@@ -52,7 +52,7 @@ void bTPOPureSmartPtr<CLASS>::Create()
             if (!IsRoot())
             {
                 bCPropertyObjectBase const *pPropertyObject = pObjRefBase->GetPropertyObject();
-                pObjRefBase->SetPropertyObject(0);
+                pObjRefBase->SetPropertyObject(nullptr);
                 pObjRefBase->ReleaseVirtualReference();
                 pObjRefBase->SetPropertyObject(pPropertyObject);
             }
@@ -89,7 +89,7 @@ void bTPOPureSmartPtr<CLASS>::CopyFrom(bCPropertyObjectBase const &a_Source)
 }
 
 template <typename CLASS>
-bTPOPureSmartPtr<CLASS>::bTPOPureSmartPtr() : m_pObject(0)
+bTPOPureSmartPtr<CLASS>::bTPOPureSmartPtr() : m_pObject(nullptr)
 {}
 
 template <typename CLASS>
