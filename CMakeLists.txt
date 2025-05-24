@@ -4,7 +4,7 @@ project(
   g3sdk
   VERSION 1.0.0
   DESCRIPTION "Gothic 3 SDK"
-  LANGUAGES CXX)
+  LANGUAGES CXX C)
 
 option(G3SDK_BINDING_ONLY "Use the binding only version of the library (no util and thirdparty)." OFF)
 option(G3SDK_USE_STDCALL "Use the same calling convention as Gothic 3 by default. Avoids unpleasant surprises, as otherwise one has to be extremly careful to provide proper calling convetions when hooking into Gothic 3. However, under certain circumstances, such as using external (pre-compiled) libraries, it may be advantageous to not default to stdcall." ON)
