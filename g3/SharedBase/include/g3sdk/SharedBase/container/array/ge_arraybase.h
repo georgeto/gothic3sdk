@@ -235,14 +235,14 @@
     }
 
 #define GE_ARRAY_FOR_EACH(NAME, ARRAY)                                                                                 \
-    if (auto &__ARRAY = ARRAY; GETrue)                                                                                 \
+    if (auto &&__ARRAY = ARRAY; GETrue)                                                                                 \
     _Pragma("warning (push)")                                                                                          \
         _Pragma("warning(disable : 4456)") /* declaration of 'i' hides previous local declaration */                   \
         for (decltype(__ARRAY.GetCount()) i = 0; i < __ARRAY.GetCount(); i++)                                          \
             _Pragma("warning (pop)") if (auto &NAME = __ARRAY[i]; GETrue)
 
 #define GE_ARRAY_FOR_EACH_REV(NAME, ARRAY)                                                                             \
-    if (auto &__ARRAY = ARRAY; GETrue)                                                                                 \
+    if (auto &&__ARRAY = ARRAY; GETrue)                                                                                 \
     _Pragma("warning (push)")                                                                                          \
         _Pragma("warning(disable : 4456)") /* declaration of 'i' hides previous local declaration */                   \
         for (decltype(__ARRAY.GetCount()) i = __ARRAY.GetCount(); i-- > 0;)                                            \
