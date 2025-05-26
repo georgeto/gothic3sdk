@@ -3,6 +3,31 @@
 #define NOMINMAX
 #include <windows.h>
 
+GELPCChar INVALID_MODULE_NAME = "<Invalid Module>";
+
+GELPCChar GetCurrentModuleName()
+{
+    static CHAR ModuleFileName[MAX_PATH];
+
+    if (ModuleFileName[0])
+        return ModuleFileName;
+
+    HMODULE Module;
+    if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCTSTR>(&GetCurrentModuleName),
+                           &Module))
+    {
+        MessageBoxA(NULL, "", "Failed to resolve current module.", MB_ICONERROR);
+        return INVALID_MODULE_NAME;
+    }
+
+    if (!GetModuleFileName(Module, ModuleFileName, sizeof(ModuleFileName)))
+    {
+        MessageBoxA(NULL, "", "Failed to resolve current module name.", MB_ICONERROR);
+        return INVALID_MODULE_NAME;
+    }
+    return ModuleFileName;
+}
+
 GELPVoid LoadModule(GELPCChar a_strModule)
 {
     GELPVoid pModule = reinterpret_cast<GELPVoid>(GetModuleHandle(a_strModule));

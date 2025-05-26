@@ -21,8 +21,17 @@
 
 #define VTABLE(CLASS) "??_7" #CLASS "@@6B@"
 
+extern GELPCChar INVALID_MODULE_NAME;
+/**
+ * Return name of current module, i.e. the .dll/.exe this function is contained in.
+ *
+ * \return Name of the current module, or `INVALID_MODULE_NAME` on failure.
+ */
+GELPCChar GetCurrentModuleName();
+
 GELPVoid LoadModule(GELPCChar a_strModule);
 GELPVoid GetProcAddress(GELPCChar a_strModule, GELPCChar a_strProc);
+
 
 inline GEU32 RVA_Generic(GELPCChar a_strModuleName, GEU32 a_uOffset)
 {
