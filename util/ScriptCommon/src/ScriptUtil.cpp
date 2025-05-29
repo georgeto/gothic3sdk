@@ -239,15 +239,20 @@ bCString GetSmalltalkText(Entity a_Speaker)
     return Text;
 }
 
-static bTObjArray<Entity> *g_arrFoundFreepointsByUseType =
-    reinterpret_cast<bTObjArray<Entity> *>(RVA_ScriptGame(0x118ACC));
+static bTObjArray<Entity> *GetFoundFreepointsByUseType()
+{
+    static bTObjArray<Entity> *g_arrFoundFreepointsByUseType =
+        reinterpret_cast<bTObjArray<Entity> *>(RVA_ScriptGame(0x118ACC));
+    return g_arrFoundFreepointsByUseType;
+}
+
 bTObjArray<Entity> &FindInteractObjects(Entity const &a_Entity)
 {
     using mFFindInteractObjects = void(GE_STDCALL *)(Entity);
     static mFFindInteractObjects s_fFindInteractObjects = force_cast<mFFindInteractObjects>(RVA_ScriptGame(0x7C90));
 
     s_fFindInteractObjects(a_Entity);
-    return *g_arrFoundFreepointsByUseType;
+    return *GetFoundFreepointsByUseType();
 }
 
 Entity FindInteractObjectWithUseType(Entity const &a_Entity, gEUseType a_enuUseType)
@@ -255,17 +260,22 @@ Entity FindInteractObjectWithUseType(Entity const &a_Entity, gEUseType a_enuUseT
     return FindInteractObjects(a_Entity)[a_enuUseType];
 }
 
-static bTObjArray<Entity> *g_arrFoundFreepointsRefined =
-    reinterpret_cast<bTObjArray<Entity> *>(RVA_ScriptGame(0x118AD8));
+static bTObjArray<Entity> *GetFoundFreepointsRefined()
+{
+    static bTObjArray<Entity> *g_arrFoundFreepointsRefined =
+        reinterpret_cast<bTObjArray<Entity> *>(RVA_ScriptGame(0x118AD8));
+    return g_arrFoundFreepointsRefined;
+}
+
 void RefineFoundFreepoints(gEUseType a_enuUseType)
 {
-    if (g_arrFoundFreepointsByUseType->GetAt(a_enuUseType) != None)
-        g_arrFoundFreepointsRefined->Add(g_arrFoundFreepointsByUseType->GetAt(a_enuUseType));
+    if (GetFoundFreepointsByUseType()->GetAt(a_enuUseType) != None)
+        GetFoundFreepointsRefined()->Add(GetFoundFreepointsByUseType()->GetAt(a_enuUseType));
 }
 
 Entity GetFirstFoundRefinedFreepoint()
 {
-    GE_ARRAY_FOR_EACH (FoundFreepoint, *g_arrFoundFreepointsRefined)
+    GE_ARRAY_FOR_EACH (FoundFreepoint, *GetFoundFreepointsRefined())
     {
         if (FoundFreepoint != None)
             return FoundFreepoint;
@@ -276,10 +286,10 @@ Entity GetFirstFoundRefinedFreepoint()
 
 Entity GetRandomFoundRefinedFreepoint()
 {
-    if (g_arrFoundFreepointsRefined->GetCount() <= 0)
+    if (GetFoundFreepointsRefined()->GetCount() <= 0)
         return None;
 
-    return g_arrFoundFreepointsRefined->GetAt(Entity::GetRandomNumber(g_arrFoundFreepointsRefined->GetCount()));
+    return GetFoundFreepointsRefined()->GetAt(Entity::GetRandomNumber(GetFoundFreepointsRefined()->GetCount()));
 }
 
 void FreeDestinationPointsOfEnclaveMembers(Entity const &a_Enclave)
