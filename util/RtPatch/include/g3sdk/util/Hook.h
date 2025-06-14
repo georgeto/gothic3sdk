@@ -47,6 +47,10 @@ class mCDataPatch : public mCRestorable
         using namespace asmjit; \
         using namespace asmjit::x86;
 
+#define BEGIN_CODE_PATCH CODE_PATCH
+
+#define END_CODE_PATCH }
+
 class mCCodePatch : public mCRestorable
 {
   public:
