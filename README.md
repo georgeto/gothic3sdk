@@ -96,7 +96,7 @@ All code, except  third-party code, is formatted with clang-format according to 
 By default C++ exception handling is disabled (see [MSVC: Default exception handling behavior](https://learn.microsoft.com/en-us/cpp/build/reference/eh-exception-handling-model?view=msvc-170#default-exception-handling-behavior)).
 This is sufficient, because Gothic 3 does not use C++ exceptions, but only structured exception handling (SEH).
 
-In case you use a library that C++ exception handling, you can set `target_compile_options(<my_target> PRIVATE "/EHsc")` to enable it for your target (see for example [Script_DumpProperties](https://github.com/georgeto/gothic3sdk-examples/blob/master/examples/Script_DumpProperties/CMakeLists.txt) and [Script_RemoteControl](https://github.com/georgeto/gothic3sdk-examples/blob/examples/Script_RemoteControl/CMakeLists.txt)).
+In case you use a library that needs C++ exception handling, you can set `target_compile_options(<my_target> PRIVATE "/EHsc")` to enable it for your target (see for example [Script_DumpProperties](https://github.com/georgeto/gothic3sdk-examples/blob/master/examples/Script_DumpProperties/CMakeLists.txt) and [Script_RemoteControl](https://github.com/georgeto/gothic3sdk-examples/blob/examples/Script_RemoteControl/CMakeLists.txt)).
 
 ## Legacy Version
 For the legacy version of the Gothic 3 SDK, which does not use CMake but is only a Visual Studio Project, see the `legacy` branch.
