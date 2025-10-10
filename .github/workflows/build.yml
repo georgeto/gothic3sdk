@@ -17,7 +17,17 @@ jobs:
         with:
           arch: x86
 
-      - name: Build
+      - name: Build with MSVC
         run: |
-          cmake -S . -B build -G "Visual Studio 17 2022" -A Win32
+          cmake -S . -B build -G "Visual Studio 17 2022" -A Win32 -D CPM_SOURCE_CACHE=".\cpm-cache"
           cmake --build build --config Release -j
+
+      - name: Build with MSVC (Ninja)
+        run: |
+          cmake -S . -B build-ninja -G Ninja -D CMAKE_BUILD_TYPE=Release -D CPM_SOURCE_CACHE=".\cpm-cache" -D CMAKE_EXPORT_COMPILE_COMMANDS=1
+          cmake --build build-ninja
+
+      - name: Build with ClangCl
+        run: |
+          cmake -S . -B build-clang -G "Visual Studio 17 2022" -A Win32 -T ClangCl -D CPM_SOURCE_CACHE=".\cpm-cache"
+          cmake --build build-clang --config Release -j
