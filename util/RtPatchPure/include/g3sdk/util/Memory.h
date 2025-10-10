@@ -32,7 +32,6 @@ GELPCChar GetCurrentModuleName();
 GELPVoid LoadModule(GELPCChar a_strModule);
 GELPVoid GetProcAddress(GELPCChar a_strModule, GELPCChar a_strProc);
 
-
 inline GEU32 RVA_Generic(GELPCChar a_strModuleName, GEU32 a_uOffset)
 {
     return reinterpret_cast<GEU32>(LoadModule(a_strModuleName)) + a_uOffset;

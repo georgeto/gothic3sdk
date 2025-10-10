@@ -80,7 +80,8 @@ GELPCVoid bTPropertyType<OBJECTCLASS, CLASS>::PropertyGet(bCPropertyObjectBase c
 template <typename OBJECTCLASS, typename CLASS>
 GELPVoid bTPropertyType<OBJECTCLASS, CLASS>::PropertyAccess(bCPropertyObjectBase *a_pPropertyObject)
 {
-    return a_pPropertyObject ? this->m_u32MemberOffset + reinterpret_cast<GELPByte>(a_pPropertyObject->GetObject()) : nullptr;
+    return a_pPropertyObject ? this->m_u32MemberOffset + reinterpret_cast<GELPByte>(a_pPropertyObject->GetObject())
+                             : nullptr;
 }
 
 template <typename OBJECTCLASS, typename CLASS>

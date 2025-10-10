@@ -46,7 +46,6 @@ class mCDataPatch : public mCRestorable
 #define CODE_PATCH [](asmjit::x86::CodeAsm &Asm) { \
         using namespace asmjit; \
         using namespace asmjit::x86;
-
 #define BEGIN_CODE_PATCH CODE_PATCH
 
 #define END_CODE_PATCH }

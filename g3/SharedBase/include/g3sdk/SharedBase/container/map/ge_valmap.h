@@ -27,15 +27,27 @@ class bTValMap
     T &AccessAt(K const &_k, GEU32 &_h);
     bCConstIterator Begin() const;
     bCIterator Begin();
-    bCConstIterator begin() const { return Begin(); };
-    bCIterator begin() { return Begin(); };
+    bCConstIterator begin() const
+    {
+        return Begin();
+    };
+    bCIterator begin()
+    {
+        return Begin();
+    };
     void Clear();
     void CopyFrom(bTValMap<K, T> const &_s);
     void CopyTo(bTValMap<K, T> &_d) const;
     bCConstIterator End() const;
     bCIterator End();
-    bCConstIterator end() const { return End(); };
-    bCIterator end() { return End(); };
+    bCConstIterator end() const
+    {
+        return End();
+    };
+    bCIterator end()
+    {
+        return End();
+    };
     T const &GetAt(K const &_k) const;
     GEBool GetAt(K const &_k, T &_e) const;
     GEInt GetCount() const;
