@@ -15,7 +15,8 @@ struct eSRayIntersectionDesc;
 
 struct eSPropertySetDebugLine
 {
-    GE_UNIMPL_STRUCT(eSPropertySetDebugLine)
+    bCString Name;
+    bCString Value;
 };
 
 enum eEDecayState

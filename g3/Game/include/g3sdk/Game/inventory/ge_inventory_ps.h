@@ -22,12 +22,14 @@ class GE_DLLIMPORT gCInventory_PS : public eCEntityPropertySet, public gCInvento
   public:
     struct SMissingAttrib
     {
-        GE_UNIMPL_STRUCT(SMissingAttrib)
+        bCString MissingAttribName;
+        // Number of missing attribute points, i.e. the difference to the required value.
+        GEInt MissingAttribValue;
     };
 
     struct SMissingSkill
     {
-        GE_UNIMPL_STRUCT(SMissingSkill)
+        eCTemplateEntity *MissingSkill;
     };
 
     enum EEvent
