@@ -74,6 +74,12 @@ struct remove_reference<T &&>
 template <typename T>
 using remove_reference_t = typename remove_reference<T>::type;
 
+template <typename T, unsigned Length>
+constexpr unsigned array_len(T (&)[Length])
+{
+    return Length;
+}
+
 } // namespace Genome
 
 #define GE_STATIC_ASSERT(EXPR)                                                                                         \
