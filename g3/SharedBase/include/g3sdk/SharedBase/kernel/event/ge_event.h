@@ -20,6 +20,13 @@ class GE_DLLIMPORT bCEvent : public bCObjectRefBase
   public:
     bCEvent &operator=(bCEvent const &);
 
+  public:
+    GE_NO_DLLIMPORT
+    inline GEU32 GetWindowId() const
+    {
+        return m_u32WindowId;
+    }
+
   protected:
     void Invalidate();
 
