@@ -263,14 +263,14 @@ class mCBaseHook : public mCRestorable, public mCRegisterBase
 
 #define ME_DECLARE_HOOK_BUILDER_DERIVE(CLASS, BASE)                                                                    \
     template <typename T, typename P>                                                                                  \
-    class CLASS##BuilderBase : public BASE##BuilderBase<T, P>
+    class [[nodiscard]] CLASS##BuilderBase : public BASE##BuilderBase<T, P>
 
 #define ME_DECLARE_HOOK_BUILDER(CLASS)                                                                                 \
     class CLASS##Builder : public CLASS##BuilderBase<CLASS##Builder, CLASS##Params>                                    \
     {};                                                                                                                \
                                                                                                                        \
-    class CLASS##InstanceBuilder : public CLASS##BuilderBase<CLASS##InstanceBuilder, CLASS##Params>,                   \
-                                   public mCHookInstanceBuilder<CLASS##InstanceBuilder, CLASS>                         \
+    class [[nodiscard]] CLASS##InstanceBuilder : public CLASS##BuilderBase<CLASS##InstanceBuilder, CLASS##Params>,     \
+                                                 public mCHookInstanceBuilder<CLASS##InstanceBuilder, CLASS>           \
     {};
 
 class mCAbstractRegArgHook : public mCBaseHook
@@ -308,8 +308,8 @@ class mCAbstractRegArgHook : public mCBaseHook
       public:
         // [Thread-safe, Recursion-safe]
         // Registers are passed in left-to-right order
-        inline T &AddStackArg(GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None,
-                              GEBool a_bIndirect = GEFalse)
+        [[nodiscard]] inline T &AddStackArg(GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None,
+                                            GEBool a_bIndirect = GEFalse)
         {
             mSRegRelativeArg Arg = {a_RegisterType, a_u32Offset,
                                     a_bIndirect ? mEArgType_RegIndirect : mEArgType_RegDirect, GEFalse};
@@ -318,38 +318,38 @@ class mCAbstractRegArgHook : public mCBaseHook
         };
 
         // [Thread-safe, Recursion-safe]
-        inline T &AddStackArgEbp(GEU32 a_u32Offset)
+        [[nodiscard]] inline T &AddStackArgEbp(GEU32 a_u32Offset)
         {
             return AddStackArg(a_u32Offset, mERegisterType_Ebp);
         };
 
         // [Thread-safe, Recursion-safe]
-        inline T &AddPtrStackArg(GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None)
+        [[nodiscard]] inline T &AddPtrStackArg(GEU32 a_u32Offset, mERegisterType a_RegisterType = mERegisterType_None)
         {
             return AddStackArg(a_u32Offset, a_RegisterType, GETrue);
         };
 
         // [Thread-safe, Recursion-safe]
-        inline T &AddPtrStackArgEbp(GEU32 a_u32Offset)
+        [[nodiscard]] inline T &AddPtrStackArgEbp(GEU32 a_u32Offset)
         {
             return AddStackArg(a_u32Offset, mERegisterType_Ebp, GETrue);
         };
 
         // [Thread-safe, Recursion-safe]
-        inline T &AddRegArg(mERegisterType a_RegisterType)
+        [[nodiscard]] inline T &AddRegArg(mERegisterType a_RegisterType)
         {
             return AddStackArg(0, a_RegisterType);
         };
 
         // [Thread-safe, Recursion-safe]
-        inline T &AddPtrRegArg(mERegisterType a_RegisterType)
+        [[nodiscard]] inline T &AddPtrRegArg(mERegisterType a_RegisterType)
         {
             return AddPtrStackArg(0, a_RegisterType);
         };
 
         // [Thread-safe, Recursion-safe]
         template <typename V>
-        inline T &AddImmArg(V a_ImmediateValue)
+        [[nodiscard]] inline T &AddImmArg(V a_ImmediateValue)
         {
             GE_ASSERT_SIZEOF(V, sizeof(GEU32));
             mSRegRelativeArg Arg = {mERegisterType_None, *reinterpret_cast<GEU32 *>(&a_ImmediateValue),
@@ -359,7 +359,7 @@ class mCAbstractRegArgHook : public mCBaseHook
         };
 
         // [Thread-safe, Recursion-safe]
-        inline T &AddThisArg()
+        [[nodiscard]] inline T &AddThisArg()
         {
             return AddRegArg(mERegisterType_Ecx);
         };
@@ -369,7 +369,7 @@ class mCAbstractRegArgHook : public mCBaseHook
         // Expects the arguments to be passed in the same order as received by the hook function.
         // The arguments are moved from the stack to the according registers.
         // Only direct register arguments without offset are allowed.
-        inline T &Restore()
+        [[nodiscard]] inline T &Restore()
         {
             GE_ASSERT(!m_arrStackArgs.IsEmpty());
 
@@ -403,13 +403,13 @@ class mCAbstractFunctionHook : public mCAbstractRegArgHook
         // [Thread-safe, Recursion-safe]
         // Push this pointer on stack before entering hook function: AddThisArg()
         // Pop this pointer from stack before entering original function: RestoreRegisterArgs()
-        inline T &ThisCall()
+        [[nodiscard]] inline T &ThisCall()
         {
             return AddThisArg().Restore();
         }
 
         template <typename V>
-        inline T &ReplaceThis(V a_ReplaceThisValue)
+        [[nodiscard]] inline T &ReplaceThis(V a_ReplaceThisValue)
         {
             GE_ASSERT_SIZEOF(V, sizeof(GEU32));
             m_bReplaceThis = GETrue;
@@ -443,7 +443,7 @@ class mCFunctionHook : public mCAbstractFunctionHook
         // A 'transparent' hook disables itself on entering.
         // Therefore calling the hooked function from inside the hook is possible without using GetOriginalFunction.
         // NOTE: 'transparent' hooks can only be used in combination with the hook types OnlyStack or ThisCall.
-        inline T &Transparent()
+        [[nodiscard]] inline T &Transparent()
         {
             m_bTransparent = GETrue;
             return *static_cast<T *>(this);
@@ -542,14 +542,14 @@ class mCCallHook : public mCAbstractRegArgHook
     {
       public:
         // [Thread-safe, Recursion-safe]
-        inline T &InsertCall()
+        [[nodiscard]] inline T &InsertCall()
         {
             m_bInsertCall = GETrue;
             return *static_cast<T *>(this);
         };
 
         // [Thread-safe, Recursion-safe]
-        inline T &ReplaceSize(GEUInt a_uReplaceSize)
+        [[nodiscard]] inline T &ReplaceSize(GEUInt a_uReplaceSize)
         {
             m_bExplicitSize = GETrue;
             m_uCallSize = a_uReplaceSize;
@@ -559,7 +559,7 @@ class mCCallHook : public mCAbstractRegArgHook
         };
 
         // [Thread-safe, Recursion-safe]
-        inline T &ExplicitSize(GEUInt a_uCallSize, GEUInt a_uRelocateSize)
+        [[nodiscard]] inline T &ExplicitSize(GEUInt a_uCallSize, GEUInt a_uRelocateSize)
         {
             m_bExplicitSize = GETrue;
             m_uCallSize = a_uCallSize;
@@ -567,51 +567,49 @@ class mCCallHook : public mCAbstractRegArgHook
             return *static_cast<T *>(this);
         };
 
-        inline T &AlignToEnd()
+        [[nodiscard]] inline T &AlignToEnd()
         {
             m_bAlignToEnd = GETrue;
             return *static_cast<T *>(this);
         };
 
         // [Not thread-safe, Not Recursion-safe]
-        inline T &VariableReturnAddress()
+        [[nodiscard]] inline T &VariableReturnAddress()
         {
             m_bVariableReturnAddress = GETrue;
             return *static_cast<T *>(this);
         };
 
         // [Not thread-safe, Not Recursion-safe]
-        inline T &RestoreRegister()
+        [[nodiscard]] inline T &RestoreRegister()
         {
             m_bRestoreRegister = GETrue;
             return *static_cast<T *>(this);
         };
 
         // [Thread-safe, Recursion-safe]
-        inline T &TestOnReturn()
+        [[nodiscard]] inline T &TestOnReturn()
         {
             m_bTestOnReturn = GETrue;
             return *static_cast<T *>(this);
         };
 
         // [Thread-safe, Recursion-safe]
-        inline T &OnTrueReturnTo(GEU32 a_u32ReturnAdr)
+        [[nodiscard]] inline T &OnTrueReturnTo(GEU32 a_u32ReturnAdr)
         {
-            TestOnReturn();
             m_u32TrueReturnAdr = a_u32ReturnAdr;
-            return *static_cast<T *>(this);
+            return TestOnReturn();
         }
 
         // [Thread-safe, Recursion-safe]
-        inline T &OnFalseReturnTo(GEU32 a_u32ReturnAdr)
+        [[nodiscard]] inline T &OnFalseReturnTo(GEU32 a_u32ReturnAdr)
         {
-            TestOnReturn();
             m_u32FalseReturnAdr = a_u32ReturnAdr;
-            return *static_cast<T *>(this);
+            return TestOnReturn();
         }
 
         // [Thread-safe, Recursion-safe]
-        inline T &ReturnInReg(mERegisterType a_RegisterType)
+        [[nodiscard]] inline T &ReturnInReg(mERegisterType a_RegisterType)
         {
             m_ReturnInReg = a_RegisterType;
             return *static_cast<T *>(this);
@@ -621,7 +619,7 @@ class mCCallHook : public mCAbstractRegArgHook
         // Remove added args from stack before returning, required for cdecl calling convention,
         // because here the caller is responsible for clearing the stack,
         // but of course the caller does not know about the arguments we added.
-        inline T &CleanArgsFromStack()
+        [[nodiscard]] inline T &CleanArgsFromStack()
         {
             m_bCleanArgsFromStack = GETrue;
             return *static_cast<T *>(this);
@@ -630,7 +628,7 @@ class mCCallHook : public mCAbstractRegArgHook
         // [Thread-safe, Recursion-safe]
         // Stores the register on the stack, before pushing any of the stack args.
         // On return the register is restored from the stack.
-        inline T &SaveReg(mERegisterType a_RegisterType)
+        [[nodiscard]] inline T &SaveReg(mERegisterType a_RegisterType)
         {
             m_arrSavedRegisters.Add(a_RegisterType);
             return *static_cast<T *>(this);
@@ -638,7 +636,7 @@ class mCCallHook : public mCAbstractRegArgHook
 
         // [Thread-safe, Recursion-safe]
         template <typename O>
-        inline T &OriginalFunction(O a_pOriginalFunc)
+        [[nodiscard]] inline T &OriginalFunction(O a_pOriginalFunc)
         {
             GE_ASSERT_SIZEOF(O, sizeof(GELPVoid))
             m_pOriginalFunc = *reinterpret_cast<GELPVoid *>(&a_pOriginalFunc);
