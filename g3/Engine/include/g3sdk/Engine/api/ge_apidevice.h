@@ -27,22 +27,30 @@ class GE_DLLIMPORT eCAPIDevice
 
     struct eSAPIModeParameters
     {
-        GE_UNIMPL_STRUCT(eSAPIModeParameters)
+        GEBool bWindowedMode;
+        GEBool bEnableVsync;
+        GE_PADDING(2)
+        eCGfxShared::eEMultiSample MultiSampleType;
+        UINT BackBufferWidth;
+        UINT BackBufferHeight;
+        UINT RefreshRateInHz;
+        D3DFORMAT BackBufferFormat;
+        eCGfxShared::eEDepthFormat AutoDepthStencilFormat;
     };
 
     struct eSAPIStartParameters
     {
         HWND hFocusWindow;
         DWORD BehaivorFlags;
-        bool bWindowedMode;
-        bool bEnableVsync;
+        GEBool bWindowedMode;
+        GEBool bEnableVsync;
         GE_PADDING(2)
-        D3DMULTISAMPLE_TYPE MultiSampleType;
+        eCGfxShared::eEMultiSample MultiSampleType;
         UINT BackBufferWidth;
         UINT BackBufferHeight;
-        int RefreshRateInHz;
+        UINT RefreshRateInHz;
         D3DFORMAT BackBufferFormat;
-        int AutoDepthStencilFormat;
+        eCGfxShared::eEDepthFormat AutoDepthStencilFormat;
     };
 
     struct eSImageInfo
