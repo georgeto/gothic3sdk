@@ -14,11 +14,6 @@ using D3DXPARAMETER_TYPE = enum _D3DXPARAMETER_TYPE;
 class GE_DLLIMPORT eCGfxShared
 {
   public:
-    struct eSGfxContextDesc
-    {
-        GE_UNIMPL_STRUCT(eSGfxContextDesc)
-    };
-
     struct eSGfxLayersDesc
     {
         UINT Width;
@@ -602,6 +597,16 @@ class GE_DLLIMPORT eCGfxShared
         GEU32 SubSysId;
         GEU32 Revision;
         GEU8 Caps[296];
+    };
+
+    struct eSGfxContextDesc
+    {
+        GEUInt AdapterIndex;
+        GE_UNIMPL_MEMBERS(4)
+        eSGfxAdapterDesc AdapterDesc;
+        GEUInt ModeIndex;
+        eSGfxModeDesc ModeDesc;
+        GE_UNIMPL_MEMBERS(4)
     };
 
     struct eSTLTexVertex
