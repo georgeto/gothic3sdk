@@ -30,15 +30,15 @@ struct eSSetupEngine
     GEInt SoundEffectVolume;
     GEInt SoundAmbientVolume;
     GEU8 f18[4];
-    GEU8 byte1C;
+    GEBool bNoSound;
     GEU8 f1D[3];
-    GEU32 Quality;
+    GEU32 DebugFilter;
     GEU32 Width;
     GEU32 Height;
     GEU32 RefreshRate;
     GEU8 AdapterNumber[4];
-    GEU8 byte34;
-    GEU8 f35;
+    GEU8 FullScreen;
+    GEU8 SetToTrueIfWindowMode3;
     GEU8 byte36;
     GEU8 f37;
     GEFloat float38;
@@ -69,7 +69,7 @@ struct eSSetupEngine
     GEU8 fA8[5];
     GEU8 byteAD;
     GEU8 fAE[2];
-    GEInt dwordB0;
+    GEInt PhysicsThreads;
     GEU8 fB4[5];
     GEU8 byteB9;
     GEU8 byteBA;
@@ -156,9 +156,11 @@ struct eSSetupEngine
     GEU8 byte1AE;
     GEU8 byte1AF;
     GEBool CaptureCursor;
-    GEU8 gap1B1[11];
+    GEU8 gap_1B1[3];
+    bCString CurrentAudioLanguage;
+    bCString CurrentLanguage;
     GEU8 ShowSubtitle;
-    GEU8 byte1BD;
+    GEU8 VsyncEnabled;
     GEU8 gap1BE[34];
     bCString Difficulty;
     bCString m_DefaultFont;
@@ -324,7 +326,7 @@ class GE_DLLIMPORT eCApplication : public eCWindow
     void ShowSplashImage(bCString const &, GEU32);
     void GE_STDCALL Snapshot(bCObjectRefBase *, bCEvent *);
     void GE_STDCALL ToggleFullScreen(bCObjectRefBase *, bCEvent *);
-    void ToggleResolution(eCGfxShared::eSGfxContextDesc const &, GEBool);
+    void ToggleResolution(eCGfxShared::eSGfxContextDesc const &, GEBool Windowed);
 
   protected:
     static GEBool ms_bEngineCreated;
