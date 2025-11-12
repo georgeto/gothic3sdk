@@ -1,9 +1,10 @@
 #pragma once
 
+#include <Game/ge_effectmap.h>
+
 #include <Engine.h>
 
 class gCEffect;
-class gCEffectMap;
 
 class GE_DLLIMPORT gCEffectSystem : public eCEffectSystemBase
 {
@@ -33,4 +34,10 @@ class GE_DLLIMPORT gCEffectSystem : public eCEffectSystemBase
     void DeleteAllEffects();
     void Destroy();
     void Invalidate();
+
+  private:
+    gCEffectMap m_EffectMap;
+    bTPtrArray<gCEffect *> m_RunningEffects;
 };
+
+GE_ASSERT_SIZEOF(gCEffectSystem, 0x24)

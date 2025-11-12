@@ -56,4 +56,9 @@ class GE_DLLIMPORT gCEffectCommandSequence
     GEInt InsertItem(gSEffectCommand_SpawnEntity const &);
     GEInt InsertItem(gSEffectCommand_TriggerEntity const &);
     void Invalidate();
+
+  private:
+    bTPtrArray<gCEffectCommand *> m_Items;
 };
+
+GE_ASSERT_SIZEOF(gCEffectCommandSequence, 0x10)

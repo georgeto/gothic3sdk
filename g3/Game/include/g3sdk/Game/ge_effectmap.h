@@ -36,4 +36,9 @@ class GE_DLLIMPORT gCEffectMap
   protected:
     void Destroy();
     void Invalidate();
+
+  private:
+    bTValMap<bCString, gCEffectCommandSequence> m_Effects;
 };
+
+GE_ASSERT_SIZEOF(gCEffectMap, 0x14)

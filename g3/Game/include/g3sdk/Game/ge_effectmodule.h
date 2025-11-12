@@ -29,7 +29,7 @@ class GE_DLLIMPORT gCEffectModule : public eCEffectModuleBase
     void Invalidate();
 
   private:
-    GE_UNIMPL_MEMBERS(4)
+    gCEffectSystem *m_pEffectSystem;
 };
 
 GE_ASSERT_SIZEOF(gCEffectModule, 0x18)
