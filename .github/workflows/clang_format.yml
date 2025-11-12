@@ -5,12 +5,6 @@ on: [push, pull_request]
 jobs:
   format-check:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        path:
-          - g3
-          - util
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -19,7 +13,9 @@ jobs:
           fetch-depth: 1
 
       - name: Run clang-format style check
-        uses: jidicula/clang-format-action@4726374d1aa3c6aecf132e5197e498979588ebc8 # v4.15.0
+        uses: georgeto/clang-format-lint-action@bd07217901b18dd1992c72040c499eb7715203a3
         with:
-          clang-format-version: 20
-          check-path: ${{ matrix.path }}
+          clangFormatVersion: 20
+          extensions: c,h,cpp,hpp,cc,inl
+          source: g3 util
+          style: file
