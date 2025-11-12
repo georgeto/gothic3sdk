@@ -217,7 +217,7 @@ template <typename OBJECTCLASS, typename CLASS>
 CLASS const *bTPropertyType<OBJECTCLASS, CLASS>::PropertyGetter(bCPropertyObjectBase const *a_pPropertyObject)
 {
     if (!a_pPropertyObject)
-        GE_FATAL_ERROR_EX(__FUNCDNAME__ " - Propertyobject is NULL, can¦t get propertyvalue from NULLobject ! ",
+        GE_FATAL_ERROR_EX(__FUNCDNAME__ " - Propertyobject is NULL, canÂ¦t get propertyvalue from NULLobject ! ",
                           "GEFalse == (NULL != a_pPropertyObject)");
 
     return reinterpret_cast<CLASS const *>(PropertyGet(a_pPropertyObject));
@@ -227,7 +227,7 @@ template <typename OBJECTCLASS, typename CLASS>
 CLASS *bTPropertyType<OBJECTCLASS, CLASS>::PropertyAccessor(bCPropertyObjectBase *a_pPropertyObject)
 {
     if (!a_pPropertyObject)
-        GE_FATAL_ERROR_EX(__FUNCDNAME__ " - Propertyobject is NULL, can¦t access propertyvalue from NULobject ! ",
+        GE_FATAL_ERROR_EX(__FUNCDNAME__ " - Propertyobject is NULL, canÂ¦t access propertyvalue from NULobject ! ",
                           "GEFalse == (NULL != a_pPropertyObject)");
 
     return reinterpret_cast<CLASS *>(PropertyAccess(a_pPropertyObject));

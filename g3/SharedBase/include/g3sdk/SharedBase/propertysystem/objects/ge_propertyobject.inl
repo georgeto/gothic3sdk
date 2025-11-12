@@ -115,7 +115,7 @@ GEU16 bTPropertyObject<CLASS, BASECLASS>::ReadData(bCIStream &a_IStream, GEU16 a
     u16PropertyObjectVersion << a_IStream;
     if (!u16PropertyObjectVersion)
         GE_FATAL_ERROR(
-            __FUNCDNAME__ " - illegal propertyobject version detected. Can¦t read version ! Filebounds exceeded ?")
+            __FUNCDNAME__ " - illegal propertyobject version detected. CanÂ¦t read version ! Filebounds exceeded ?")
 
     bCAccessorCreator AccessorCreator(this);
     bCAccessorProperty AccessorProperty(AccessorCreator);

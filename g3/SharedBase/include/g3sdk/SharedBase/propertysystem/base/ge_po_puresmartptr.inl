@@ -60,7 +60,7 @@ void bTPOPureSmartPtr<CLASS>::Create()
         else
         {
             GE_FATAL_ERROR_EX(
-                __FUNCDNAME__ "- dynamic_cast<bCObjectRefBase*> objecttype isn¦t derived from bCObjectRefBase !",
+                __FUNCDNAME__ "- dynamic_cast<bCObjectRefBase*> objecttype isnÂ¦t derived from bCObjectRefBase !",
                 "GEFalse == (NULL != pObjRefBase)")
             // Destroy();
         }
